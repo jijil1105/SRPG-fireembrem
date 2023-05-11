@@ -8,11 +8,17 @@ public class MapManager : MonoBehaviour
     public GameObject blockPrefab_Grass;
     public GameObject blockPrefab_Water;
 
+    //-------------------------------------------------------------------------
+
     public MapBlock[,] mapBlocks;
+
+    //-------------------------------------------------------------------------
 
     public const int MAP_WIDTH = 9;
     public const int MAP_HEIGHT = 9;
     private const int GENERATE_RATIO_GRASS = 90;
+
+    //-------------------------------------------------------------------------
 
     void Start()
     {
@@ -52,12 +58,16 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    //-------------------------------------------------------------------------
+
     public void AllSelectionModeClear()
     {
         for (int i = 0; i < MAP_WIDTH; i++)
             for (int j = 0; j < MAP_HEIGHT; j++)
                 mapBlocks[i, j].SetSelectionMode(MapBlock.Highlight.Off);
     }
+
+    //-------------------------------------------------------------------------
 
     public List<MapBlock> SearchReachableBlocks(int xPos, int zPos)
     {
@@ -99,6 +109,8 @@ public class MapManager : MonoBehaviour
 
         return results;
     }
+
+    //-------------------------------------------------------------------------
 
     private bool AddReachableList(List<MapBlock> reachableList, MapBlock targetBlock)
     {

@@ -12,8 +12,12 @@ public class MapBlock : MonoBehaviour
     public int XPos { get => xPos; set => xPos = value; }
     public int ZPos { get => zPos; set => zPos = value; }
 
+    //-------------------------------------------------------------------------
+
     [Header("通行可能フラグ")]
     public bool passable;//通行可能フラグ
+
+    //-------------------------------------------------------------------------
 
     private GameObject selectionBlockObj;//このブロックが選択された際に表示する強調表示ブロック
 
@@ -34,6 +38,7 @@ public class MapBlock : MonoBehaviour
         Attackable//
     }
 
+    //-------------------------------------------------------------------------
 
     // Start is called before the first frame update
     void Start()
@@ -42,6 +47,8 @@ public class MapBlock : MonoBehaviour
 
         SetSelectionMode(Highlight.Off);
     }
+
+    //-------------------------------------------------------------------------
 
     public void SetSelectionMode(Highlight mode)
     {

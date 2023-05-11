@@ -10,14 +10,47 @@ public class Charactor : MonoBehaviour
     [Header("Init Position(-4~4)"), SerializeField]
     public int initPos_Z;
 
+    //-------------------------------------------------------------------------
+
+    [Header("EnemyFlg true: EnemyCharactor")]
+    public bool isEnemy;
+    [Header("Charactor's Name")]
+    public string charaName;
+    [Header("maxHP")]
+    public int maxHP;
+    [Header("atk")]
+    public int atk;
+    [Header("def")]
+    public int def;
+    [Header("Attribute")]
+    public Attribute attribute;
+
+    //-------------------------------------------------------------------------
+
     private int xPos;
     private int zPos;
+    private int nowHp;
+
+    public int XPos { get => xPos; set => xPos = value; }
+    public int ZPos { get => zPos; set => zPos = value; }
+    public int NowHp { get => nowHp; set => nowHp = value; }
+
+    //-------------------------------------------------------------------------
+
+    public enum Attribute
+    {
+        Water,
+        Fire,
+        Wind,
+        Soil
+    }
+
+    //-------------------------------------------------------------------------
 
     //Main Camera
     private Camera MainCamera;
 
-    public int XPos { get => xPos; set => xPos = value; }
-    public int ZPos { get => zPos; set => zPos = value; }
+    //-------------------------------------------------------------------------
 
     void Start()
     {
@@ -32,9 +65,13 @@ public class Charactor : MonoBehaviour
         ZPos = initPos_Z;
         transform.position = pos;
 
-        //Set camera to MainCamera
+        NowHp = maxHP;
+
+        //Set camera from MainCamera
         MainCamera = Camera.main;
     }
+
+    //-------------------------------------------------------------------------
 
     // Update is called once per frame
     void Update()
@@ -44,6 +81,8 @@ public class Charactor : MonoBehaviour
         transform.LookAt(MainCamera.transform);
         //MainCamera.transform.LookAt(this.transform);
     }
+
+    //-------------------------------------------------------------------------
 
     public void MovePosition(int targetXPos, int targetZPos)
     {

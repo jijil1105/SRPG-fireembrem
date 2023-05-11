@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
 
     private MapManager mapManager;
     private CharactorManager charactorManager;
+    private GUIManager guiManager;
+
+    //-------------------------------------------------------------------------
 
     private Charactor selectingChara;
     private List<MapBlock> reachableBlocks;
@@ -48,6 +51,7 @@ public class GameManager : MonoBehaviour
     {
         mapManager = GetComponent<MapManager>();
         charactorManager = GetComponent<CharactorManager>();
+        guiManager = GetComponent<GUIManager>();
 
         reachableBlocks = new List<MapBlock>();
 
@@ -104,6 +108,9 @@ public class GameManager : MonoBehaviour
                 if (charaData)
                 {
                     selectingChara = charaData;
+
+                    guiManager.ShowStatusWindow(charaData);
+
                     reachableBlocks = mapManager.SearchReachableBlocks(charaData.XPos, charaData.ZPos);
 
                     foreach (MapBlock mapblock in reachableBlocks)
@@ -116,10 +123,11 @@ public class GameManager : MonoBehaviour
 
                else
                 {
-                    selectingChara = null;
+                    ClearSelectingChara();
 
                     Debug.Log("Tapped on Block  Position : " + targetBlock.transform.position);
                 }
+
                 break;
 
             case Phase.Myturn_Moving:
@@ -139,6 +147,13 @@ public class GameManager : MonoBehaviour
                 break;
         }
         
+    }
+
+    private void ClearSelectingChara()
+    {
+        selectingChara = null;
+
+        guiManager.HideStatusWindow();
     }
 
     private void ChangePhase(Phase NowPhase)

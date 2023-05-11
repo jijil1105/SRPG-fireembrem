@@ -8,11 +8,15 @@ public class CharactorManager : MonoBehaviour
     public Transform charactorParent;
     public List<Charactor> Charactors = new List<Charactor>();
 
+    //-------------------------------------------------------------------------
+
     // Start is called before the first frame update
     void Start()
     {
         charactorParent.GetComponentsInChildren(Charactors);
     }
+
+    //-------------------------------------------------------------------------
 
     public Charactor GetCharactor(int X, int Z)
     {
