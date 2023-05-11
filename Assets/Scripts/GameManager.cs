@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -20,19 +19,55 @@ public class GameManager : MonoBehaviour
     }
 
     public static GameManager instance;
-    public List<GameObject> blocks = new List<GameObject>();
-    public List<GameObject> childobjs = new List<GameObject>();
 
-    public int nowmode;//０：選択なし、１：キャラクター選択、２：キャラクター移動選択
-    public bool nowPhase; // true:自ターン, false:相手ターン
+    //-------------------------------------------------------------------------
+
+    private MapManager mapManager;
+    private CharactorManager charactorManager;
+
+    private Charactor selectingChara;
+
+    private enum Phase
+    {
+        Myturn_Start,
+        Myturn_Moving,
+        Myturn_Command,
+        Myturn_Targeting,
+        Myturn_Result,
+        Enemyturn_Start,
+        Enemyturn_Result
+    }
+
+    private Phase nowPhase;
+
+    //------------------------------------------------------------------------
+
+
+    private void Start()
+    {
+        mapManager = GetComponent<MapManager>();
+        charactorManager = GetComponent<CharactorManager>();
+
+        nowPhase = Phase.Myturn_Start;
+    }
+
+    //-------------------------------------------------------------------------
+
+    bool isCalledOnce = false;
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButton(0))
+        if(!isCalledOnce)
         {
-            GetMapBlockByTapPos();
+            if (Input.GetMouseButton(0))
+            {
+                isCalledOnce = true;
+                GetMapBlockByTapPos();
+            }
         }
+
+        if(!Input.GetMouseButton(0)) { isCalledOnce = false; }
     }
 
     private void GetMapBlockByTapPos()
@@ -54,19 +89,45 @@ public class GameManager : MonoBehaviour
 
     private void SelectBlock(MapBlock targetBlock)
     {
-        GameObject obj = childobjs.FirstOrDefault(obj => obj.activeSelf == true);
-        if(obj)
+        switch(nowPhase)
         {
-            obj.SetActive(false);
+            case Phase.Myturn_Start:
+
+                mapManager.AllSelectionModeClear();
+                targetBlock.SetSelectionMode(true);
+
+                Charactor charaData = charactorManager.GetCharactor(targetBlock.XPos, targetBlock.ZPos);
+
+                if (charaData)
+                {
+                    selectingChara = charaData;
+                    ChangePhase(Phase.Myturn_Moving);
+
+                    Debug.Log("Select Charactor :" + charaData.gameObject.name + " : position :" + charaData.XPos + " : " + charaData.ZPos);
+                }
+
+               else
+                {
+                    selectingChara = null;
+
+                    Debug.Log("Tapped on Block  Position : " + targetBlock.transform.position);
+                }
+                break;
+
+            case Phase.Myturn_Moving:
+
+                selectingChara.MovePosition(targetBlock.XPos, targetBlock.ZPos);
+                mapManager.AllSelectionModeClear();
+                ChangePhase(Phase.Myturn_Command);
+
+                Debug.Log("phase Moving");
+                break;
         }
         
-        childobjs.FirstOrDefault(obj => obj.transform.position == targetBlock.transform.position).SetActive(true);
-        Debug.Log("Tapped on Block  Position : " + targetBlock.transform.position);
+    }
 
-        Charactor charactor = CharactorManager.instance.GetCharactor(targetBlock.XPos, targetBlock.ZPos);
-        if(charactor)
-        {
-            Debug.Log("Select Charactor");
-        }
+    private void ChangePhase(Phase NowPhase)
+    {
+        nowPhase = NowPhase;
     }
 }

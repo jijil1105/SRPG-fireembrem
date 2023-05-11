@@ -5,9 +5,10 @@ using UnityEngine;
 public class MapManager : MonoBehaviour
 {
     public Transform blockParent;
-    public GameObject ChildeObject;
     public GameObject blockPrefab_Grass;
     public GameObject blockPrefab_Water;
+
+    public MapBlock[,] mapBlocks;
 
     public const int MAP_WIDTH = 9;
     public const int MAP_HEIGHT = 9;
@@ -15,6 +16,7 @@ public class MapManager : MonoBehaviour
 
     void Start()
     {
+        mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
 
         Vector3 defaultPos = new Vector3(0.0f, 0.0f, 0.0f);
         defaultPos.x = -(MAP_WIDTH / 2);
@@ -34,36 +36,27 @@ public class MapManager : MonoBehaviour
                 if (rand < GENERATE_RATIO_GRASS) { isGrass = true; }
 
                 GameObject obj;
-                GameObject childeobj;
 
                 if (isGrass) { obj = Instantiate(blockPrefab_Grass, blockParent); }
 
                 else { obj = Instantiate(blockPrefab_Water, blockParent); }
 
                 obj.transform.position = pos;
-                if(obj.GetComponent<MapBlock>())
-                {
-                    Debug.Log("showflg = true");
-                }
-                
-                childeobj = Instantiate(ChildeObject, obj.transform);
-                childeobj.SetActive(false);
 
-                if(childeobj.GetComponent<MapBlock>())
-                {
-                    Debug.Log("showflg = false");
-                }
+                var mapBlock = obj.GetComponent<MapBlock>();
+                mapBlocks[i, j] = mapBlock;
 
-                childeobj.GetComponent<MapBlock>().XPos = (int)pos.x;
-                childeobj.GetComponent<MapBlock>().ZPos = (int)pos.z;
-
-                obj.GetComponent<MapBlock>().XPos = (int)pos.x;
-                obj.GetComponent<MapBlock>().ZPos = (int)pos.z;
-
-                GameManager.instance.childobjs.Add(childeobj);
-                GameManager.instance.blocks.Add(obj);
+                mapBlock.XPos = (int)pos.x;
+                mapBlock.ZPos = (int)pos.z;
             }
         }
+    }
+
+    public void AllSelectionModeClear()
+    {
+        for (int i = 0; i < MAP_WIDTH; i++)
+            for (int j = 0; j < MAP_HEIGHT; j++)
+                mapBlocks[i, j].SetSelectionMode(false);
     }
 
     void Update()

@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Charactor : MonoBehaviour
 {
-    // Start is called before the first frame update
-
     //Set charactor's init position from inspector
     [Header("Init Position(-4~4)"), SerializeField]
     public int initPos_X;
@@ -41,7 +39,9 @@ public class Charactor : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.transform.LookAt(MainCamera.transform);
+        Vector3 camerPos = MainCamera.transform.position;
+        camerPos.y = transform.position.y;
+        transform.LookAt(MainCamera.transform);
         //MainCamera.transform.LookAt(this.transform);
     }
 
