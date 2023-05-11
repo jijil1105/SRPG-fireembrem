@@ -59,8 +59,57 @@ public class MapManager : MonoBehaviour
                 mapBlocks[i, j].SetSelectionMode(false);
     }
 
-    void Update()
+    public List<MapBlock> SearchReachableBlocks(int xPos, int zPos)
     {
-        
+        var results = new List<MapBlock>();
+
+        int baseX = -1, baseZ = -1;
+
+        for(int i=0; i<MAP_WIDTH; i++)
+        {
+            for(int j=0; j<MAP_HEIGHT; j++)
+            {
+                if((mapBlocks[i,j].XPos == xPos)&&(mapBlocks[i,j].ZPos == zPos))
+                {
+                    baseX = i;
+                    baseZ = j;
+                    break;
+                }
+            }
+            if (baseX != -1) { break; }
+        }
+
+        for (int i = baseX + 1; i < MAP_WIDTH; i++)
+            if (AddReachableList(results, mapBlocks[i, baseZ]))
+                break;
+
+        for (int i = baseX - 1; i >= 0; i--)
+            if (AddReachableList(results, mapBlocks[i, baseZ]))
+                break;
+
+        for (int i = baseZ + 1; i < MAP_HEIGHT; i++)
+            if (AddReachableList(results, mapBlocks[baseX, i]))
+                break;
+
+        for (int i = baseZ - 1; i >= 0; i--)
+            if (AddReachableList(results, mapBlocks[baseX, i]))
+                break;
+
+        results.Add(mapBlocks[baseX, baseZ]);
+
+        return results;
+    }
+
+    private bool AddReachableList(List<MapBlock> reachableList, MapBlock targetBlock)
+    {
+        if (!targetBlock.passable)
+            return true;
+
+        var charaData = GetComponent<CharactorManager>().GetCharactor(targetBlock.XPos, targetBlock.ZPos);
+        if (charaData != null)
+            return false;
+
+        reachableList.Add(targetBlock);
+        return false;
     }
 }

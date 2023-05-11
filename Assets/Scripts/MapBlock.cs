@@ -4,15 +4,19 @@ using UnityEngine;
 
 public class MapBlock : MonoBehaviour
 {
-    //[HideInInspector]
-    private int xPos;
-    //[HideInInspector]
-    private int zPos;
+    [HideInInspector]
+    private int xPos;//ブロックのX座標
+    [HideInInspector]
+    private int zPos;//ブロックのY座標
+
+    [Header("通行可能フラグ")]
+    public bool passable;
 
     public int XPos { get => xPos; set => xPos = value; }
     public int ZPos { get => zPos; set => zPos = value; }
 
-    private GameObject selectionBlockObj;
+    private GameObject selectionBlockObj;//このブロックが選択された際に表示する強調表示ブロック
+
 
     // Start is called before the first frame update
     void Start()

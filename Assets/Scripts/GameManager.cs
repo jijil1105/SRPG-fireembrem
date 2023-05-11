@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     private CharactorManager charactorManager;
 
     private Charactor selectingChara;
+    private List<MapBlock> reachableBlocks;
 
     private enum Phase
     {
@@ -47,6 +48,8 @@ public class GameManager : MonoBehaviour
     {
         mapManager = GetComponent<MapManager>();
         charactorManager = GetComponent<CharactorManager>();
+
+        reachableBlocks = new List<MapBlock>();
 
         nowPhase = Phase.Myturn_Start;
     }
@@ -101,6 +104,8 @@ public class GameManager : MonoBehaviour
                 if (charaData)
                 {
                     selectingChara = charaData;
+                    reachableBlocks = mapManager.SearchReachableBlocks(charaData.XPos, charaData.ZPos);
+
                     ChangePhase(Phase.Myturn_Moving);
 
                     Debug.Log("Select Charactor :" + charaData.gameObject.name + " : position :" + charaData.XPos + " : " + charaData.ZPos);
@@ -116,10 +121,17 @@ public class GameManager : MonoBehaviour
 
             case Phase.Myturn_Moving:
 
-                selectingChara.MovePosition(targetBlock.XPos, targetBlock.ZPos);
-                mapManager.AllSelectionModeClear();
-                ChangePhase(Phase.Myturn_Command);
+                if (reachableBlocks.Contains(targetBlock))
+                {
+                    selectingChara.MovePosition(targetBlock.XPos, targetBlock.ZPos);
 
+                    reachableBlocks.Clear();
+
+                    mapManager.AllSelectionModeClear();
+
+                    ChangePhase(Phase.Myturn_Command);
+                }
+                    
                 Debug.Log("phase Moving");
                 break;
         }
