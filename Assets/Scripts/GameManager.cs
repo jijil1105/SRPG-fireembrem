@@ -97,7 +97,7 @@ public class GameManager : MonoBehaviour
             case Phase.Myturn_Start:
 
                 mapManager.AllSelectionModeClear();
-                targetBlock.SetSelectionMode(true);
+                targetBlock.SetSelectionMode(MapBlock.Highlight.Select);
 
                 Charactor charaData = charactorManager.GetCharactor(targetBlock.XPos, targetBlock.ZPos);
 
@@ -105,6 +105,9 @@ public class GameManager : MonoBehaviour
                 {
                     selectingChara = charaData;
                     reachableBlocks = mapManager.SearchReachableBlocks(charaData.XPos, charaData.ZPos);
+
+                    foreach (MapBlock mapblock in reachableBlocks)
+                        mapblock.SetSelectionMode(MapBlock.Highlight.Reachable);
 
                     ChangePhase(Phase.Myturn_Moving);
 

@@ -191,3 +191,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   passable: 1
+  selMat_Select: {fileID: 2100000, guid: 9ff4f9927a4d3441bb8bb1b7ca12b602, type: 2}
+  selMat_Reachable: {fileID: 2100000, guid: becd9e72079e04d939851686b41a2d4b, type: 2}
+  selMat_Attackable: {fileID: 2100000, guid: 2e4cb46904c974826a89fba41f086449, type: 2}

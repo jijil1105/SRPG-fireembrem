@@ -56,7 +56,7 @@ public class MapManager : MonoBehaviour
     {
         for (int i = 0; i < MAP_WIDTH; i++)
             for (int j = 0; j < MAP_HEIGHT; j++)
-                mapBlocks[i, j].SetSelectionMode(false);
+                mapBlocks[i, j].SetSelectionMode(MapBlock.Highlight.Off);
     }
 
     public List<MapBlock> SearchReachableBlocks(int xPos, int zPos)

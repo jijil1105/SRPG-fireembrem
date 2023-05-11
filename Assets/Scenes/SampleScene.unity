@@ -278,7 +278,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockParent: {fileID: 169811918}
-  ChildeObject: {fileID: 5834167874720143618, guid: 387777f81e8e249e69cfcf3dd1b5d45a, type: 3}
   blockPrefab_Grass: {fileID: 5834167874720143618, guid: 37928c98a240e421f9c9db5e9501c3e8, type: 3}
   blockPrefab_Water: {fileID: 526010217631796985, guid: a48c715194adc42beb167ded66c31b7b, type: 3}
 --- !u!4 &871221859
@@ -307,10 +306,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba4127efb0784df0b09d95445e85359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blocks: []
-  childobjs: []
-  nowmode: 0
-  nowPhase: 0
 --- !u!114 &871221861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,8 +601,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778389293cb554e03883ad16f81eb89a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initPos_X: 3
-  initPos_Z: 0
+  initPos_X: 4
+  initPos_Z: 4
 --- !u!114 &3360908308748152621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -620,8 +615,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778389293cb554e03883ad16f81eb89a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initPos_X: 2
-  initPos_Z: 0
+  initPos_X: -4
+  initPos_Z: -4
 --- !u!114 &3360908308963779627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -634,7 +629,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778389293cb554e03883ad16f81eb89a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initPos_X: 1
+  initPos_X: 0
   initPos_Z: 0
 --- !u!4 &4334622636882393667
 Transform:
