@@ -30,6 +30,7 @@ public class GameManager : MonoBehaviour
 
     private Charactor selectingChara;
     private List<MapBlock> reachableBlocks;
+    private List<MapBlock> attackableBlocks;
 
     private enum Phase
     {
@@ -54,6 +55,7 @@ public class GameManager : MonoBehaviour
         guiManager = GetComponent<GUIManager>();
 
         reachableBlocks = new List<MapBlock>();
+        attackableBlocks = new List<MapBlock>();
 
         nowPhase = Phase.Myturn_Start;
     }
@@ -65,11 +67,25 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (nowPhase == Phase.Enemyturn_Start)
+            nowPhase = Phase.Myturn_Start;
+
         if(!isCalledOnce)
         {
             if (Input.GetMouseButton(0))
             {
                 isCalledOnce = true;
+
+                if (guiManager.battleWindowUI.gameObject.activeInHierarchy)
+                {
+                    // バトル結果表示ウィンドウを閉じる
+                    guiManager.battleWindowUI.HideWindow();
+
+                    // 進行モードを進める(デバッグ用)
+                    ChangePhase(Phase.Myturn_Start);
+                    return;
+                }
+
                 GetMapBlockByTapPos();
             }
         }
@@ -140,10 +156,41 @@ public class GameManager : MonoBehaviour
 
                     mapManager.AllSelectionModeClear();
 
+                    guiManager.ShowCommandButtons();
+
                     ChangePhase(Phase.Myturn_Command);
                 }
                     
-                Debug.Log("phase Moving");
+                Debug.Log("phase Command");
+                break;
+
+            case Phase.Myturn_Command:
+
+                if (attackableBlocks.Contains(targetBlock))
+                {
+                    attackableBlocks.Clear();
+
+                    mapManager.AllSelectionModeClear();
+
+                    var targetChara = charactorManager.GetCharactor(targetBlock.XPos, targetBlock.ZPos);
+
+                    if(targetChara != null)
+                    {
+                        CharaAttack(selectingChara, targetChara);
+
+                        ChangePhase(Phase.Myturn_Result);
+
+                        Debug.Log("phase Result");
+                        return;
+                    }
+
+                    else
+                    {
+                        ChangePhase(Phase.Enemyturn_Start);
+
+                        Debug.Log("phase EnemyTurnStart");
+                    }
+                }
                 break;
         }
         
@@ -159,5 +206,49 @@ public class GameManager : MonoBehaviour
     private void ChangePhase(Phase NowPhase)
     {
         nowPhase = NowPhase;
+    }
+
+    public void AttackCommand()
+    {
+        guiManager.HideCommandButtons();
+
+        attackableBlocks = mapManager.SearchAttackableBlocks(selectingChara.XPos, selectingChara.ZPos);
+
+        foreach(MapBlock block in attackableBlocks)
+        {
+            block.SetSelectionMode(MapBlock.Highlight.Attackable);
+        }
+    }
+
+    public void StandbyCommand()
+    {
+        guiManager.HideCommandButtons();
+
+        ChangePhase(Phase.Enemyturn_Start);
+
+        Debug.Log("phase EnemyTurnStart");
+    }
+
+    private void CharaAttack(Charactor attackchara, Charactor defensechara)
+    {
+        int damagevalue;
+        int atkpoint = attackchara.atk;
+        int defpoint = defensechara.def;
+
+        damagevalue = atkpoint - defpoint;
+
+        if (damagevalue < 0)
+            damagevalue = 0;
+
+        guiManager.battleWindowUI.ShowWindow(defensechara, damagevalue);
+
+        defensechara.NowHp -= damagevalue;
+
+        defensechara.NowHp = Mathf.Clamp(defensechara.NowHp, 0, defensechara.maxHP);
+
+        if (defensechara.NowHp == 0)
+            charactorManager.DeleteCharaData(defensechara);
+
+        Debug.Log("Atk:" + attackchara.charaName + " Def:" + defensechara.charaName);
     }
 }

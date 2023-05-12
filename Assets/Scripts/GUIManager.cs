@@ -21,10 +21,19 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    public BattleWindowUI battleWindowUI;
+
+    //-------------------------------------------------------------------------
+
+    public GameObject commandButtons;
+
+    //-------------------------------------------------------------------------
+
     // Start is called before the first frame update
     void Start()
     {
         HideStatusWindow();
+        HideCommandButtons();
     }
 
     //-------------------------------------------------------------------------
@@ -66,5 +75,15 @@ public class GUIManager : MonoBehaviour
     public void HideStatusWindow()
     {
         statusWindow.SetActive(false);
+    }
+
+    public void ShowCommandButtons()
+    {
+        commandButtons.SetActive(true);
+    }
+
+    public void HideCommandButtons()
+    {
+        commandButtons.SetActive(false);
     }
 }

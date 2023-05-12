@@ -22,4 +22,11 @@ public class CharactorManager : MonoBehaviour
     {
         return Charactors.FirstOrDefault(cha => cha.XPos == X && cha.ZPos == Z);
     }
+
+    public void DeleteCharaData(Charactor charadata)
+    {
+        Charactors.Remove(charadata);
+
+        Destroy(charadata.gameObject);
+    }
 }

@@ -124,4 +124,52 @@ public class MapManager : MonoBehaviour
         reachableList.Add(targetBlock);
         return false;
     }
+
+    public List<MapBlock> SearchAttackableBlocks(int xPos, int zPos)
+    {
+        var results = new List<MapBlock>();
+
+        int baseX = -1, baseZ = -1;
+
+        for (int i = 0; i < MAP_WIDTH; i++)
+        {
+            for(int j = 0; j < MAP_HEIGHT; j++)
+            {
+                if(mapBlocks[i, j].XPos == xPos && mapBlocks[i, j].ZPos == zPos)
+                {
+                    baseX = i;
+                    baseZ = j;
+                    break;
+                }
+            }
+            if (baseX != -1)
+                break;
+        }
+
+        AddAttackableList(results, baseX + 1, baseZ);
+
+        AddAttackableList(results, baseX - 1, baseZ);
+
+        AddAttackableList(results, baseX, baseZ + 1);
+
+        AddAttackableList(results, baseX, baseZ - 1);
+
+        AddAttackableList(results, baseX + 1, baseZ + 1);
+        // X-Z+方向
+        AddAttackableList(results, baseX - 1, baseZ + 1);
+        // X+Z-方向
+        AddAttackableList(results, baseX + 1, baseZ - 1);
+        // X-Z-方向
+        AddAttackableList(results, baseX - 1, baseZ - 1);
+
+        return results;
+    }
+
+    private void AddAttackableList(List<MapBlock> attackableList, int indexX, int indexZ)
+    {
+        if(indexX < 0 || indexX >= MAP_WIDTH || indexZ < 0 || indexZ >= MAP_HEIGHT )
+            return;
+
+        attackableList.Add(mapBlocks[indexX, indexZ]);
+    }
 }
