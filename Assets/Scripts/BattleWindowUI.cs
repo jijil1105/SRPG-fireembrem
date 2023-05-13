@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class BattleWindowUI : MonoBehaviour
 {
@@ -26,9 +27,13 @@ public class BattleWindowUI : MonoBehaviour
 
         nowHp = Mathf.Clamp(nowHp, 0, charadata.maxHP);
 
-        float ratio = (float)nowHp / charadata.maxHP;
+        float amount = (float)charadata.NowHp / charadata.maxHP;
+        float endamount = (float)nowHp / charadata.maxHP;
 
-        hpGageImage.fillAmount = ratio;
+        DOTween.To(() => amount, (n) => amount = n, endamount, 1.0f).OnUpdate(() =>
+        {
+            hpGageImage.fillAmount = amount;
+        });
 
         hpText.text = nowHp + "/" + charadata.maxHP;
 

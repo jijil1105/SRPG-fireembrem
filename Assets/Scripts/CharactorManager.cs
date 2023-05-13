@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using DG.Tweening;
 
 public class CharactorManager : MonoBehaviour
 {
@@ -27,6 +28,6 @@ public class CharactorManager : MonoBehaviour
     {
         Charactors.Remove(charadata);
 
-        Destroy(charadata.gameObject);
+        DOVirtual.DelayedCall(0.5f, () => { Destroy(charadata.gameObject); });
     }
 }

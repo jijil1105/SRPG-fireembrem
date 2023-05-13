@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Charactor : MonoBehaviour
 {
@@ -90,9 +91,14 @@ public class Charactor : MonoBehaviour
         movePos.x = targetXPos - XPos;
         movePos.z = targetZPos - ZPos;
 
-        transform.position += movePos;
+        transform.DOMove(movePos, 0.5f).SetEase(Ease.Linear).SetRelative();
 
         XPos = targetXPos;
         ZPos = targetZPos;
+    }
+
+    public void AttackAnimation(Charactor targetCharaData)
+    {
+        transform.DOJump(targetCharaData.transform.position, 1.0f, 1, 0.5f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
     }
 }
