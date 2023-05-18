@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using System.Linq;
 
 public class GameManager : MonoBehaviour
 {
@@ -189,6 +190,24 @@ public class GameManager : MonoBehaviour
         nowPhase = NowPhase;
 
         Debug.Log("Change" + nowPhase);
+
+        switch(nowPhase)
+        {
+            case Phase.Myturn_Start :
+
+                guiManager.ShowLogoChangeTurn(true);
+                break;
+
+            case Phase.Enemyturn_Start :
+
+                guiManager.ShowLogoChangeTurn(false);
+
+                DOVirtual.DelayedCall(1.0f, () =>
+                {
+                    EnemyCommand();
+                });
+                break;
+        }
     }
 
     public void AttackCommand()
@@ -243,5 +262,90 @@ public class GameManager : MonoBehaviour
         });
 
         Debug.Log("Atk:" + attackchara.charaName + " Def:" + defensechara.charaName);
+    }
+
+    private void EnemyCommand()
+    {
+        var enemyCharas = charactorManager.Charactors.Where(chara => chara.isEnemy);
+        var enemycharas = new List<Charactor>();
+        foreach (var enemyChara in enemyCharas)
+            enemycharas.Add(enemyChara);
+
+        var actionPlan = TargetFinder.GetRandomActionPlan(mapManager, charactorManager, enemycharas);
+
+        if(actionPlan != null)
+        {
+            actionPlan.charaData.MovePosition(actionPlan.toMoveBlock.XPos, actionPlan.toMoveBlock.ZPos);
+
+            DOVirtual.DelayedCall(1.0f, () =>
+            {
+                CharaAttack(actionPlan.charaData, actionPlan.toAttackChara);
+            });
+
+            ChangePhase(Phase.Enemyturn_Result);
+            return;
+        }
+
+        /*foreach(Charactor enemyData in enemyCharas)
+        {
+            reachableBlocks = mapManager.SearchReachableBlocks(enemyData.XPos, enemyData.ZPos);
+
+            foreach(MapBlock block in reachableBlocks)
+            {
+                attackableBlocks = mapManager.SearchAttackableBlocks(block.XPos, block.ZPos);
+
+                var AtkBlock = attackableBlocks.FirstOrDefault(atkblock => charactorManager.GetCharactor(atkblock.XPos, atkblock.ZPos) != null && charactorManager.GetCharactor(atkblock.XPos, atkblock.ZPos).isEnemy != true);
+
+                if(AtkBlock)
+                {
+                    var targetChara = charactorManager.GetCharactor(AtkBlock.XPos, AtkBlock.ZPos);
+
+                    enemyData.MovePosition(block.XPos, block.ZPos);
+
+                    DOVirtual.DelayedCall(1.0F, () =>
+                    {
+                        CharaAttack(enemyData, targetChara);
+                    });
+
+                    reachableBlocks.Clear();
+                    attackableBlocks.Clear();
+                    ChangePhase(Phase.Enemyturn_Result);
+                    return;
+                }
+            }
+        }
+
+        int randValue = Random.Range(0, enemyCharas.Count());
+        var chara = enemyCharas.ElementAt(randValue);
+        if(chara)
+        {
+            reachableBlocks = mapManager.SearchReachableBlocks(chara.XPos, chara.ZPos);
+
+            if(reachableBlocks.Count > 0)
+            {
+                randValue = Random.Range(0, reachableBlocks.Count);
+                MapBlock block = reachableBlocks[randValue];
+                chara.MovePosition(block.XPos, block.ZPos);
+            }
+        }*/
+
+        int randValue = Random.Range(0, enemycharas.Count);
+        var chara = enemycharas[randValue];
+
+        reachableBlocks = mapManager.SearchReachableBlocks(chara.XPos, chara.ZPos);
+        if(reachableBlocks.Count > 0)
+        {
+            randValue = Random.Range(0, reachableBlocks.Count-1);
+            MapBlock toMoveblock = reachableBlocks[randValue];
+            chara.MovePosition(toMoveblock.XPos, toMoveblock.ZPos);
+        }
+
+        reachableBlocks.Clear();
+        attackableBlocks.Clear();
+
+        DOVirtual.DelayedCall(1.0f, () =>
+        {
+            ChangePhase(Phase.Myturn_Start);
+        });
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class GUIManager : MonoBehaviour
 {
@@ -26,6 +27,11 @@ public class GUIManager : MonoBehaviour
     //-------------------------------------------------------------------------
 
     public GameObject commandButtons;
+
+    //-------------------------------------------------------------------------
+
+    public Image playerTurnImage;
+    public Image enemyTurnImage;
 
     //-------------------------------------------------------------------------
 
@@ -85,5 +91,17 @@ public class GUIManager : MonoBehaviour
     public void HideCommandButtons()
     {
         commandButtons.SetActive(false);
+    }
+
+    public void ShowLogoChangeTurn(bool playerTurn)
+    {
+        if(playerTurn)
+        {
+            playerTurnImage.DOFade(1.0f, 1.0f).SetEase(Ease.OutCubic).SetLoops(2, LoopType.Yoyo);
+        }
+        else
+        {
+            enemyTurnImage.DOFade(1.0f, 1.0f).SetEase(Ease.OutCubic).SetLoops(2, LoopType.Yoyo);
+        }
     }
 }

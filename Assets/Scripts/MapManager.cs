@@ -16,7 +16,7 @@ public class MapManager : MonoBehaviour
 
     public const int MAP_WIDTH = 9;
     public const int MAP_HEIGHT = 9;
-    private const int GENERATE_RATIO_GRASS = 90;
+    private const int GENERATE_RATIO_GRASS = 80;
 
     //-------------------------------------------------------------------------
 
