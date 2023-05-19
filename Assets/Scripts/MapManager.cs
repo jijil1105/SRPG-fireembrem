@@ -4,31 +4,37 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
-    public Transform blockParent;
-    public GameObject blockPrefab_Grass;
-    public GameObject blockPrefab_Water;
+    // オブジェクト・プレハブ(インスペクタから指定)
+    public Transform blockParent; // マップブロックの親オブジェクトのTransform
+    public GameObject blockPrefab_Grass; // 草ブロック
+    public GameObject blockPrefab_Water; // 水場ブロック
 
     //-------------------------------------------------------------------------
 
+    // マップデータ
     public MapBlock[,] mapBlocks;
 
     //-------------------------------------------------------------------------
 
-    public const int MAP_WIDTH = 9;
-    public const int MAP_HEIGHT = 9;
-    private const int GENERATE_RATIO_GRASS = 80;
+    // 定数定義
+    public const int MAP_WIDTH = 9;// マップの横幅
+    public const int MAP_HEIGHT = 9;// マップの縦(奥行)の幅
+    private const int GENERATE_RATIO_GRASS = 80;// 草ブロックが生成される確率
 
     //-------------------------------------------------------------------------
 
     void Start()
     {
+        // マップデータを初期化
         mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
 
+        // ブロック生成位置の基点となる座標を設定
         Vector3 defaultPos = new Vector3(0.0f, 0.0f, 0.0f);
         defaultPos.x = -(MAP_WIDTH / 2);
         defaultPos.z = -(MAP_HEIGHT / 2);
 
-        for(int i = 0; i < MAP_WIDTH; i++)
+        // ブロック生成処理
+        for (int i = 0; i < MAP_WIDTH; i++)
         {
             for (int j = 0; j < MAP_HEIGHT; j++)
             {
@@ -36,6 +42,7 @@ public class MapManager : MonoBehaviour
                 pos.x += i;
                 pos.z += j;
 
+                // ブロックの種類を決定
                 int rand = Random.Range(0, 100);
                 bool isGrass = false;
 
@@ -43,15 +50,17 @@ public class MapManager : MonoBehaviour
 
                 GameObject obj;
 
-                if (isGrass) { obj = Instantiate(blockPrefab_Grass, blockParent); }
+                if (isGrass) { obj = Instantiate(blockPrefab_Grass, blockParent); }// blockParentの子に草ブロックを生成
 
-                else { obj = Instantiate(blockPrefab_Water, blockParent); }
+                else { obj = Instantiate(blockPrefab_Water, blockParent); }// blockParentの子に水場ブロックを生成
 
                 obj.transform.position = pos;
 
+                // 配列mapBlocksにブロックデータを格納
                 var mapBlock = obj.GetComponent<MapBlock>();
                 mapBlocks[i, j] = mapBlock;
 
+                // ブロックデータ設定
                 mapBlock.XPos = (int)pos.x;
                 mapBlock.ZPos = (int)pos.z;
             }
@@ -60,6 +69,9 @@ public class MapManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+	/// 全てのブロックの選択状態を解除する
+	/// </summary>
     public void AllSelectionModeClear()
     {
         for (int i = 0; i < MAP_WIDTH; i++)
@@ -69,6 +81,12 @@ public class MapManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+	/// 渡された位置からキャラクターが到達できる場所のブロックをリストにして返す
+	/// </summary>
+	/// <param name="xPos">基点x位置</param>
+	/// <param name="zPos">基点z位置</param>
+	/// <returns>条件を満たすブロックのリスト</returns>
     public List<MapBlock> SearchReachableBlocks(int xPos, int zPos)
     {
         var results = new List<MapBlock>();
@@ -112,6 +130,13 @@ public class MapManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+	/// (キャラクター到達ブロック検索処理用)
+	/// 指定したブロックを到達可能ブロックリストに追加する
+	/// </summary>
+	/// <param name="reachableList">到達可能ブロックリスト</param>
+	/// <param name="targetBlock">対象ブロック</param>
+	/// <returns>行き止まりフラグ(行き止まりならtrueが返る)</returns>
     private bool AddReachableList(List<MapBlock> reachableList, MapBlock targetBlock)
     {
         if (!targetBlock.passable)
@@ -125,6 +150,12 @@ public class MapManager : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+	/// 渡された位置からキャラクターが攻撃できる場所のマップブロックをリストにして返す
+	/// </summary>
+	/// <param name="xPos">基点x位置</param>
+	/// <param name="zPos">基点z位置</param>
+	/// <returns>条件を満たすマップブロックのリスト</returns>
     public List<MapBlock> SearchAttackableBlocks(int xPos, int zPos)
     {
         var results = new List<MapBlock>();
@@ -165,6 +196,13 @@ public class MapManager : MonoBehaviour
         return results;
     }
 
+    /// <summary>
+	/// (キャラクター攻撃可能ブロック検索処理用)
+	/// マップデータの指定された配列内番号に対応するブロックを攻撃可能ブロックリストに追加する
+	/// </summary>
+	/// <param name="attackableList">攻撃可能ブロックリスト</param>
+	/// <param name="indexX">X方向の配列内番号</param>
+	/// <param name="indexZ">Z方向の配列内番号</param>
     private void AddAttackableList(List<MapBlock> attackableList, int indexX, int indexZ)
     {
         if(indexX < 0 || indexX >= MAP_WIDTH || indexZ < 0 || indexZ >= MAP_HEIGHT )

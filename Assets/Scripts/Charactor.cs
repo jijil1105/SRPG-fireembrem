@@ -5,7 +5,7 @@ using DG.Tweening;
 
 public class Charactor : MonoBehaviour
 {
-    //Set charactor's init position from inspector
+    // キャラクター初期設定(インスペクタから入力)
     [Header("Init Position(-4~4)"), SerializeField]
     public int initPos_X;
     [Header("Init Position(-4~4)"), SerializeField]
@@ -14,7 +14,7 @@ public class Charactor : MonoBehaviour
     //-------------------------------------------------------------------------
 
     [Header("EnemyFlg true: EnemyCharactor")]
-    public bool isEnemy;
+    public bool isEnemy;// 敵フラグ
     [Header("Charactor's Name")]
     public string charaName;
     [Header("maxHP")]
@@ -24,7 +24,7 @@ public class Charactor : MonoBehaviour
     [Header("def")]
     public int def;
     [Header("Attribute")]
-    public Attribute attribute;
+    public Attribute attribute;// 属性
 
     //-------------------------------------------------------------------------
 
@@ -55,7 +55,7 @@ public class Charactor : MonoBehaviour
 
     void Start()
     {
-        // Set object's init position from chractor's position
+        // Set object's init position from chractor's data
         Vector3 pos = new Vector3();
         pos.x = initPos_X;
         XPos = initPos_X;
@@ -74,7 +74,8 @@ public class Charactor : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
-    // Update is called once per frame
+    // ビルボード処理
+    // (スプライトオブジェクトをメインカメラの方向に向ける)
     void Update()
     {
         Vector3 camerPos = MainCamera.transform.position;
@@ -85,20 +86,35 @@ public class Charactor : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+	/// 対象の座標へとキャラクターを移動させる
+	/// </summary>
+	/// <param name="targetXPos">x座標</param>
+	/// <param name="targetZPos">z座標</param>
     public void MovePosition(int targetXPos, int targetZPos)
     {
         Vector3 movePos = Vector3.zero;
         movePos.x = targetXPos - XPos;
         movePos.z = targetZPos - ZPos;
 
+        // DoTweenのTweenを使用して徐々に位置が変化するアニメーションを行う
         transform.DOMove(movePos, 0.5f).SetEase(Ease.Linear).SetRelative();
 
+        // キャラクターデータに位置を保存
         XPos = targetXPos;
         ZPos = targetZPos;
     }
 
+    /// <summary>
+	/// キャラクターの近接攻撃アニメーション
+	/// </summary>
+	/// <param name="targetCharaData">相手キャラクター</param>
     public void AttackAnimation(Charactor targetCharaData)
     {
-        transform.DOJump(targetCharaData.transform.position, 1.0f, 1, 0.5f).SetEase(Ease.Linear).SetLoops(2, LoopType.Yoyo);
+        // 攻撃アニメーション(DoTween)
+        // 相手キャラクターの位置へジャンプで近づき、同じ動きで元の場所に戻る
+        transform.DOJump(targetCharaData.transform.position, 1.0f, 1, 0.5f)
+            .SetEase(Ease.Linear) // イージング(変化の度合)を設定
+            .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
     }
 }
