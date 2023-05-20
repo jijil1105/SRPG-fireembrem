@@ -67,6 +67,8 @@ public class GameManager : MonoBehaviour
         attackableBlocks = new List<MapBlock>();
 
         nowPhase = Phase.Myturn_Start;
+
+        AudioManager.instance.Play("BGM_1");
     }
 
     //-------------------------------------------------------------------------
@@ -77,6 +79,9 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.C))
+            AudioManager.instance.Play("BGM_1");
+        
         if(!isCalledOnce)
         {
             //入力の検出とUIへのタップ検出
@@ -311,6 +316,9 @@ public class GameManager : MonoBehaviour
 
         damagevalue = atkpoint - defpoint;// ダメージ＝攻撃力－防御力で計算
 
+        float ratio = GetDamegeRatioByAttribute(attackchara, defensechara);
+        damagevalue = (int)(damagevalue * ratio);
+
         // ダメージ量が0以下なら0にする
         if (damagevalue < 0)
             damagevalue = 0;
@@ -407,5 +415,67 @@ public class GameManager : MonoBehaviour
             // 進行モード＜自ターン：開始時＞に変更
             ChangePhase(Phase.Myturn_Start);
         });
+    }
+
+    /// <summary>
+    /// 攻撃側・防御側の属性の相性によるダメージ倍率を返す
+    /// </summary>
+    /// <param name="attackChara">攻撃側のキャラ</param>
+    /// <param name="defenseChara">防御側のキャラ</param>
+    /// <returns></returns>
+    private float GetDamegeRatioByAttribute(Charactor attackChara, Charactor defenseChara)
+    {
+        const float RATIO_NORMAL = 1.0f;//通常
+        const float RATIO_GOOD = 1.2f;//効果抜群
+        const float RATIO_BAD = 0.8f;//効果いまひとつ
+
+        Charactor.Attribute atkAttr = attackChara.attribute;//攻撃側の属性
+        Charactor.Attribute defAttr = defenseChara.attribute;//防御側の属性
+
+        switch(atkAttr)
+        {
+            case Charactor.Attribute.Water://攻撃側の属性：水属性
+                if (defAttr == Charactor.Attribute.Fire)
+                    return RATIO_GOOD;
+
+                else if (defAttr == Charactor.Attribute.Soil)
+                    return RATIO_BAD;
+
+                else
+                    return RATIO_NORMAL;
+
+            case Charactor.Attribute.Fire://攻撃側の属性：火属性
+                if (defAttr == Charactor.Attribute.Wind)
+                    return RATIO_GOOD;
+
+                else if (defAttr == Charactor.Attribute.Water)
+                    return RATIO_BAD;
+
+                else
+                    return RATIO_NORMAL;
+
+            case Charactor.Attribute.Wind://攻撃側の属性：風属性
+                if (defAttr == Charactor.Attribute.Soil)
+                    return RATIO_GOOD;
+
+                else if (defAttr == Charactor.Attribute.Fire)
+                    return RATIO_BAD;
+
+                else
+                    return RATIO_NORMAL;
+
+            case Charactor.Attribute.Soil://攻撃側の属性：土属性
+                if (defAttr == Charactor.Attribute.Water)
+                    return RATIO_GOOD;
+
+                else if (defAttr == Charactor.Attribute.Wind)
+                    return RATIO_BAD;
+
+                else
+                    return RATIO_NORMAL;
+
+            default:
+                return RATIO_NORMAL;
+        }
     }
 }
