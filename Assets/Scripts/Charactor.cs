@@ -25,6 +25,8 @@ public class Charactor : MonoBehaviour
     public int def;
     [Header("Attribute")]
     public Attribute attribute;// 属性
+    [Header("移動方法")]
+    public MoveType moveType;
 
     //-------------------------------------------------------------------------
 
@@ -38,12 +40,23 @@ public class Charactor : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    // キャラクター属性定義(列挙型)
     public enum Attribute
     {
         Water,
         Fire,
         Wind,
         Soil
+    }
+
+    //-------------------------------------------------------------------------
+
+    // キャラクター移動方法定義(列挙型)
+    public enum MoveType
+    {
+        Rook,
+        Bishop,
+        Queen,
     }
 
     //-------------------------------------------------------------------------

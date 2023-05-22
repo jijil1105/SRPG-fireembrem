@@ -107,21 +107,51 @@ public class MapManager : MonoBehaviour
             if (baseX != -1) { break; }
         }
 
-        for (int i = baseX + 1; i < MAP_WIDTH; i++)
-            if (AddReachableList(results, mapBlocks[i, baseZ]))
-                break;
 
-        for (int i = baseX - 1; i >= 0; i--)
-            if (AddReachableList(results, mapBlocks[i, baseZ]))
-                break;
+        var moveChara = GetComponent<CharactorManager>().GetCharactor(xPos, zPos);
 
-        for (int i = baseZ + 1; i < MAP_HEIGHT; i++)
-            if (AddReachableList(results, mapBlocks[baseX, i]))
-                break;
+        if(moveChara)
+        {
+            if(moveChara.moveType == Charactor.MoveType.Rook || moveChara.moveType == Charactor.MoveType.Queen)
+            {
+                for (int i = baseX + 1; i < MAP_WIDTH; i++)
+                    if (AddReachableList(results, mapBlocks[i, baseZ]))
+                        break;
 
-        for (int i = baseZ - 1; i >= 0; i--)
-            if (AddReachableList(results, mapBlocks[baseX, i]))
-                break;
+                for (int i = baseX - 1; i >= 0; i--)
+                    if (AddReachableList(results, mapBlocks[i, baseZ]))
+                        break;
+
+                for (int i = baseZ + 1; i < MAP_HEIGHT; i++)
+                    if (AddReachableList(results, mapBlocks[baseX, i]))
+                        break;
+
+                for (int i = baseZ - 1; i >= 0; i--)
+                    if (AddReachableList(results, mapBlocks[baseX, i]))
+                        break;
+            }
+
+            if (moveChara.moveType == Charactor.MoveType.Bishop || moveChara.moveType == Charactor.MoveType.Queen)
+            {
+                for (int i = baseX + 1, j = baseZ + 1; i < MAP_WIDTH && j < MAP_HEIGHT; i++, j++)
+                    if (AddReachableList(results, mapBlocks[i, j]))
+                        break;
+
+                for (int i = baseX - 1, j = baseZ + 1; i >= 0 && j < MAP_HEIGHT; i--, j++)
+                    if (AddReachableList(results, mapBlocks[i, j]))
+                        break;
+
+                for (int i = baseX + 1, j = baseZ - 1; i < MAP_WIDTH && j >= 0; i++, j--)
+                    if (AddReachableList(results, mapBlocks[i, j]))
+                        break;
+
+                for (int i = baseX - 1, j = baseZ - 1; i >= 0 && j >= 0; i--, j--)
+                    if (AddReachableList(results, mapBlocks[i, j]))
+                        break;
+
+
+            }
+        }
 
         results.Add(mapBlocks[baseX, baseZ]);
 

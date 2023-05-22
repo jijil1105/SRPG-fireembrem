@@ -79,8 +79,9 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.C))
-            AudioManager.instance.Play("BGM_1");
+        /*if (Input.GetKey(KeyCode.C))
+            AudioManager.instance.Play("BGM_1");*/
+        //Play Battle Bgm
         
         if(!isCalledOnce)
         {
@@ -88,7 +89,7 @@ public class GameManager : MonoBehaviour
             if (Input.GetMouseButton(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
             {//UIではない部分をタップした際にタップ先のブロックを取得
                 isCalledOnce = true;
-
+                AudioManager.instance.Play("SE_1");// Play SE
                 GetMapBlockByTapPos();
             }
         }
@@ -121,6 +122,8 @@ public class GameManager : MonoBehaviour
             SelectBlock(targetObject.GetComponent<MapBlock>());
         }
     }
+
+    //------------------------------------------------------------------------
 
     /// <summary>
     /// 選択処理：選択ブロックにキャラクターが居ればキャラクター選択処理開始、居なければブロック選択処理開始
@@ -229,6 +232,8 @@ public class GameManager : MonoBehaviour
         
     }
 
+    //------------------------------------------------------------------------
+
     /// <summary>
 	/// 選択中のキャラクター情報を初期化する
 	/// </summary>
@@ -239,6 +244,8 @@ public class GameManager : MonoBehaviour
         // キャラクターのステータスUIを非表示にする
         guiManager.HideStatusWindow();
     }
+
+    //------------------------------------------------------------------------
 
     /// <summary>
 	/// ターン進行モードを変更する
@@ -274,11 +281,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //------------------------------------------------------------------------
+
     /// <summary>
 	/// 攻撃コマンドボタン処理
 	/// </summary>
     public void AttackCommand()
     {
+        AudioManager.instance.Play("SE_1");//Play SE
+
         // コマンドボタンを非表示にする
         guiManager.HideCommandButtons();
 
@@ -291,16 +302,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //------------------------------------------------------------------------
+
     /// <summary>
     /// 待機コマンドボタン処理
     /// </summary>
     public void StandbyCommand()
     {
+        AudioManager.instance.Play("SE_1");
         // コマンドボタンを非表示にする
         guiManager.HideCommandButtons();
         // 進行モード＜敵ターン：開始時＞に変更
         ChangePhase(Phase.Enemyturn_Start);
     }
+
+    //------------------------------------------------------------------------
 
     /// <summary>
 	/// キャラクターが他のキャラクターに攻撃する処理
@@ -325,6 +341,11 @@ public class GameManager : MonoBehaviour
 
         // キャラクター攻撃アニメーション
         attackchara.AttackAnimation(defensechara);
+
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            AudioManager.instance.Play("SE_2");
+        });
 
         // バトル結果表示ウィンドウの表示設定
         guiManager.battleWindowUI.ShowWindow(defensechara, damagevalue);
@@ -355,6 +376,8 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("Atk:" + attackchara.charaName + " Def:" + defensechara.charaName);
     }
+
+    //------------------------------------------------------------------------
 
     /// <summary>
 	/// (敵のターン開始時に呼出)

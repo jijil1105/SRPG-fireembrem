@@ -671,7 +671,7 @@ GameObject:
   - component: {fileID: 293115588}
   - component: {fileID: 293115587}
   m_Layer: 5
-  m_Name: StandCommandButton (1)
+  m_Name: StandCommandButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1274,6 +1274,10 @@ MonoBehaviour:
     playableDistance: 117
   - name: SE_1
     audioClip: {fileID: 8300000, guid: 1869a03daea2b4ff7879162a737005aa, type: 3}
+    playedTime: 0
+    playableDistance: 0.2
+  - name: SE_2
+    audioClip: {fileID: 8300000, guid: 0968da6de305d411c9c37102333fbb3b, type: 3}
     playedTime: 0
     playableDistance: 0.2
 --- !u!4 &779980342
@@ -2883,8 +2887,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5419227944798305403}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 1.02, y: 0, z: -1.5}
+  m_LocalScale: {x: 1, y: 1, z: 0}
   m_Children: []
   m_Father: {fileID: 1348453198}
   m_RootOrder: 4
@@ -2909,6 +2913,7 @@ MonoBehaviour:
   atk: 10
   def: 5
   attribute: 2
+  moveType: 0
 --- !u!1 &1664180450761253301
 GameObject:
   m_ObjectHideFlags: 0
@@ -3139,7 +3144,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8060608497860641389}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 3.02, y: 0, z: -1.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1348453198}
@@ -3165,6 +3170,7 @@ MonoBehaviour:
   atk: 20
   def: 2
   attribute: 1
+  moveType: 1
 --- !u!114 &3360908308748152621
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3185,6 +3191,7 @@ MonoBehaviour:
   atk: 10
   def: 5
   attribute: 3
+  moveType: 0
 --- !u!114 &3360908308963779627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3205,6 +3212,7 @@ MonoBehaviour:
   atk: 15
   def: 2
   attribute: 0
+  moveType: 2
 --- !u!114 &3983794593542660370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3225,6 +3233,7 @@ MonoBehaviour:
   atk: 15
   def: 2
   attribute: 3
+  moveType: 1
 --- !u!212 &4143729471005701640
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -3298,7 +3307,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8516334277857642324}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.93, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1348453198}
@@ -3407,6 +3416,7 @@ MonoBehaviour:
   atk: 15
   def: 10
   attribute: 1
+  moveType: 2
 --- !u!4 &6705842220365092772
 Transform:
   m_ObjectHideFlags: 0
@@ -3415,7 +3425,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1664180450761253301}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -1.28}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1348453198}
