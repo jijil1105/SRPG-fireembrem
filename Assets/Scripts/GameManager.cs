@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
  *  ここの処理ではゲームマネージャーのシングルトン化を行っています。
  */
 
-    private void Awake()
+ /*   private void Awake()
     {
         if(instance == null)
         {
@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static GameManager instance;
+    public static GameManager instance;*/
 
     //-------------------------------------------------------------------------
     //各マネージャークラスの宣言
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
 
     //変数の初期化
 
-    private void Start()
+    public void Start()
     {
         mapManager = GetComponent<MapManager>();//
         charactorManager = GetComponent<CharactorManager>();
@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
 
         nowPhase = Phase.Myturn_Start;
 
-        AudioManager.instance.Play("BGM_1");
+        //AudioManager.instance.Play("BGM_1");
     }
 
     //-------------------------------------------------------------------------
@@ -583,7 +583,7 @@ public class GameManager : MonoBehaviour
                 {
                     //guiManager.FadeIn_FadeOut(false, 1.0f);
 
-                    SceneManager.LoadScene("Battle_1");
+                    SceneManager.LoadScene("MainMenu");
                 });
         }
     }
