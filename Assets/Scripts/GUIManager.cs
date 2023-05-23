@@ -35,6 +35,18 @@ public class GUIManager : MonoBehaviour
     // 各種ロゴ画像
     public Image playerTurnImage;// プレイヤーターン開始時画像
     public Image enemyTurnImage;// 敵ターン開始時画像
+    public Image gameClearImage;
+    public Image gameOverImage;
+
+    //-------------------------------------------------------------------------
+
+    //
+    public GameObject moveCancelButton;
+
+    //-------------------------------------------------------------------------
+
+    //
+    public Image fadeImage;
 
     //-------------------------------------------------------------------------
 
@@ -44,6 +56,7 @@ public class GUIManager : MonoBehaviour
         // UI初期化
         HideStatusWindow(); // ステータスウィンドウを隠す
         HideCommandButtons(); // コマンドボタンを隠す
+        ShowMoveCancelButton(false);//キャンセルボタンを隠す
     }
 
     //-------------------------------------------------------------------------
@@ -100,6 +113,8 @@ public class GUIManager : MonoBehaviour
         statusWindow.SetActive(false);
     }
 
+    //-------------------------------------------------------------------------
+
     /// <summary>
 	/// コマンドボタンを表示する
 	/// </summary>
@@ -107,6 +122,8 @@ public class GUIManager : MonoBehaviour
     {
         commandButtons.SetActive(true);
     }
+
+    //-------------------------------------------------------------------------
 
     /// <summary>
 	/// コマンドボタンを隠す
@@ -116,10 +133,12 @@ public class GUIManager : MonoBehaviour
         commandButtons.SetActive(false);
     }
 
+    //-------------------------------------------------------------------------
+
     /// <summary>
     /// プレイヤーのターンに切り替わった時のロゴ画像を表示する
     /// </summary>
-    /// <param name="playerTurn"></param>true : 自ターン開始時のロゴ表示、false : 相手ターン開始時のロゴ表示
+    /// <param name="playerTurn">true : 自ターン開始時のロゴ表示、false : 相手ターン開始時のロゴ表示</param>
     public void ShowLogoChangeTurn(bool playerTurn)
     {
         // 徐々に表示→非表示を行うアニメーション(Tween)
@@ -131,5 +150,53 @@ public class GUIManager : MonoBehaviour
         {
             enemyTurnImage.DOFade(1.0f, 1.0f).SetEase(Ease.OutCubic).SetLoops(2, LoopType.Yoyo);
         }
+    }
+
+    //-------------------------------------------------------------------------
+
+    /// <summary>
+    /// キャンセルボタンの表示、非表示
+    /// </summary>
+    /// <param name="setFlg">trueでキャンセルボタン表示</param>
+    public void ShowMoveCancelButton(bool setFlg)
+    {
+        moveCancelButton.SetActive(setFlg);
+    }
+
+    /// <summary>
+    /// ゲームクリア時のロゴを表示する
+    /// </summary>
+    public void ShowLogo_GameClear()
+    {
+        gameClearImage.DOFade(
+            1.0f,
+            1.0f)
+            .SetEase(Ease.OutCubic);
+
+        gameClearImage.transform.DOScale(
+            1.5f,
+            1.0f)
+            .SetEase(Ease.OutCubic)
+            .SetLoops(2, LoopType.Yoyo);
+    }
+
+    /// <summary>
+    /// ゲームオーバー時のロゴを表示する
+    /// </summary>
+    public void ShowLogo_gameOver()
+    {
+        gameOverImage.DOFade(
+            1.0f,
+            1.0f)
+            .SetEase(Ease.OutCubic);
+    }
+
+    public void FadeIn(float duration)
+    {
+         //フェードイン処理
+         fadeImage.DOFade(1.0f, duration).SetEase(Ease.Linear);
+
+         //フェードの当たり判定をオン
+         fadeImage.raycastTarget = true;           
     }
 }

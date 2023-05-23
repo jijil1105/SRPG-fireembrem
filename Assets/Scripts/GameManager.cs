@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -35,6 +36,11 @@ public class GameManager : MonoBehaviour
     private GUIManager guiManager;//UIを管理するクラス
 
     //-------------------------------------------------------------------------
+
+    private bool isGameSet;//ゲーム終了フラグ
+
+    //-------------------------------------------------------------------------
+
 
     private Charactor selectingChara;//選択中のキャラクター（マップフィールド上のキャラクターを選択していない時はnull）
     private List<MapBlock> reachableBlocks;//選択キャラの移動可能範囲
@@ -82,6 +88,10 @@ public class GameManager : MonoBehaviour
         /*if (Input.GetKey(KeyCode.C))
             AudioManager.instance.Play("BGM_1");*/
         //Play Battle Bgm
+
+        //ゲーム終了後なら終了
+        if(isGameSet)
+            return;
         
         if(!isCalledOnce)
         {
@@ -159,6 +169,9 @@ public class GameManager : MonoBehaviour
                     foreach (MapBlock mapblock in reachableBlocks)
                         mapblock.SetSelectionMode(MapBlock.Highlight.Reachable);
 
+                    //移動キャンセルボタン表示
+                    guiManager.ShowMoveCancelButton(true);
+
                     //進行モード＜自分のターン：移動先選択中＞に変更
                     ChangePhase(Phase.Myturn_Moving);
 
@@ -179,6 +192,14 @@ public class GameManager : MonoBehaviour
 
             //自分のターン：移動先選択中
             case Phase.Myturn_Moving:
+
+                //選択キャラが敵キャラクターなら移動先選択状態を解除
+                if(selectingChara.isEnemy)
+                {
+                    CancelMoving();
+                    break;
+                }
+
                 // 選択ブロックが移動可能な場所リスト内にある場合、移動処理を開始
                 if (reachableBlocks.Contains(targetBlock))
                 {
@@ -188,6 +209,9 @@ public class GameManager : MonoBehaviour
                     reachableBlocks.Clear();
                     //全ブロックの選択状態解除
                     mapManager.AllSelectionModeClear();
+
+                    //キャンセルボタン非表示
+                    guiManager.ShowMoveCancelButton(false);
                     // 0.5秒数経過後に処理を実行する
                     DOVirtual.DelayedCall(0.5f, () =>
                     {　　//コマンドボタン表示
@@ -251,8 +275,13 @@ public class GameManager : MonoBehaviour
 	/// ターン進行モードを変更する
 	/// </summary>
 	/// <param name="NowPhase">変更先モード</param>
-    private void ChangePhase(Phase NowPhase)
+    /// <param name="noLogos">trueだとロゴを表示しない</param>
+    private void ChangePhase(Phase NowPhase, bool noLogos = false)
     {
+        //ゲーム終了後なら終了
+        if (isGameSet)
+            return;
+
         // モード変更を保存
         nowPhase = NowPhase;
         Debug.Log("Change" + nowPhase);
@@ -263,14 +292,16 @@ public class GameManager : MonoBehaviour
             // 自分のターン：開始時
             case Phase.Myturn_Start :
                 // 自分のターン開始時のロゴを表示
-                guiManager.ShowLogoChangeTurn(true);
+                if(!noLogos)
+                    guiManager.ShowLogoChangeTurn(true);
                 break;
 
             // 敵のターン：開始時
             case Phase.Enemyturn_Start :
                 // 敵のターン開始時のロゴを表示
-                guiManager.ShowLogoChangeTurn(false);
-
+                if(!noLogos)
+                    guiManager.ShowLogoChangeTurn(false);
+                
                 // 敵の行動を開始する処理
                 // (ロゴ表示後に開始させる為、遅延処理にする)
                 DOVirtual.DelayedCall(1.0f, () =>
@@ -440,6 +471,8 @@ public class GameManager : MonoBehaviour
         });
     }
 
+    //------------------------------------------------------------------------
+
     /// <summary>
     /// 攻撃側・防御側の属性の相性によるダメージ倍率を返す
     /// </summary>
@@ -499,6 +532,59 @@ public class GameManager : MonoBehaviour
 
             default:
                 return RATIO_NORMAL;
+        }
+    }
+
+    //------------------------------------------------------------------------
+
+    public void CancelMoving()
+    {
+        mapManager.AllSelectionModeClear();
+
+        reachableBlocks.Clear();
+
+        ClearSelectingChara();
+
+        guiManager.ShowMoveCancelButton(false);
+
+        ChangePhase(Phase.Myturn_Start, true);
+    }
+
+    //------------------------------------------------------------------------
+
+    public void CheckGameSet()
+    {
+        //敵キャラが居るかチェック
+        var Enemychara = charactorManager.Charactors.FirstOrDefault(chara => chara.isEnemy == true);
+
+        //味方キャラが居るかチェック
+        var Chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isEnemy == false);
+
+        if(!Chara || !Enemychara)
+        {
+            //ゲーム終了フラグをtrue
+            isGameSet = true;
+
+            //ゲーム終了フラグを遅延処理
+            DOVirtual.DelayedCall(
+                1.5f, () =>
+                 {
+                     if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
+                         guiManager.ShowLogo_GameClear();
+                     if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
+                         guiManager.ShowLogo_gameOver();
+
+                     guiManager.FadeIn(5.0f);
+                 });
+
+            // Gameシーンの再読み込み(遅延実行)
+            DOVirtual.DelayedCall(
+                7.0f, () =>
+                {
+                    //guiManager.FadeIn_FadeOut(false, 1.0f);
+
+                    SceneManager.LoadScene("Battle_1");
+                });
         }
     }
 }

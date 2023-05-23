@@ -42,5 +42,7 @@ public class CharactorManager : MonoBehaviour
 
         // オブジェクト削除を攻撃完了後に処理させる為に遅延実行
         DOVirtual.DelayedCall(0.5f, () => { Destroy(charadata.gameObject); });
+
+        GetComponent<GameManager>().CheckGameSet();
     }
 }
