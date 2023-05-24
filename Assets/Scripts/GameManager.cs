@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
     private Charactor selectingChara;//選択中のキャラクター（マップフィールド上のキャラクターを選択していない時はnull）
     private List<MapBlock> reachableBlocks;//選択キャラの移動可能範囲
     private List<MapBlock> attackableBlocks;//選択キャラの攻撃可能範囲
+    private SkillDefine.Skill selectingSkill;//選択中の特技(通常攻撃時はNONE固定)
 
     private enum Phase
     {
@@ -205,17 +206,21 @@ public class GameManager : MonoBehaviour
                 {
                     //選択キャラを選択ブロックへ移動
                     selectingChara.MovePosition(targetBlock.XPos, targetBlock.ZPos);
+
                     //移動可能ブロックリストを初期化
                     reachableBlocks.Clear();
+
                     //全ブロックの選択状態解除
                     mapManager.AllSelectionModeClear();
 
                     //キャンセルボタン非表示
                     guiManager.ShowMoveCancelButton(false);
+
                     // 0.5秒数経過後に処理を実行する
                     DOVirtual.DelayedCall(0.5f, () =>
                     {　　//コマンドボタン表示
-                        guiManager.ShowCommandButtons();
+                        guiManager.ShowCommandButtons(selectingChara);
+
                         //進行モード＜自分のターン：移動後のコマンド選択中＞に変更
                         ChangePhase(Phase.Myturn_Command);
                     });
@@ -321,16 +326,11 @@ public class GameManager : MonoBehaviour
     {
         AudioManager.instance.Play("SE_1");//Play SE
 
-        // コマンドボタンを非表示にする
-        guiManager.HideCommandButtons();
+        // 特技の選択をオフにする
+        selectingSkill = SkillDefine.Skill._None;
 
-        // 攻撃可能な場所リストを取得する
-        attackableBlocks = mapManager.SearchAttackableBlocks(selectingChara.XPos, selectingChara.ZPos);
-        // 攻撃可能な場所リストを赤色に強調表示する
-        foreach (MapBlock block in attackableBlocks)
-        {
-            block.SetSelectionMode(MapBlock.Highlight.Attackable);
-        }
+        // 攻撃範囲を取得して表示する
+        GetAttackableBlocks();
     }
 
     //------------------------------------------------------------------------
@@ -341,10 +341,49 @@ public class GameManager : MonoBehaviour
     public void StandbyCommand()
     {
         AudioManager.instance.Play("SE_1");
+
         // コマンドボタンを非表示にする
         guiManager.HideCommandButtons();
+
         // 進行モード＜敵ターン：開始時＞に変更
         ChangePhase(Phase.Enemyturn_Start);
+    }
+
+    //------------------------------------------------------------------------
+
+    /// <summary>
+    /// スキルコマンドボタン処理
+    /// </summary>
+    public void SkillCommand()
+    {
+        // キャラクターの持つ特技を選択状態にする
+        selectingSkill = selectingChara.skill;
+
+        // 攻撃範囲を取得して表示する
+        GetAttackableBlocks();
+    }
+
+    //------------------------------------------------------------------------
+
+    /// <summary>
+    /// 攻撃・スキルコマンド選択後に対象ブロックを表示する処理
+    /// </summary>
+    private void GetAttackableBlocks()
+    {
+        // コマンドボタンを非表示にする
+        guiManager.HideCommandButtons();
+
+        // （特技：ファイアボールの場合はマップ全域に対応）
+        if (selectingSkill == SkillDefine.Skill.FireBall)
+            attackableBlocks = mapManager.MapBlocksToList();
+
+        // 攻撃可能な場所リストを取得する
+        else
+            attackableBlocks = mapManager.SearchAttackableBlocks(selectingChara.XPos, selectingChara.ZPos);
+        
+        // 攻撃可能な場所リストを表示する
+        foreach (MapBlock block in attackableBlocks)
+            block.SetSelectionMode(MapBlock.Highlight.Attackable);
     }
 
     //------------------------------------------------------------------------
@@ -361,6 +400,10 @@ public class GameManager : MonoBehaviour
         int atkpoint = attackchara.atk;// 攻撃側の攻撃力
         int defpoint = defensechara.def;// 防御側の防御力
 
+        //防御力０化デバフ状態なら防御力０でダメージ計算
+        if (defensechara.isDefBreak)
+            defpoint = 0;
+
         damagevalue = atkpoint - defpoint;// ダメージ＝攻撃力－防御力で計算
 
         float ratio = GetDamegeRatioByAttribute(attackchara, defensechara);
@@ -370,13 +413,59 @@ public class GameManager : MonoBehaviour
         if (damagevalue < 0)
             damagevalue = 0;
 
-        // キャラクター攻撃アニメーション
-        attackchara.AttackAnimation(defensechara);
 
-        DOVirtual.DelayedCall(0.5f, () =>
+        // 選択したスキルによるダメージ値補正および効果処理
+        switch (selectingSkill)
         {
-            AudioManager.instance.Play("SE_2");
-        });
+            case SkillDefine.Skill.Critical:// スキル：会心の一撃
+
+                // ダメージ２倍
+                damagevalue *= 2;
+
+                //スキル使用不可状態にする
+                attackchara.isSkillLock = true;
+                break;
+
+            case SkillDefine.Skill.DefBreak:// スキル：防御破壊
+
+                //ダメージ０
+                damagevalue = 0;
+
+                //防御力０化デバフON
+                defensechara.isDefBreak = true;
+                break;
+
+            case SkillDefine.Skill.Heal:// スキル：ヒール
+
+                // 回復(回復量は攻撃力の半分。負数にする事でダメージ計算時に回復する)
+                damagevalue = (int)(atkpoint * -0.5f);
+                break;
+
+            case SkillDefine.Skill.FireBall:// スキル：ファイアボール
+
+                // ダメージ半減
+                damagevalue /= 2;
+
+                //スキル使用不可状態にする
+                attackchara.isSkillLock = true;
+
+                break;
+
+            default:// スキル無しor通常攻撃時
+                break;
+        }
+
+        if(selectingSkill != SkillDefine.Skill.Heal&&selectingSkill != SkillDefine.Skill.FireBall)
+        {
+            // キャラクター攻撃アニメーション
+            attackchara.AttackAnimation(defensechara);
+
+            // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
+            DOVirtual.DelayedCall(0.5f, () =>
+            {
+                AudioManager.instance.Play("SE_2");
+            });
+        }
 
         // バトル結果表示ウィンドウの表示設定
         guiManager.battleWindowUI.ShowWindow(defensechara, damagevalue);
@@ -389,6 +478,9 @@ public class GameManager : MonoBehaviour
         // HP0になったキャラクターを削除する
         if (defensechara.NowHp == 0)
             charactorManager.DeleteCharaData(defensechara);
+
+        // Skillの選択状態を解除する
+        selectingSkill = SkillDefine.Skill._None;
 
         // ターン切り替え処理(遅延実行)
         DOVirtual.DelayedCall(

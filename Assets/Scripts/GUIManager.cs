@@ -28,7 +28,9 @@ public class GUIManager : MonoBehaviour
     //-------------------------------------------------------------------------
 
     // キャラクターのコマンドボタン
-    public GameObject commandButtons;
+    public GameObject commandButtons;// 全コマンドボタンの親オブジェクト
+    public Button skillCommandButton;// 特技コマンドのButton
+    public Text skillText;// 選択キャラクターの特技の説明Text
 
     //-------------------------------------------------------------------------
 
@@ -99,8 +101,12 @@ public class GUIManager : MonoBehaviour
         hpText.text = charaData.NowHp + "/" + charaData.maxHP;
         // 攻撃力Text表示(intからstringに変換)
         atkText.text = charaData.atk.ToString();
-        // 防御力Text表示(intからstringに変換)
-        defText.text = charaData.def.ToString();
+
+        if (charaData.isDefBreak)//防御力０化状態以上だったら赤色で強調表示
+            defText.text = "<color=red>0</color>";
+
+        else// 防御力Text表示(intからstringに変換)
+            defText.text = charaData.def.ToString();
     }
 
     //-------------------------------------------------------------------------
@@ -116,11 +122,24 @@ public class GUIManager : MonoBehaviour
     //-------------------------------------------------------------------------
 
     /// <summary>
-	/// コマンドボタンを表示する
-	/// </summary>
-    public void ShowCommandButtons()
+    /// コマンドボタンを表示する
+    /// </summary>
+    /// <param name="charaData">SkillInfo表示に使用するキャラデータ</param>
+    public void ShowCommandButtons(Charactor charaData)
     {
         commandButtons.SetActive(true);
+
+        SkillDefine.Skill skill = charaData.skill;
+        string skillname = SkillDefine.dec_SkillName[skill];
+        string skillInfo = SkillDefine.dec_SkillInfo[skill];
+
+        skillText.text = "<size=40>" + skillname + "</size>\n" + skillInfo;
+
+        // スキル使用不可状態なら特技ボタンを押せなくする
+        if (charaData.isSkillLock)
+            skillCommandButton.interactable = false;
+        else
+            skillCommandButton.interactable = true;
     }
 
     //-------------------------------------------------------------------------
@@ -199,4 +218,6 @@ public class GUIManager : MonoBehaviour
          //フェードの当たり判定をオン
          fadeImage.raycastTarget = true;           
     }
+
+    
 }

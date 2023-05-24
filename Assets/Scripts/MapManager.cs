@@ -240,4 +240,25 @@ public class MapManager : MonoBehaviour
 
         attackableList.Add(mapBlocks[indexX, indexZ]);
     }
+
+    /// <summary>
+	/// マップデータ配列をリストにして返す
+	/// </summary>
+	/// <returns>マップデータのリスト</returns>
+	public List<MapBlock> MapBlocksToList()
+    {
+        // 結果用リスト
+        var results = new List<MapBlock>();
+
+        // マップデータ配列の中身を順番にリストに格納
+        for (int i = 0; i < MAP_WIDTH; i++)
+        {
+            for (int j = 0; j < MAP_HEIGHT; j++)
+            {
+                results.Add(mapBlocks[i, j]);
+            }
+        }
+
+        return results;
+    }
 }

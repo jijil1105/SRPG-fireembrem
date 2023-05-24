@@ -10,9 +10,6 @@ public class Charactor : MonoBehaviour
     public int initPos_X;
     [Header("Init Position(-4~4)"), SerializeField]
     public int initPos_Z;
-
-    //-------------------------------------------------------------------------
-
     [Header("EnemyFlg true: EnemyCharactor")]
     public bool isEnemy;// 敵フラグ
     [Header("Charactor's Name")]
@@ -27,16 +24,23 @@ public class Charactor : MonoBehaviour
     public Attribute attribute;// 属性
     [Header("移動方法")]
     public MoveType moveType;
+    [Header("Skill")]
+    public SkillDefine.Skill skill;
 
     //-------------------------------------------------------------------------
+    // ゲーム中に変化するキャラクターデータ
 
     private int xPos;
     private int zPos;
     private int nowHp;
 
-    public int XPos { get => xPos; set => xPos = value; }
-    public int ZPos { get => zPos; set => zPos = value; }
+    public int XPos { get => xPos; set => xPos = value; }// 現在のx座標
+    public int ZPos { get => zPos; set => zPos = value; }// 現在のz座標
     public int NowHp { get => nowHp; set => nowHp = value; }
+
+    // 各種状態異常
+    public bool isSkillLock;// 特技使用不可状態
+    public bool isDefBreak;//　防御力０化デバフ
 
     //-------------------------------------------------------------------------
 

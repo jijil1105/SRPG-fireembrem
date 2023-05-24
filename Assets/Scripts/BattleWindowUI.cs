@@ -54,8 +54,14 @@ public class BattleWindowUI : MonoBehaviour
 
 		// HPText表示(現在値と最大値両方を表示)
 		hpText.text = nowHP + "/" + charadata.maxHP;
+
 		// ダメージ量Text表示
-		damageText.text = damagevalue + "ダメージ！";
+		if (damagevalue >= 0)
+			damageText.text = damagevalue + "ダメージ！";
+
+		// HP回復時
+		else
+			damageText.text = -damagevalue + "回復！";
 	}
 
 	// <summary>
