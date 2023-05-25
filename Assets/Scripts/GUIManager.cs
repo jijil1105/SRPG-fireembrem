@@ -45,6 +45,9 @@ public class GUIManager : MonoBehaviour
     //
     public GameObject moveCancelButton;
 
+    //
+    public GameObject decideButtons;
+
     //-------------------------------------------------------------------------
 
     //
@@ -59,6 +62,7 @@ public class GUIManager : MonoBehaviour
         HideStatusWindow(); // ステータスウィンドウを隠す
         HideCommandButtons(); // コマンドボタンを隠す
         ShowMoveCancelButton(false);//キャンセルボタンを隠す
+        HideDecideButtons(); // 行動決定・キャンセルボタンを隠す
     }
 
     //-------------------------------------------------------------------------
@@ -182,6 +186,8 @@ public class GUIManager : MonoBehaviour
         moveCancelButton.SetActive(setFlg);
     }
 
+    //-------------------------------------------------------------------------
+
     /// <summary>
     /// ゲームクリア時のロゴを表示する
     /// </summary>
@@ -199,6 +205,8 @@ public class GUIManager : MonoBehaviour
             .SetLoops(2, LoopType.Yoyo);
     }
 
+    //-------------------------------------------------------------------------
+
     /// <summary>
     /// ゲームオーバー時のロゴを表示する
     /// </summary>
@@ -210,6 +218,8 @@ public class GUIManager : MonoBehaviour
             .SetEase(Ease.OutCubic);
     }
 
+    //-------------------------------------------------------------------------
+
     public void FadeIn(float duration)
     {
          //フェードイン処理
@@ -219,5 +229,19 @@ public class GUIManager : MonoBehaviour
          fadeImage.raycastTarget = true;           
     }
 
-    
+    //-------------------------------------------------------------------------
+
+    public void ShowDecideButtons()
+    {
+        decideButtons.SetActive(true);
+    }
+
+    //-------------------------------------------------------------------------
+
+    public void HideDecideButtons()
+    {
+        decideButtons.SetActive(false);
+    }
+
+    //-------------------------------------------------------------------------
 }

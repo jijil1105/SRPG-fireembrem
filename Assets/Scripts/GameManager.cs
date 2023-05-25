@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     private MapManager mapManager;//フィールドのブロックを管理するマネージャークラス
     private CharactorManager charactorManager;//フィールドのキャラクターを管理するクラス
     private GUIManager guiManager;//UIを管理するクラス
+    public LevelManager levelManager;//キャラのレベルを管理するクラス
 
     //-------------------------------------------------------------------------
 
@@ -41,6 +42,12 @@ public class GameManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    // 行動キャンセル処理用変数
+    private int charaStartPos_X; // 選択キャラクターの移動前の位置(X方向)
+    private int charaStartPos_Z; // 選択キャラクターの移動前の位置(Z方向)
+    private MapBlock attackBlock; // 選択キャラクターの攻撃先のブロック
+
+    //-------------------------------------------------------------------------
 
     private Charactor selectingChara;//選択中のキャラクター（マップフィールド上のキャラクターを選択していない時はnull）
     private List<MapBlock> reachableBlocks;//選択キャラの移動可能範囲
@@ -69,6 +76,7 @@ public class GameManager : MonoBehaviour
         mapManager = GetComponent<MapManager>();//
         charactorManager = GetComponent<CharactorManager>();
         guiManager = GetComponent<GUIManager>();
+        levelManager = GetComponent<LevelManager>();
 
         reachableBlocks = new List<MapBlock>();
         attackableBlocks = new List<MapBlock>();
@@ -161,8 +169,16 @@ public class GameManager : MonoBehaviour
                 {
                     //選択ブロックに居たキャラクターの記憶
                     selectingChara = charaData;
+                    // 選択キャラクターの現在位置を記憶
+                    charaStartPos_X = selectingChara.XPos;
+                    charaStartPos_Z = selectingChara.ZPos;
                     //選択キャラのステータスをUI表示する
                     guiManager.ShowStatusWindow(charaData);
+
+                    //行動不能状態なら処理しない
+                    if (charaData.isIncapacitated)
+                        return;
+
                     //選択キャラの移動可能ブロックリストを取得
                     reachableBlocks = mapManager.SearchReachableBlocks(charaData.XPos, charaData.ZPos);
 
@@ -232,33 +248,26 @@ public class GameManager : MonoBehaviour
                 // (攻撃可能ブロックを選択した場合に攻撃処理を呼び出す)
                 if (attackableBlocks.Contains(targetBlock))
                 {
-                    // 攻撃可能ブロックをタップした時
-                 　 // 攻撃可能な場所リストを初期化する
+                    // 攻撃先のブロック情報を記憶
+                    attackBlock = targetBlock;
+
+                    // 行動決定・キャンセルボタンを表示する
+                    guiManager.ShowDecideButtons();
+
+                    // 攻撃可能な場所リストを初期化する
                     attackableBlocks.Clear();
+
                     // 全ブロックの選択状態を解除
                     mapManager.AllSelectionModeClear();
 
-                    // 攻撃対象の位置に居るキャラクターのデータを取得
-                    var targetChara = charactorManager.GetCharactor(targetBlock.XPos, targetBlock.ZPos);
+                    // 攻撃先のブロックを強調表示する
+                    attackBlock.SetSelectionMode(MapBlock.Highlight.Attackable);
 
-                    // 攻撃対象のキャラクターが存在する場合の処理
-                    if (targetChara != null)
-                    {
-                        // キャラクター攻撃処理
-                        CharaAttack(selectingChara, targetChara);
-                        //進行モード＜自分のターン：行動結果表示中＞に変更
-                        ChangePhase(Phase.Myturn_Result);
-
-                        return;
-                    }
-
-                    // 攻撃対象が存在しない
-                    // 進行モード＜敵ターン：開始時＞に変更
-                    else { ChangePhase(Phase.Enemyturn_Start); }
+                    // 進行モードを進める：攻撃の対象を選択中
+                    ChangePhase(Phase.Myturn_Targeting);
                 }
                 break;
-        }
-        
+        } 
     }
 
     //------------------------------------------------------------------------
@@ -296,6 +305,21 @@ public class GameManager : MonoBehaviour
         {
             // 自分のターン：開始時
             case Phase.Myturn_Start :
+                //行動可能な自キャラが居るかチェック
+                var chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+                Debug.Log("" + chara);
+                //動かせるキャラが居なかった場合
+                if (!chara)
+                {
+                    //味方キャラ取得
+                    var charas = charactorManager.Charactors.Where(chara => chara.isEnemy == false);
+                    //行動可能にする
+                    foreach (var charaData in charas)          
+                        charaData.SetInCapacitited(false);
+                                           
+                    ChangePhase(Phase.Enemyturn_Start);
+                }
+
                 // 自分のターン開始時のロゴを表示
                 if(!noLogos)
                     guiManager.ShowLogoChangeTurn(true);
@@ -303,8 +327,23 @@ public class GameManager : MonoBehaviour
 
             // 敵のターン：開始時
             case Phase.Enemyturn_Start :
+                var enemy = charactorManager.Charactors.FirstOrDefault(chara => chara.isEnemy == true && chara.isIncapacitated != true);
+                Debug.Log("" + enemy);
+                //動かせるキャラが居なかった場合
+                if(!enemy)
+                {
+                    //敵キャラ取得
+                    var charas = charactorManager.Charactors.Where(chara => chara.isEnemy == true);
+                    //行動可能にする
+                    foreach (var charaData in charas)
+                        charaData.SetInCapacitited(false);
+
+                    ChangePhase(Phase.Myturn_Start);
+                    return;
+                }
+
                 // 敵のターン開始時のロゴを表示
-                if(!noLogos)
+                if (!noLogos)
                     guiManager.ShowLogoChangeTurn(false);
                 
                 // 敵の行動を開始する処理
@@ -345,8 +384,13 @@ public class GameManager : MonoBehaviour
         // コマンドボタンを非表示にする
         guiManager.HideCommandButtons();
 
-        // 進行モード＜敵ターン：開始時＞に変更
-        ChangePhase(Phase.Enemyturn_Start);
+        //行動不能状態にする
+        selectingChara.SetInCapacitited(true);
+
+        selectingChara = null;
+
+        // 進行モード＜自ターン：開始時＞に変更
+        ChangePhase(Phase.Myturn_Start, true);
     }
 
     //------------------------------------------------------------------------
@@ -413,7 +457,73 @@ public class GameManager : MonoBehaviour
         if (damagevalue < 0)
             damagevalue = 0;
 
+        //Skill
+        damagevalue = SkillAttack(damagevalue, atkpoint, attackchara, defensechara);
+        
+        // キャラクター攻撃アニメーション
+        attackchara.AttackAnimation(defensechara, selectingSkill);
+        
+        // バトル結果表示ウィンドウの表示設定
+        guiManager.battleWindowUI.ShowWindow(defensechara, damagevalue);
 
+        // ダメージ量分防御側のHPを減少
+        defensechara.NowHp -= damagevalue;
+        // HPが0～最大値の範囲に収まるよう補正
+        defensechara.NowHp = Mathf.Clamp(defensechara.NowHp, 0, defensechara.maxHP);
+
+        // HP0になったキャラクターを削除する
+        if (defensechara.NowHp == 0)
+        {
+            //
+            charactorManager.DeleteCharaData(defensechara);
+
+            //
+            if(!attackchara.isEnemy)
+                levelManager.LevelUpChecker(attackchara, defensechara);
+
+            //DataManager._instance.WriteSaveData(attackchara);
+        }
+           
+            
+
+        // Skillの選択状態を解除する
+        selectingSkill = SkillDefine.Skill._None;
+
+        // ターン切り替え処理(遅延実行)
+        DOVirtual.DelayedCall(
+            2.0f,// 遅延時間(秒)
+            () =>
+            {// 遅延実行する内容
+
+                // ウィンドウを非表示化
+                guiManager.battleWindowUI.HideWindow();
+
+                // ターンを切り替える
+                if (nowPhase == Phase.Myturn_Result)
+                {
+                    //行動不能状態
+                    attackchara.SetInCapacitited(true);
+
+                    ChangePhase(Phase.Myturn_Start, true);
+                }
+
+                else if(nowPhase == Phase.Enemyturn_Result)
+                {
+                    //行動不能状態
+                    attackchara.SetInCapacitited(true);
+
+                    ChangePhase(Phase.Enemyturn_Start, true);
+                }
+                
+        });
+
+        Debug.Log("Atk:" + attackchara.charaName + " Def:" + defensechara.charaName);
+    }
+
+    //------------------------------------------------------------------------
+
+    public int SkillAttack(int damagevalue, int atkpoint, Charactor attackchara, Charactor defensechara)
+    {
         // 選択したスキルによるダメージ値補正および効果処理
         switch (selectingSkill)
         {
@@ -455,49 +565,7 @@ public class GameManager : MonoBehaviour
                 break;
         }
 
-        if(selectingSkill != SkillDefine.Skill.Heal&&selectingSkill != SkillDefine.Skill.FireBall)
-        {
-            // キャラクター攻撃アニメーション
-            attackchara.AttackAnimation(defensechara);
-
-            // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
-            DOVirtual.DelayedCall(0.5f, () =>
-            {
-                AudioManager.instance.Play("SE_2");
-            });
-        }
-
-        // バトル結果表示ウィンドウの表示設定
-        guiManager.battleWindowUI.ShowWindow(defensechara, damagevalue);
-
-        // ダメージ量分防御側のHPを減少
-        defensechara.NowHp -= damagevalue;
-        // HPが0～最大値の範囲に収まるよう補正
-        defensechara.NowHp = Mathf.Clamp(defensechara.NowHp, 0, defensechara.maxHP);
-
-        // HP0になったキャラクターを削除する
-        if (defensechara.NowHp == 0)
-            charactorManager.DeleteCharaData(defensechara);
-
-        // Skillの選択状態を解除する
-        selectingSkill = SkillDefine.Skill._None;
-
-        // ターン切り替え処理(遅延実行)
-        DOVirtual.DelayedCall(
-            2.0f,// 遅延時間(秒)
-            () =>
-            {// 遅延実行する内容
-
-                // ウィンドウを非表示化
-                guiManager.battleWindowUI.HideWindow();
-                // ターンを切り替える
-                if (nowPhase == Phase.Myturn_Result) { ChangePhase(Phase.Enemyturn_Start); }
-
-                else if(nowPhase == Phase.Enemyturn_Result) { ChangePhase(Phase.Myturn_Start); }
-                
-        });
-
-        Debug.Log("Atk:" + attackchara.charaName + " Def:" + defensechara.charaName);
+        return damagevalue;
     }
 
     //------------------------------------------------------------------------
@@ -508,8 +576,8 @@ public class GameManager : MonoBehaviour
 	/// </summary>
     private void EnemyCommand()
     {
-        // 生存中の敵キャラクターのリストを作成する
-        var enemyCharas = charactorManager.Charactors.Where(chara => chara.isEnemy);
+        // 生存中の敵キャラクター&&行動可能キャラクターのリストを作成する
+        var enemyCharas = charactorManager.Charactors.Where(chara => chara.isEnemy && chara.isIncapacitated != true);
         var enemycharas = new List<Charactor>();
 
         // 全生存キャラクターから敵フラグの立っているキャラクターをリストに追加
@@ -558,8 +626,10 @@ public class GameManager : MonoBehaviour
         // (移動後のタイミングで処理するよう遅延実行)
         DOVirtual.DelayedCall(1.0f, () =>
         {
-            // 進行モード＜自ターン：開始時＞に変更
-            ChangePhase(Phase.Myturn_Start);
+            //行動不能状態に
+            chara.SetInCapacitited(true);
+            // 進行モード＜敵ターン：開始時＞に変更
+            ChangePhase(Phase.Enemyturn_Start, true);
         });
     }
 
@@ -678,5 +748,56 @@ public class GameManager : MonoBehaviour
                     SceneManager.LoadScene("MainMenu");
                 });
         }
+    }
+
+    /// <summary>
+	/// 行動内容決定ボタン処理
+	/// </summary>
+    public void ActionDecideButton()
+    {
+        // 行動決定・キャンセルボタンを非表示にする
+        guiManager.HideDecideButtons();
+        // 攻撃先のブロックの強調表示を解除する
+        attackBlock.SetSelectionMode(MapBlock.Highlight.Off);
+
+        // 攻撃対象の位置に居るキャラクターのデータを取得
+        var targetChara =
+            charactorManager.GetCharactor(attackBlock.XPos, attackBlock.ZPos);
+        if (targetChara != null)
+        {// 攻撃対象のキャラクターが存在する
+         // キャラクター攻撃処理
+            CharaAttack(selectingChara, targetChara);
+
+            // 進行モードを進める(行動結果表示へ)
+            ChangePhase(Phase.Myturn_Result);
+            return;
+        }
+        else
+        {// 攻撃対象が存在しない
+
+            //行動不能状態
+            selectingChara.SetInCapacitited(true);
+            // 進行モードを進める(敵のターンへ)
+            ChangePhase(Phase.Myturn_Start, true);
+        }
+    }
+
+    /// <summary>
+    /// 行動内容リセットボタン処理
+    /// </summary>
+    public void ActionCancelButton()
+    {
+        // 行動決定・キャンセルボタンを非表示にする
+        guiManager.HideDecideButtons();
+        // 攻撃先のブロックの強調表示を解除する
+        attackBlock.SetSelectionMode(MapBlock.Highlight.Off);
+
+        // キャラクターを移動前の位置に戻す
+        selectingChara.MovePosition(charaStartPos_X, charaStartPos_Z);
+        // キャラクターの選択を解除する
+        ClearSelectingChara();
+
+        // 進行モードを戻す(ターンの最初へ)
+        ChangePhase(Phase.Myturn_Start, true);
     }
 }
