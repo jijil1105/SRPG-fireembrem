@@ -38,6 +38,9 @@ public class Charactor : MonoBehaviour
     public int ZPos { get => zPos; set => zPos = value; }// 現在のz座標
     public int NowHp { get => nowHp; set => nowHp = value; }
 
+    public int Lv = 1;
+    public int Exp;
+
     // 各種状態異常
     public bool isSkillLock;// 特技使用不可状態
     public bool isDefBreak;//　防御力０化デバフ

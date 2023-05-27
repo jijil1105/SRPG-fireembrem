@@ -6,6 +6,7 @@ public class MapManager : MonoBehaviour
 {
     // オブジェクト・プレハブ(インスペクタから指定)
     public Transform blockParent; // マップブロックの親オブジェクトのTransform
+    public GameObject blockParentobj;
     public GameObject blockPrefab_Grass; // 草ブロック
     public GameObject blockPrefab_Water; // 水場ブロック
 
@@ -25,15 +26,41 @@ public class MapManager : MonoBehaviour
 
     void Start()
     {
+        //マップを自動で作成する場合
+
         // マップデータを初期化
         mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
+
+        var objs = blockParentobj.GetComponentsInChildren<MapBlock>();
 
         // ブロック生成位置の基点となる座標を設定
         Vector3 defaultPos = new Vector3(0.0f, 0.0f, 0.0f);
         defaultPos.x = -(MAP_WIDTH / 2);
         defaultPos.z = -(MAP_HEIGHT / 2);
 
-        // ブロック生成処理
+        int index = 0;
+
+        for(int i = 0; i < MAP_WIDTH; i++)
+        {
+            for(int j = 0; j < MAP_HEIGHT; j++)
+            {
+                Vector3 pos = defaultPos;
+                pos.x += i;
+                pos.z += j;
+
+                mapBlocks[i, j] = objs[index];
+                mapBlocks[i, j].transform.position = pos;
+                mapBlocks[i, j].XPos = (int)pos.x;
+                mapBlocks[i, j].ZPos = (int)pos.z;
+                if (index < (MAP_WIDTH * MAP_HEIGHT))
+                    index++;
+            }
+        }
+
+        //-------------------------------------------------------------------------
+        //マップをランダムで生成する場合
+
+        /*// ブロック生成処理
         for (int i = 0; i < MAP_WIDTH; i++)
         {
             for (int j = 0; j < MAP_HEIGHT; j++)
@@ -64,7 +91,7 @@ public class MapManager : MonoBehaviour
                 mapBlock.XPos = (int)pos.x;
                 mapBlock.ZPos = (int)pos.z;
             }
-        }
+        }*/
     }
 
     //-------------------------------------------------------------------------

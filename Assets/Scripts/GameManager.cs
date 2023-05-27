@@ -202,7 +202,7 @@ public class GameManager : MonoBehaviour
                     //選択中キャラを初期化
                     ClearSelectingChara();
                     //選択ブロックのデバッグ出力
-                    Debug.Log("Tapped on Block  Position : " + targetBlock.transform.position);
+                    Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
                 }
 
                 break;
