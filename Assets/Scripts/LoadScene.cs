@@ -21,4 +21,37 @@ public class LoadScene : MonoBehaviour
     {
         SceneManager.LoadScene(name);
     }
+
+    public void NewGaeme()
+    {
+        DataManager._instance.DeleteData();
+
+        SceneManager.LoadScene("Battle_1");
+    }
+
+    public void LoadGame()
+    {
+        SaveData data = DataManager._instance.Load();
+
+        if (data != null && data.SceneName != "Delete Data")
+        {
+            Debug.Log(data.SceneName);
+
+            for(int i = 0; i < data.atk.Count; i++)
+            {
+                Debug.Log(
+                    data.name[i] + ":" +
+                    data.maxHp[i] + ":" +
+                    data.atk[i] + ":" +
+                    data.def[i] + ":" +
+                    data.atrr[i] + ":" +
+                    data.movetype[i] + ":" +
+                    data.skill[i]);
+            }
+
+            SceneManager.LoadScene(data.SceneName);
+        }
+        else
+            Debug.Log("Dont have Data");
+    }
 }

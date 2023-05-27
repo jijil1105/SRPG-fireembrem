@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using LitJson;
 
 public class DataManager : MonoBehaviour
 {
@@ -9,15 +11,8 @@ public class DataManager : MonoBehaviour
 	[HideInInspector]
 	public static DataManager _instance;
 
-	// プレイヤー強化データ
-	public int Save_HP; // 最大HP上昇量
-	public int Save_Atk; // 攻撃力上昇量
-	public int Save_Def; // 防御力上昇量
-
-	// データのキー定義
-	public const string Key_HP = "Key_HP";
-	public const string Key_Atk = "Key_Atk";
-	public const string Key_Def = "Key_Def";
+	string filePath;
+	SaveData saveData;
 
 	private void Awake()
 	{
@@ -31,22 +26,88 @@ public class DataManager : MonoBehaviour
 			Destroy(gameObject);
         }
 
-		Save_HP = PlayerPrefs.GetInt(Key_HP);
-		Save_Atk = PlayerPrefs.GetInt(Key_Atk);
-		Save_Def = PlayerPrefs.GetInt(Key_Def);
-
-		Debug.Log(Save_HP + ":" + Save_Atk + ":" + Save_Def);
+		filePath = Application.persistentDataPath + "/" + ".savedata.json";
+		saveData = new SaveData();
+		//Debug.Log(Save_HP + ":" + Save_Atk + ":" + Save_Def);
 	}
 
-	public void WriteSaveData(Charactor charaData)
+	public void WriteSaveData(List<Charactor> charactors)
     {
-		Save_HP = charaData.maxHP;
-		Save_Atk = charaData.atk;
-		Save_Def = charaData.def;
+		Debug.Log("Save Data");
 
-		PlayerPrefs.SetInt(Key_HP, Save_HP);
-		PlayerPrefs.SetInt(Key_Atk, Save_Atk);
-		PlayerPrefs.SetInt(Key_Def, Save_Def);
-		PlayerPrefs.Save();
+		saveData.SceneName = "Battle_1";
+
+		foreach(var chara in charactors)
+        {
+			saveData.name.Add(chara.charaName);
+			saveData.maxHp.Add(chara.maxHP);
+			saveData.atk.Add(chara.atk);
+			saveData.def.Add(chara.def);
+			saveData.atrr.Add(chara.attribute.ToString());
+			saveData.movetype.Add(chara.moveType.ToString());
+			saveData.skill.Add(chara.skill.ToString());
+        }
+
+		string json = LitJson.JsonMapper.ToJson(saveData);
+
+		StreamWriter streamWriter = new StreamWriter(filePath);
+
+		streamWriter.Write(json); streamWriter.Flush();
+		streamWriter.Close();
     }
+
+    public SaveData Load()
+    {
+		if (File.Exists(filePath))
+		{
+			StreamReader streamReader;
+
+			streamReader = new StreamReader(filePath);
+
+			string data = streamReader.ReadToEnd();
+
+			streamReader.Close();
+
+			saveData = LitJson.JsonMapper.ToObject<SaveData>(data);
+
+			return saveData;
+		}
+		else
+			return null;
+    }
+
+	public void DeleteData()
+    {
+		Debug.Log("Delete Data");
+
+		saveData = new SaveData();
+		saveData.SceneName = "Delete Data";
+
+		string json = LitJson.JsonMapper.ToJson(saveData);
+
+		StreamWriter streamWriter = new StreamWriter(filePath);
+
+		streamWriter.Write(json); streamWriter.Flush();
+		streamWriter.Close();
+	}
 }
+
+[SerializeField]
+public class SaveData
+{
+	public string SceneName;
+
+	public List<string> name = new List<string>();
+
+	public List<int> maxHp = new List<int>();
+
+	public List<int> atk = new List<int>();
+
+	public List<int> def = new List<int>();
+
+	public List<string> atrr = new List<string>();
+
+	public List<string> movetype = new List<string>();
+
+	public List<string> skill = new List<string>();
+};

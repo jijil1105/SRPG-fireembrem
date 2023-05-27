@@ -83,7 +83,7 @@ public class GameManager : MonoBehaviour
 
         nowPhase = Phase.Myturn_Start;
 
-        //AudioManager.instance.Play("BGM_1");
+        AudioManager.instance.Play("BGM_1");
     }
 
     //-------------------------------------------------------------------------
@@ -726,13 +726,29 @@ public class GameManager : MonoBehaviour
         {
             //ゲーム終了フラグをtrue
             isGameSet = true;
+            if(Chara)
+            {
+                List<Charactor> charalist = new List<Charactor>();
+                foreach (var chara in charactorManager.Charactors)
+                {
+                    if (!chara.isEnemy)
+                        charalist.Add(chara);
+                }
+                //セーブデータ
+                DataManager._instance.WriteSaveData(charalist);
+            }
+            
 
             //ゲーム終了フラグを遅延処理
             DOVirtual.DelayedCall(
                 1.5f, () =>
                  {
                      if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
+                     {
                          guiManager.ShowLogo_GameClear();
+                     }
+                         
+
                      if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
                          guiManager.ShowLogo_gameOver();
 
