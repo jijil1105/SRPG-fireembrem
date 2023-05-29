@@ -34,7 +34,6 @@ public class GameManager : MonoBehaviour
     private MapManager mapManager;//フィールドのブロックを管理するマネージャークラス
     private CharactorManager charactorManager;//フィールドのキャラクターを管理するクラス
     private GUIManager guiManager;//UIを管理するクラス
-    public LevelManager levelManager;//キャラのレベルを管理するクラス
 
     //-------------------------------------------------------------------------
 
@@ -76,7 +75,7 @@ public class GameManager : MonoBehaviour
         mapManager = GetComponent<MapManager>();//
         charactorManager = GetComponent<CharactorManager>();
         guiManager = GetComponent<GUIManager>();
-        levelManager = GetComponent<LevelManager>();
+        //clevelManager = GetComponent<LevelManager>();
 
         reachableBlocks = new List<MapBlock>();
         attackableBlocks = new List<MapBlock>();
@@ -94,10 +93,6 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        /*if (Input.GetKey(KeyCode.C))
-            AudioManager.instance.Play("BGM_1");*/
-        //Play Battle Bgm
-
         //ゲーム終了後なら終了
         if(isGameSet)
             return;
@@ -441,8 +436,19 @@ public class GameManager : MonoBehaviour
     {
         // ダメージ計算処理
         int damagevalue;// ダメージ量
-        int atkpoint = attackchara.atk;// 攻撃側の攻撃力
-        int defpoint = defensechara.def;// 防御側の防御力
+        int atkpoint = attackchara.atk;
+        int defpoint = defensechara.def;
+
+        if (!attackchara.isMagicAttac)//攻撃キャラが物理攻撃の場合
+        {
+            atkpoint = attackchara.atk;// 攻撃側の物理攻撃力
+            defpoint = defensechara.def;// 防御側の物理防御力
+        }
+        else if(attackchara.isMagicAttac)//攻撃キャラが魔法攻撃の場合
+        {
+            atkpoint = attackchara.Int;// 攻撃側の魔法攻撃力
+            defpoint = defensechara.Res;// 防御側の魔法防御力
+        }
 
         //防御力０化デバフ状態なら防御力０でダメージ計算
         if (defensechara.isDefBreak)
@@ -474,17 +480,15 @@ public class GameManager : MonoBehaviour
         // HP0になったキャラクターを削除する
         if (defensechara.NowHp == 0)
         {
+            attackchara.nowExp += (int)GetComponent<LevelManager>().GetExp(100, 1.5f, defensechara.Lv);
+
+            if (attackchara.nowExp > attackchara.ExpPerLv)
+                GetComponent<LevelManager>().LevelUp(attackchara);
             //
             charactorManager.DeleteCharaData(defensechara);
-
-            //
-            if(!attackchara.isEnemy)
-                levelManager.LevelUpChecker(attackchara, defensechara);
-
-            //DataManager._instance.WriteSaveData(attackchara);
         }
-           
-            
+
+
 
         // Skillの選択状態を解除する
         selectingSkill = SkillDefine.Skill._None;

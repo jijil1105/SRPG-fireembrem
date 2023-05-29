@@ -20,12 +20,20 @@ public class Charactor : MonoBehaviour
     public int atk;
     [Header("def")]
     public int def;
+    [Header("magic atk")]
+    public int Int;
+    [Header("magic def")]
+    public int Res;
     [Header("Attribute")]
     public Attribute attribute;// 属性
     [Header("移動方法")]
     public MoveType moveType;
     [Header("Skill")]
-    public SkillDefine.Skill skill;
+    public SkillDefine.Skill skill;//
+    [Header("Exp")]
+    public float maxExp;//
+    [Header("魔法攻撃フラグ")]
+    public bool isMagicAttac;//
 
     //-------------------------------------------------------------------------
     // ゲーム中に変化するキャラクターデータ
@@ -38,8 +46,9 @@ public class Charactor : MonoBehaviour
     public int ZPos { get => zPos; set => zPos = value; }// 現在のz座標
     public int NowHp { get => nowHp; set => nowHp = value; }
 
-    public int Lv = 1;
-    public int Exp;
+    public int Lv;
+    public int nowExp;
+    public int ExpPerLv;
 
     // 各種状態異常
     public bool isSkillLock;// 特技使用不可状態

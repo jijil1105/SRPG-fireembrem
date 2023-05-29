@@ -20,6 +20,11 @@ public class GUIManager : MonoBehaviour
     public Sprite attr_Wind;  // 風属性アイコン画像
     public Sprite attr_Soil;  // 土属性アイコン画像
 
+    public Text ExpText;//経験値テキスト
+    public Image ExpGageImage;//経験値ゲージ
+
+    public Text LvText;//
+
     //-------------------------------------------------------------------------
 
     // バトル結果表示UI処理クラス
@@ -111,6 +116,13 @@ public class GUIManager : MonoBehaviour
 
         else// 防御力Text表示(intからstringに変換)
             defText.text = charaData.def.ToString();
+
+        LvText.text = "Lv : " + charaData.Lv;
+
+        float Expratio = (float)charaData.nowExp / charaData.ExpPerLv;
+        ExpGageImage.fillAmount = Expratio;
+
+        ExpText.text = charaData.nowExp + "/" + charaData.ExpPerLv;
     }
 
     //-------------------------------------------------------------------------
