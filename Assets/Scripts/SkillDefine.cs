@@ -4,15 +4,21 @@ using UnityEngine;
 
 public static class SkillDefine
 {
+    /// <summary>
+    /// キャラクタースキル
+    /// </summary>
     public enum Skill
     {
         _None,// スキル：無し
         Critical,// スキル：会心の一撃：敵に与えるダメージ２倍
         DefBreak,// スキル：防御破壊：敵の防御力を０、このスキルで与えるダメージは０
-        Heal,
+        Heal,//スキル：ヒール：攻撃（又は魔法攻撃）の半分、対象キャラのHpを回復
         FireBall,
     }
 
+    /// <summary>
+    /// スキルとスキルの名前を紐付け
+    /// </summary>
     public static Dictionary<Skill, string> dec_SkillName = new Dictionary<Skill, string>()
     {
         {Skill._None, "スキル無し" },
@@ -22,6 +28,9 @@ public static class SkillDefine
         {Skill.FireBall, "ファイアボール"},
     };
 
+    /// <summary>
+    /// スキルとスキルの説明文を紐付け
+    /// </summary>
     public static Dictionary<Skill, string> dec_SkillInfo = new Dictionary<Skill, string>()
     {
         {Skill._None, "----" },

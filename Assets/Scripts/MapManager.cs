@@ -26,11 +26,12 @@ public class MapManager : MonoBehaviour
 
     void Start()
     {
-        //マップを自動で作成する場合
+        //マップを手動で生成する場合
 
         // マップデータを初期化
         mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
 
+        //手動で配置したブロックを取得
         var objs = blockParentobj.GetComponentsInChildren<MapBlock>();
 
         // ブロック生成位置の基点となる座標を設定
@@ -40,7 +41,8 @@ public class MapManager : MonoBehaviour
 
         int index = 0;
 
-        for(int i = 0; i < MAP_WIDTH; i++)
+        //取得したブロックを２次元配列で管理して２次元座標と比較しやすくする
+        for (int i = 0; i < MAP_WIDTH; i++)
         {
             for(int j = 0; j < MAP_HEIGHT; j++)
             {

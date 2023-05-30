@@ -50,10 +50,17 @@ public class AudioManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
-
+    /// <summary>
+    /// 使用されていないオーディオソースを取得する
+    /// </summary>
+    /// <returns></returns>
     private AudioSource GetUnusedAudioSource() =>
         audioSourceList.FirstOrDefault(audiosource => audiosource.isPlaying == false);
 
+    /// <summary>
+    /// 引数のクリップを再生
+    /// </summary>
+    /// <param name="clip">再生するオーディオクリップ</param>
     public void Play(AudioClip clip)
     {
         var audioSouce = GetUnusedAudioSource();
@@ -62,6 +69,10 @@ public class AudioManager : MonoBehaviour
         audioSouce.Play();
     }
 
+    /// <summary>
+    /// 引数の名前から検索し再生
+    /// </summary>
+    /// <param name="name">再生する曲名</param>
     public void Play(string name)
     {
         if(soundDictionary.TryGetValue(name, out var soundData))

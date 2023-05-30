@@ -7,33 +7,33 @@ public class Charactor : MonoBehaviour
 {
     // キャラクター初期設定(インスペクタから入力)
     [Header("Init Position(-4~4)"), SerializeField]
-    public int initPos_X;
+    public int initPos_X;//初期位置：X
     [Header("Init Position(-4~4)"), SerializeField]
-    public int initPos_Z;
+    public int initPos_Z;//初期位置：Z
     [Header("EnemyFlg true: EnemyCharactor")]
     public bool isEnemy;// 敵フラグ
     [Header("Charactor's Name")]
-    public string charaName;
+    public string charaName;//キャラ名
     [Header("maxHP")]
-    public int maxHP;
+    public int maxHP;//最大Hp
     [Header("atk")]
-    public int atk;
+    public int atk;//物理攻撃力
     [Header("def")]
-    public int def;
+    public int def;//物理防御力
     [Header("magic atk")]
-    public int Int;
+    public int Int;//魔法攻撃力
     [Header("magic def")]
-    public int Res;
+    public int Res;//魔法防御力
     [Header("Attribute")]
     public Attribute attribute;// 属性
     [Header("移動方法")]
-    public MoveType moveType;
+    public MoveType moveType;//移動タイプ
     [Header("Skill")]
-    public SkillDefine.Skill skill;//
+    public SkillDefine.Skill skill;//スキル
     [Header("Exp")]
-    public float maxExp;//
+    public float maxExp;//最大経験値
     [Header("魔法攻撃フラグ")]
-    public bool isMagicAttac;//
+    public bool isMagicAttac;//魔法攻撃力
 
     //-------------------------------------------------------------------------
     // ゲーム中に変化するキャラクターデータ
@@ -44,11 +44,11 @@ public class Charactor : MonoBehaviour
 
     public int XPos { get => xPos; set => xPos = value; }// 現在のx座標
     public int ZPos { get => zPos; set => zPos = value; }// 現在のz座標
-    public int NowHp { get => nowHp; set => nowHp = value; }
+    public int NowHp { get => nowHp; set => nowHp = value; }//現在のHp
 
-    public int Lv;
-    public int nowExp;
-    public int ExpPerLv;
+    public int Lv;//レベル
+    public int nowExp;//現在の経験値
+    public int ExpPerLv;//次のレベルに必要な経験値
 
     // 各種状態異常
     public bool isSkillLock;// 特技使用不可状態
@@ -215,6 +215,10 @@ public class Charactor : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 移行を行ったキャラを行動不能状態にする
+    /// </summary>
+    /// <param name="cap">trueなら行動不能：falseなら行動可能</param>
     public void SetInCapacitited(bool cap)
     {
         isIncapacitated = cap;

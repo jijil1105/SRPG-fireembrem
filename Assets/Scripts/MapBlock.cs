@@ -32,10 +32,10 @@ public class MapBlock : MonoBehaviour
 
     public enum Highlight
     {
-        Off,//
-        Select,//
-        Reachable,//
-        Attackable//
+        Off,//選択されてない状態
+        Select,//選択せれている状態
+        Reachable,//移動可能範囲を強調表示
+        Attackable//攻撃可能範囲を強調表示
     }
 
     //-------------------------------------------------------------------------

@@ -11,8 +11,8 @@ public class DataManager : MonoBehaviour
 	[HideInInspector]
 	public static DataManager _instance;
 
-	string filePath;
-	SaveData saveData;
+	string filePath;//セーブデータを書き込むパス
+	SaveData saveData;//セーブするデータ
 
 	private void Awake()
 	{
@@ -26,18 +26,26 @@ public class DataManager : MonoBehaviour
 			Destroy(gameObject);
         }
 
+		//パス設定
 		filePath = Application.persistentDataPath + "/" + ".savedata.json";
+		//セーブデータ初期化
 		saveData = new SaveData();
 		//Debug.Log(Save_HP + ":" + Save_Atk + ":" + Save_Def);
 	}
 
+	/// <summary>
+    /// セーブするデータをJsonFileに書き込み
+    /// </summary>
+    /// <param name="charactors">セーブするキャラデータ</param>
 	public void WriteSaveData(List<Charactor> charactors)
     {
 		Debug.Log("Save Data");
 
+		//仮でシーン”Battle＿1”を保存
 		saveData.SceneName = "Battle_1";
 
-		foreach(var chara in charactors)
+		//キャラデータをセーブデータ型のクラスに格納
+		foreach (var chara in charactors)
         {
 			saveData.name.Add(chara.charaName);
 			saveData.maxHp.Add(chara.maxHP);
@@ -48,6 +56,7 @@ public class DataManager : MonoBehaviour
 			saveData.skill.Add(chara.skill.ToString());
         }
 
+		//JsonFileに書き込み
 		string json = LitJson.JsonMapper.ToJson(saveData);
 
 		StreamWriter streamWriter = new StreamWriter(filePath);
@@ -56,8 +65,13 @@ public class DataManager : MonoBehaviour
 		streamWriter.Close();
     }
 
+	/// <summary>
+    /// JsonFileに書き込んだセーブデータを読み込む
+    /// </summary>
+    /// <returns>読み込んだセーブデータ</returns>
     public SaveData Load()
     {
+		//JsonFileを読み込み
 		if (File.Exists(filePath))
 		{
 			StreamReader streamReader;
@@ -76,6 +90,9 @@ public class DataManager : MonoBehaviour
 			return null;
     }
 
+	/// <summary>
+    /// 初期化データを既存データに上書き
+    /// </summary>
 	public void DeleteData()
     {
 		Debug.Log("Delete Data");
@@ -92,6 +109,9 @@ public class DataManager : MonoBehaviour
 	}
 }
 
+/// <summary>
+/// セーブデータクラス
+/// </summary>
 [SerializeField]
 public class SaveData
 {

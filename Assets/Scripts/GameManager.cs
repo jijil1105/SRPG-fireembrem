@@ -463,7 +463,7 @@ public class GameManager : MonoBehaviour
         if (damagevalue < 0)
             damagevalue = 0;
 
-        //Skill
+        //スキル選択ならスキルのダメージ倍率適応
         damagevalue = SkillAttack(damagevalue, atkpoint, attackchara, defensechara);
         
         // キャラクター攻撃アニメーション
@@ -480,11 +480,50 @@ public class GameManager : MonoBehaviour
         // HP0になったキャラクターを削除する
         if (defensechara.NowHp == 0)
         {
+            //
+            float startvalue = (float)attackchara.nowExp / attackchara.ExpPerLv;
+            
+            //キャラの現在の経験値を更新
             attackchara.nowExp += (int)GetComponent<LevelManager>().GetExp(100, 1.5f, defensechara.Lv);
 
-            if (attackchara.nowExp > attackchara.ExpPerLv)
+            if(attackchara.nowExp < attackchara.ExpPerLv)
+            {
+                guiManager.ShowStatusWindow(attackchara);
+
+                float endvalue = (float)attackchara.nowExp / (float)attackchara.ExpPerLv;
+                guiManager.ShowGetExpWindow(attackchara);
+                guiManager.moveExpbar(startvalue, endvalue, 1.0f);
+
+                DOVirtual.DelayedCall(1.5f, () =>
+                {
+                    guiManager.HideGetExpWindow();
+                });
+            }
+
+            //キャラの現在の経験値が次レベルに必要な経験値を上回っていたらレベルアップ処理
+            else
+            {
+                guiManager.ShowGetExpWindow(attackchara);
+                float EndExp = (float)attackchara.nowExp - (float)attackchara.ExpPerLv;
                 GetComponent<LevelManager>().LevelUp(attackchara);
-            //
+
+                float endvalue = EndExp / (float)attackchara.ExpPerLv;
+
+                guiManager.moveExpbar(startvalue, 1, 0.5f);
+                DOVirtual.DelayedCall(0.5f, () =>
+                {
+                    guiManager.ShowGetExpWindow(attackchara);
+                    guiManager.ShowStatusWindow(attackchara);
+                    guiManager.moveExpbar(0, endvalue, 0.5f);
+                });
+
+                DOVirtual.DelayedCall(1.5f, () =>
+                {
+                    guiManager.HideGetExpWindow();
+                });
+            }
+
+            //倒したキャラクターを削除
             charactorManager.DeleteCharaData(defensechara);
         }
 

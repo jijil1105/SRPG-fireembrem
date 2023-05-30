@@ -23,7 +23,7 @@ public class GUIManager : MonoBehaviour
     public Text ExpText;//経験値テキスト
     public Image ExpGageImage;//経験値ゲージ
 
-    public Text LvText;//
+    public Text LvText;//レベル表示テキスト
 
     //-------------------------------------------------------------------------
 
@@ -42,21 +42,27 @@ public class GUIManager : MonoBehaviour
     // 各種ロゴ画像
     public Image playerTurnImage;// プレイヤーターン開始時画像
     public Image enemyTurnImage;// 敵ターン開始時画像
-    public Image gameClearImage;
-    public Image gameOverImage;
+    public Image gameClearImage;//ゲームクリア時画像
+    public Image gameOverImage;//ゲームオーバー時画像
 
     //-------------------------------------------------------------------------
 
-    //
+    //行動キャンセルボタン
     public GameObject moveCancelButton;
 
-    //
+    //行動決定ボタン
     public GameObject decideButtons;
 
     //-------------------------------------------------------------------------
 
-    //
+    //シーン遷移のフェード画像
     public Image fadeImage;
+
+    //-------------------------------------------------------------------------
+
+    public GameObject GetExpWindow;//取得経験値を表示するウィンドウ
+    public Image GetExpWindow_ExpBar;//経験値バー
+    public Text GetExpWindow_charaname_text;//経験値を取得したキャラの名前
 
     //-------------------------------------------------------------------------
 
@@ -68,7 +74,12 @@ public class GUIManager : MonoBehaviour
         HideCommandButtons(); // コマンドボタンを隠す
         ShowMoveCancelButton(false);//キャンセルボタンを隠す
         HideDecideButtons(); // 行動決定・キャンセルボタンを隠す
+        HideGetExpWindow();
     }
+
+    //-------------------------------------------------------------------------
+
+
 
     //-------------------------------------------------------------------------
 
@@ -84,7 +95,7 @@ public class GUIManager : MonoBehaviour
         // 名前Text表示
         nameText.text = charaData.charaName;
 
-        // 属性Image表示
+        // 属性Image表示（キャラの属性によってアイコン変更）
         switch (charaData.attribute)
         {
             case Charactor.Attribute.Water:
@@ -117,11 +128,14 @@ public class GUIManager : MonoBehaviour
         else// 防御力Text表示(intからstringに変換)
             defText.text = charaData.def.ToString();
 
+        //キャラのレベルをステータスウィンドウにに表示
         LvText.text = "Lv : " + charaData.Lv;
 
+        //キャラの次レベルまでに必要な経験値と現在の経験値の割合を経験値バーのfillAmountにセット
         float Expratio = (float)charaData.nowExp / charaData.ExpPerLv;
         ExpGageImage.fillAmount = Expratio;
 
+        //経験値テキストに表示
         ExpText.text = charaData.nowExp + "/" + charaData.ExpPerLv;
     }
 
@@ -232,6 +246,10 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// 画面をフェードインさせる
+    /// </summary>
+    /// <param name="duration"></param>
     public void FadeIn(float duration)
     {
          //フェードイン処理
@@ -243,6 +261,9 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// 決定ボタンを表示
+    /// </summary>
     public void ShowDecideButtons()
     {
         decideButtons.SetActive(true);
@@ -250,10 +271,34 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// 決定ボタン非表示
+    /// </summary>
     public void HideDecideButtons()
     {
         decideButtons.SetActive(false);
     }
 
     //-------------------------------------------------------------------------
+
+    public void ShowGetExpWindow(Charactor charadata)
+    {
+        GetExpWindow_charaname_text.text = charadata.charaName + ":" + charadata.Lv;
+        GetExpWindow.SetActive(true);
+    }
+
+    //-------------------------------------------------------------------------
+
+    public void HideGetExpWindow()
+    {
+        GetExpWindow.SetActive(false);
+    }
+
+    //-------------------------------------------------------------------------
+
+    public void moveExpbar(float startvalue, float endvalue, float duration)
+    {
+        GetExpWindow_ExpBar.fillAmount = startvalue;
+        GetExpWindow_ExpBar.DOFillAmount(endvalue, duration);
+    }
 }
