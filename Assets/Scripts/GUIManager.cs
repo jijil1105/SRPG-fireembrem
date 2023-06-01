@@ -60,9 +60,21 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    //経験値バーを表示するWindow
     public GameObject GetExpWindow;//取得経験値を表示するウィンドウ
     public Image GetExpWindow_ExpBar;//経験値バー
     public Text GetExpWindow_charaname_text;//経験値を取得したキャラの名前
+
+    //-------------------------------------------------------------------------
+
+    //レベルアップ時のステータス上昇値を表示させるウィンドウ
+    public GameObject LevelUpWindow;
+    public Text levelupwindow_name_text;
+    public Text levelupwindow_hp_text;
+    public Text levelupwindow_atk_text;
+    public Text levelupwindow_def_text;
+    public Text levelupwindow_int_text;
+    public Text levelupwindow_res_text;
 
     //-------------------------------------------------------------------------
 
@@ -75,6 +87,7 @@ public class GUIManager : MonoBehaviour
         ShowMoveCancelButton(false);//キャンセルボタンを隠す
         HideDecideButtons(); // 行動決定・キャンセルボタンを隠す
         HideGetExpWindow();
+        HideLevelUpWindow();
     }
 
     //-------------------------------------------------------------------------
@@ -119,8 +132,13 @@ public class GUIManager : MonoBehaviour
 
         // HPText表示(現在値と最大値両方を表示)
         hpText.text = charaData.NowHp + "/" + charaData.maxHP;
-        // 攻撃力Text表示(intからstringに変換)
-        atkText.text = charaData.atk.ToString();
+
+        if(charaData.isMagicAttac)
+            // 魔法攻撃力Text表示(intからstringに変換)
+            atkText.text = charaData.Int.ToString();      
+        else
+            // 物理攻撃力Text表示(intからstringに変換)
+            atkText.text = charaData.atk.ToString();
 
         if (charaData.isDefBreak)//防御力０化状態以上だったら赤色で強調表示
             defText.text = "<color=red>0</color>";
@@ -300,5 +318,41 @@ public class GUIManager : MonoBehaviour
     {
         GetExpWindow_ExpBar.fillAmount = startvalue;
         GetExpWindow_ExpBar.DOFillAmount(endvalue, duration);
+    }
+
+    public void ShowLeveUpWindow(Charactor charaData, List<int> list)
+    {
+        LevelUpWindow.SetActive(true);
+        levelupwindow_name_text.text = charaData.charaName + " : LV" + charaData.Lv;
+
+        if(list[0] != 0)
+            levelupwindow_hp_text.text = "Hp : " + charaData.maxHP + " <color=red> +" + list[0] + "</color>";
+        else
+            levelupwindow_hp_text.text = "Hp : " + charaData.maxHP;
+
+        if (list[1] != 0)
+            levelupwindow_atk_text.text = "Atk : " + charaData.atk + " <color=red> +" + list[1] + "</color>";
+        else
+            levelupwindow_atk_text.text = "Atk : " + charaData.atk;
+
+        if (list[2] != 0)
+            levelupwindow_def_text.text = "Def : " + charaData.def + " <color=red> +" + list[2] + "</color>";
+        else
+            levelupwindow_def_text.text = "Def : " + charaData.def;
+
+        if (list[3] != 0)
+            levelupwindow_int_text.text = "Int : " + charaData.Int + " <color=red> +" + list[3] + "</color>";
+        else
+            levelupwindow_int_text.text = "Int : " + charaData.Int;
+
+        if (list[4] != 0)
+            levelupwindow_res_text.text = "Res : " + charaData.Res + " <color=red> +" + list[4] + "</color>";
+        else
+            levelupwindow_res_text.text = "Res : " + charaData.Res;
+    }
+
+    public void HideLevelUpWindow()
+    {
+        LevelUpWindow.SetActive(false);
     }
 }

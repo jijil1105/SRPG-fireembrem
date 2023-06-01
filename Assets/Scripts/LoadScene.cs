@@ -58,10 +58,32 @@ public class LoadScene : MonoBehaviour
                     data.maxHp[i] + ":" +
                     data.atk[i] + ":" +
                     data.def[i] + ":" +
+                    data.Int[i] + ":" +
+                    data.res[i] + ":" +
                     data.atrr[i] + ":" +
                     data.movetype[i] + ":" +
-                    data.skill[i]);
+                    data.skill[i] + ":" +
+                    data.isMagicAttack[i] + ":" +
+                    data.Lv[i] + ":" +
+                    data.nowExp[i]
+                    );                  
             }
+            /*
+		    public string charaName;//キャラ名
+		    public int maxHP;//最大Hp
+		    public int atk;//物理攻撃力
+		    public int def;//物理防御力
+		    public int Int;//魔法攻撃力
+		    public int Res;//魔法防御力
+		    public Attribute attribute;// 属性
+		    public MoveType moveType;//移動タイプ
+		    public SkillDefine.Skill skill;//スキル
+		    public bool isMagicAttac;//魔法攻撃flg
+
+		    public int Lv;//レベル
+		    public int nowExp;//現在の経験値
+		    public int ExpPerLv;//次のレベルに必要な経験値
+            */
 
             SceneManager.LoadScene(data.SceneName);
         }

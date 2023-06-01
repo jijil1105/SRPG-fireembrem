@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
     /// キャラクターのレベルアップ処理
     /// </summary>
     /// <param name="charaData">レベルアップさせるキャラクター</param>
-    public void LevelUp(Charactor charaData)
+    public List<int> LevelUp(Charactor charaData)
     {
         //現在の経験値をレベルアップに必要な経験値分引いて差を求める
         var nowExp = charaData.nowExp - charaData.ExpPerLv;
@@ -37,43 +37,77 @@ public class LevelManager : MonoBehaviour
         //現在の経験値を求めた差分に更新
         charaData.nowExp = nowExp;
         //キャラのステータス強化
-        LevelUpStatus(charaData);
+        return LevelUpStatus(charaData);
     }
 
     /// <summary>
     /// レベルアップ時のキャラのステータス強化処理
     /// </summary>
     /// <param name="charaData">強化するキャラデータ</param>
-    public void LevelUpStatus(Charactor charaData)
+    public List<int> LevelUpStatus(Charactor charaData)
     {
-        switch(charaData.moveType)//行動タイプによって成長率変更（仮）
+        /*
+        public int maxHP;//最大Hp
+        public int atk;//物理攻撃力
+        public int def;//物理防御力
+        public int Int;//魔法攻撃力
+        public int Res;//魔法防御力
+        */
+
+        List<int> Up_Status = new List<int>();
+        for (int i = 0; i < 5; i++)
+            Up_Status.Add(0);
+
+        switch (charaData.moveType)//行動タイプによって成長率変更（仮）
         {
             default:
+
                 int randHP = Random.Range(0, 100);
                 int randAtk = Random.Range(0, 100);
                 int randDef = Random.Range(0, 100);
+                int randInt = Random.Range(0, 100);
+                int randRes = Random.Range(0, 100);
 
                 if (randHP >= 33)
                 {
                     charaData.maxHP += 1;
-                    Debug.Log("レベルアップ：" + charaData.charaName + charaData.maxHP);
+                    Up_Status[0] = 1;
+                    Debug.Log("レベルアップ : " + charaData.charaName + " HP : " + charaData.maxHP);
                 }
                     
 
-                else if (randAtk >= 33)
+                if (randAtk >= 33)
                 {
                     charaData.atk += 1;
-                    Debug.Log("レベルアップ：" + charaData.charaName + charaData.atk);
+                    Up_Status[1] = 1;
+                    Debug.Log("レベルアップ : " + charaData.charaName + " atk : " + charaData.atk);
                 }
 
-                else if (randDef >= 33)
+                if (randDef >= 33)
                 {
                     charaData.def += 1;
-                    Debug.Log("レベルアップ：" + charaData.charaName + charaData.def);
+                    Up_Status[2] = 1;
+                    Debug.Log("レベルアップ : " + charaData.charaName + " def : " + charaData.def);
+                }
+
+                if(randInt >= 33)
+                {
+                    charaData.Int += 1;
+                    Up_Status[3] = 1;
+                    Debug.Log("レベルアップ : " + charaData.charaName + " Int : " + charaData.Int);
+                }
+
+                if(randRes >= 33)
+                {
+                    charaData.Res += 1;
+                    Up_Status[4] = 1;
+                    Debug.Log("レベルアップ : " + charaData.charaName + " Res : " + charaData.Res);
                 }
                     
                 break;
         }
+
+        return Up_Status;
     }
 
     /// <summary>

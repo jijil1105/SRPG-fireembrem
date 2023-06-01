@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2336360642440602846}
   - component: {fileID: 3360908307870512068}
   m_Layer: 0
-  m_Name: Charactor
+  m_Name: Charactor_Actor_02
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -72,7 +72,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 6bb24a95577d649cc8a8f9f49ca90eca, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 74b9d9fca607b406db10e506d72b4321, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -98,12 +98,19 @@ MonoBehaviour:
   initPos_X: 0
   initPos_Z: 0
   isEnemy: 0
-  charaName: 
+  charaName: "\u6226\u58EB"
   maxHP: 0
   atk: 0
   def: 0
+  Int: 0
+  Res: 0
   attribute: 0
   moveType: 0
   skill: 0
+  isMagicAttac: 0
+  Lv: 0
+  nowExp: 0
+  ExpPerLv: 0
   isSkillLock: 0
   isDefBreak: 0
+  isIncapacitated: 0

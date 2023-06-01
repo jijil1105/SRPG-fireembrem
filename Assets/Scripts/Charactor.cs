@@ -30,10 +30,8 @@ public class Charactor : MonoBehaviour
     public MoveType moveType;//移動タイプ
     [Header("Skill")]
     public SkillDefine.Skill skill;//スキル
-    [Header("Exp")]
-    public float maxExp;//最大経験値
     [Header("魔法攻撃フラグ")]
-    public bool isMagicAttac;//魔法攻撃力
+    public bool isMagicAttac;//魔法攻撃フラグ
 
     //-------------------------------------------------------------------------
     // ゲーム中に変化するキャラクターデータ

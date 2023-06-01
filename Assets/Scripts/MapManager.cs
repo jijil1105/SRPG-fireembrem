@@ -18,9 +18,12 @@ public class MapManager : MonoBehaviour
     //-------------------------------------------------------------------------
 
     // 定数定義
-    public const int MAP_WIDTH = 9;// マップの横幅
-    public const int MAP_HEIGHT = 9;// マップの縦(奥行)の幅
-    private const int GENERATE_RATIO_GRASS = 80;// 草ブロックが生成される確率
+    [SerializeField]
+    public int MAP_WIDTH = 9;// マップの横幅
+    [SerializeField]
+    public int MAP_HEIGHT = 9;// マップの縦(奥行)の幅
+    [SerializeField]
+    //private int GENERATE_RATIO_GRASS = 80;// 草ブロックが生成される確率
 
     //-------------------------------------------------------------------------
 
