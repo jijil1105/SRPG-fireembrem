@@ -480,82 +480,86 @@ public class GameManager : MonoBehaviour
         // HP0になったキャラクターを削除する
         if (defensechara.NowHp == 0)
         {
-            //経験値を更新する前の値を記憶
-            float startvalue = (float)attackchara.nowExp / attackchara.ExpPerLv;
-            
-            //キャラの現在の経験値を更新
-            attackchara.nowExp += (int)GetComponent<LevelManager>().GetExp(100, 1.5f, defensechara.Lv);
-
-            //更新した経験値量が次レベルに必要な経験値量を下回っていたら
-            if (attackchara.nowExp < attackchara.ExpPerLv)
+            //味方キャラなら経験値更新処理
+            if(!attackchara.isEnemy)
             {
-                delay_time = 3;
+                //経験値を更新する前の値を記憶
+                float startvalue = (float)attackchara.nowExp / attackchara.ExpPerLv;
 
-                //経験値更新後の値を記憶
-                float endvalue = (float)attackchara.nowExp / (float)attackchara.ExpPerLv;
+                //キャラの現在の経験値を更新
+                attackchara.nowExp += (int)GetComponent<LevelManager>().GetExp(100, 1.5f, defensechara.Lv);
 
-                DOVirtual.DelayedCall(1.0f, () =>
+                //更新した経験値量が次レベルに必要な経験値量を下回っていたら
+                if (attackchara.nowExp < attackchara.ExpPerLv)
                 {
-                    // ウィンドウを非表示化
-                    guiManager.battleWindowUI.HideWindow();
-                    //取得経験値をアニメーション再生する経験値バーを表示
-                    guiManager.ShowGetExpWindow(attackchara);
-                    //経験値更新前から経験値更新後の値まで経験値バーをアニメーション再生する
-                    guiManager.moveExpbar(startvalue, endvalue, 1.0f);
-                });
+                    delay_time = 3;
 
-                //経験値バーをアニメーション再生後、経験値バーを非表示
-                DOVirtual.DelayedCall(2.5f, () =>
+                    //経験値更新後の値を記憶
+                    float endvalue = (float)attackchara.nowExp / (float)attackchara.ExpPerLv;
+
+                    DOVirtual.DelayedCall(1.0f, () =>
+                    {
+                        // ウィンドウを非表示化
+                        guiManager.battleWindowUI.HideWindow();
+                        //取得経験値をアニメーション再生する経験値バーを表示
+                        guiManager.ShowGetExpWindow(attackchara);
+                        //経験値更新前から経験値更新後の値まで経験値バーをアニメーション再生する
+                        guiManager.moveExpbar(startvalue, endvalue, 1.0f);
+                    });
+
+                    //経験値バーをアニメーション再生後、経験値バーを非表示
+                    DOVirtual.DelayedCall(2.5f, () =>
+                    {
+                        //経験値バーを非表示
+                        guiManager.HideGetExpWindow();
+                        //経験値更新後のステータスを表示
+                        guiManager.ShowStatusWindow(attackchara);
+                    });
+                }
+
+                //キャラの現在の経験値が次レベルに必要な経験値を上回っていたら
+                else
                 {
-                    //経験値バーを非表示
-                    guiManager.HideGetExpWindow();
-                    //経験値更新後のステータスを表示
-                    guiManager.ShowStatusWindow(attackchara);
-                });
-            }
+                    delay_time = 5;
+                    //現在の経験値から次レベルに必要な経験値の差を記憶
+                    float EndExp = (float)attackchara.nowExp - (float)attackchara.ExpPerLv;
+                    //キャラのレベルをアップ
+                    var up_list = GetComponent<LevelManager>().LevelUp(attackchara);
+                    //レベルアップ後の次レベルに必要な経験値で経験値バーのfillamountに適応する値を求める
+                    float endvalue = EndExp / (float)attackchara.ExpPerLv;
 
-            //キャラの現在の経験値が次レベルに必要な経験値を上回っていたら
-            else
-            {
-                delay_time = 5;
-                //現在の経験値から次レベルに必要な経験値の差を記憶
-                float EndExp = (float)attackchara.nowExp - (float)attackchara.ExpPerLv;
-                //キャラのレベルをアップ
-                var up_list = GetComponent<LevelManager>().LevelUp(attackchara);
-                //レベルアップ後の次レベルに必要な経験値で経験値バーのfillamountに適応する値を求める
-                float endvalue = EndExp / (float)attackchara.ExpPerLv;
+                    DOVirtual.DelayedCall(1.0f, () =>
+                    {
+                        // ウィンドウを非表示化
+                        guiManager.battleWindowUI.HideWindow();
+                        //取得経験値をアニメーション再生する経験値バーを表示
+                        guiManager.ShowGetExpWindow(attackchara);
+                        //経験値バーをアニメーション再生
+                        guiManager.moveExpbar(startvalue, 1, 0.5f);
+                    });
 
-                DOVirtual.DelayedCall(1.0f, () =>
-                {
-                    // ウィンドウを非表示化
-                    guiManager.battleWindowUI.HideWindow();
-                    //取得経験値をアニメーション再生する経験値バーを表示
-                    guiManager.ShowGetExpWindow(attackchara);
-                    //経験値バーをアニメーション再生
-                    guiManager.moveExpbar(startvalue, 1, 0.5f);
-                });
+                    DOVirtual.DelayedCall(1.6f, () =>
+                    {
+                        //経験値バーを表示するウィンドウを更新
+                        guiManager.ShowGetExpWindow(attackchara);
+                        //ステータスウィンドウを更新
+                        guiManager.ShowStatusWindow(attackchara);
+                        //経験値バーをアニメーション再生
+                        guiManager.moveExpbar(0, endvalue, 0.5f);
+                    });
 
-                DOVirtual.DelayedCall(1.6f, () =>
-                {
-                    //経験値バーを表示するウィンドウを更新
-                    guiManager.ShowGetExpWindow(attackchara);
-                    //ステータスウィンドウを更新
-                    guiManager.ShowStatusWindow(attackchara);
-                    //経験値バーをアニメーション再生
-                    guiManager.moveExpbar(0, endvalue, 0.5f);
-                });
+                    //経験値バーのアニメーション再生終了後に非表示
+                    DOVirtual.DelayedCall(2.6f, () =>
+                    {
+                        guiManager.HideGetExpWindow();
+                        guiManager.ShowLeveUpWindow(attackchara, up_list);
+                    });
 
-                //経験値バーのアニメーション再生終了後に非表示
-                DOVirtual.DelayedCall(2.6f, () =>
-                {
-                    guiManager.HideGetExpWindow();
-                    guiManager.ShowLeveUpWindow(attackchara, up_list);
-                });
-
-                DOVirtual.DelayedCall(4.5f, () =>
-                {
-                    guiManager.HideLevelUpWindow();
-                });
+                    DOVirtual.DelayedCall(4.5f, () =>
+                    {
+                        guiManager.HideLevelUpWindow();
+                    });
+                }
             }
 
             //倒したキャラクターを削除
@@ -812,7 +816,7 @@ public class GameManager : MonoBehaviour
                         charalist.Add(chara);
                 }
                 //セーブデータ
-                DataManager._instance.WriteSaveData(charalist);
+                DataManager._instance.WriteSaveData(charalist, SceneManager.GetActiveScene().name);
             }
             
 

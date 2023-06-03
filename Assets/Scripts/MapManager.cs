@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapManager : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class MapManager : MonoBehaviour
 
     // マップデータ
     public MapBlock[,] mapBlocks;
+    
+    public string SceneName;
 
     //-------------------------------------------------------------------------
 
@@ -31,6 +34,7 @@ public class MapManager : MonoBehaviour
     {
         //マップを手動で生成する場合
 
+        SceneName = SceneManager.GetActiveScene().name;
         // マップデータを初期化
         mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
 

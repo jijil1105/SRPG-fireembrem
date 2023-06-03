@@ -8525,6 +8525,9 @@ MonoBehaviour:
   blockParentobj: {fileID: 169811917}
   blockPrefab_Grass: {fileID: 5834167874720143618, guid: 37928c98a240e421f9c9db5e9501c3e8, type: 3}
   blockPrefab_Water: {fileID: 526010217631796985, guid: a48c715194adc42beb167ded66c31b7b, type: 3}
+  SceneName: 
+  MAP_WIDTH: 9
+  MAP_HEIGHT: 9
 --- !u!4 &871221859
 Transform:
   m_ObjectHideFlags: 0

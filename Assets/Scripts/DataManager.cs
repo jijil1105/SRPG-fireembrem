@@ -42,12 +42,12 @@ public class DataManager : MonoBehaviour
     /// セーブするデータをJsonFileに書き込み
     /// </summary>
     /// <param name="charactors">セーブするキャラデータ</param>
-	public void WriteSaveData(List<Charactor> charactors)
+	public void WriteSaveData(List<Charactor> charactors, string clear_scene_name)
     {
 		Debug.Log("Save Data");
 
-		//仮でシーン”Battle＿1”を保存
-		saveData.SceneName = "Battle_2";
+		//クリアしたシーンに応じて次にロードするシーン名を保存
+		Save_ClearMap(clear_scene_name);
 
 		//キャラデータをセーブデータ型のクラスに格納
 		foreach (var chara in charactors)
@@ -133,6 +133,19 @@ public class DataManager : MonoBehaviour
 		streamWriter.Write(json); streamWriter.Flush();
 		streamWriter.Close();
 	}
+
+    public void Save_ClearMap (string name)
+    {
+		if(name == "Battle_1")
+        {
+			saveData.SceneName = "Battle_2";
+        }
+		else
+        {
+			saveData.SceneName = "Delete Data";
+
+		}
+    }
 }
 
 /// <summary>
