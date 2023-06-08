@@ -8,6 +8,11 @@ public class CameraController : MonoBehaviour
     private bool isCameraRotate; // カメラ回転中フラグ
     private bool isMirror; // 回転方向反転フラグ
 
+    private bool isForward;
+    private bool isBack;
+    private bool isRight;
+    private bool isLeft;
+
     // 定数定義
     const float SPEED = 30.0f; // 回転速度
 
@@ -22,6 +27,42 @@ public class CameraController : MonoBehaviour
                 speed *= -1.0f;
 
             transform.RotateAround(Vector3.zero, Vector3.up, speed);
+        }
+
+        if(isForward)
+        {
+            float speed = SPEED * Time.deltaTime;
+
+            var velocity = Vector3.zero;
+            var rotation = transform.rotation;
+            rotation.x = 0;
+            velocity.z = speed;
+            transform.position += rotation * velocity;
+        }
+
+        if(isBack)
+        {
+            float speed = SPEED * Time.deltaTime;
+
+            var velocity = Vector3.zero;
+            var rotation = transform.rotation;
+            rotation.x = 0;
+            velocity.z = -speed;
+            transform.position += rotation * velocity;
+        }
+
+        if(isRight)
+        {
+            float speed = SPEED * Time.deltaTime;
+
+            transform.position += transform.TransformDirection(Vector3.right) * speed;
+        }
+
+        if(isLeft)
+        {
+            float speed = SPEED * Time.deltaTime;
+
+            transform.position += transform.TransformDirection(Vector3.left) * speed;
         }
     }
 
@@ -42,5 +83,49 @@ public class CameraController : MonoBehaviour
     public void CameraRotate_End()
     {
         isCameraRotate = false;
+    }
+
+    public void CameraMove_Start(string dir)
+    {
+        switch(dir)
+        {
+            case "isForward":
+                isForward = true;
+                break;
+
+            case "isBack":
+                isBack = true;
+                break; 
+
+            case "isRight":
+                isRight = true;
+                break; 
+
+            case "isLeft":
+                isLeft = true;
+                break; 
+        }
+    }
+
+    public void CameraMove_End(string dir)
+    {
+        switch (dir)
+        {
+            case "isForward":
+                isForward = false;
+                break;
+
+            case "isBack":
+                isBack = false;
+                break;
+
+            case "isRight":
+                isRight = false;
+                break;
+
+            case "isLeft":
+                isLeft = false;
+                break;
+        }
     }
 }

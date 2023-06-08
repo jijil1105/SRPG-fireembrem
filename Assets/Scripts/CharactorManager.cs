@@ -18,6 +18,8 @@ public class CharactorManager : MonoBehaviour
     [SerializeField]
     public CharaDatas[] charaObjs;
 
+    public List<Vector3> initPos = new List<Vector3>();
+
     //-------------------------------------------------------------------------
 
     // Start is called before the first frame update
@@ -65,9 +67,18 @@ public class CharactorManager : MonoBehaviour
 		            public int ExpPerLv;//次のレベルに必要な経験値
                     */
 
-                    obj.GetComponent<Charactor>().initPos_X = initX;
-                    obj.GetComponent<Charactor>().initPos_Z = initZ;
-                    initX++;
+                    if(initPos.Count>0)
+                    {
+                        obj.GetComponent<Charactor>().initPos_X = ((int)initPos[i].x);
+                        obj.GetComponent<Charactor>().initPos_Z = ((int)initPos[i].z);
+                    }
+                    else
+                    {
+                        obj.GetComponent<Charactor>().initPos_X = initX;
+                        obj.GetComponent<Charactor>().initPos_Z = initZ;
+                        initX++;
+                    }
+                    
 
                     Instantiate(obj , charactorParent);
                 }
@@ -106,6 +117,8 @@ public class CharactorManager : MonoBehaviour
     {
         Charactors.Remove(charadata);
 
+        DataManager._instance.DeleteCharaData(charadata);
+        
         // オブジェクト削除を攻撃完了後に処理させる為に遅延実行
         DOVirtual.DelayedCall(0.5f, () => { Destroy(charadata.gameObject); });
 

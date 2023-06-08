@@ -75,13 +75,9 @@ public class GameManager : MonoBehaviour
         mapManager = GetComponent<MapManager>();//
         charactorManager = GetComponent<CharactorManager>();
         guiManager = GetComponent<GUIManager>();
-        //clevelManager = GetComponent<LevelManager>();
-
         reachableBlocks = new List<MapBlock>();
         attackableBlocks = new List<MapBlock>();
-
         nowPhase = Phase.Myturn_Start;
-
         AudioManager.instance.Play("BGM_1");
     }
 

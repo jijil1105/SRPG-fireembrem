@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using LitJson;
 
 public class MapManager : MonoBehaviour
 {
@@ -10,6 +11,7 @@ public class MapManager : MonoBehaviour
     public GameObject blockParentobj;
     public GameObject blockPrefab_Grass; // 草ブロック
     public GameObject blockPrefab_Water; // 水場ブロック
+    public GameObject blockPrefab_Null;
 
     //-------------------------------------------------------------------------
 
@@ -17,6 +19,25 @@ public class MapManager : MonoBehaviour
     public MapBlock[,] mapBlocks;
     
     public string SceneName;
+    public enum MapTyape
+    {
+        Random,
+        Manual,
+        JsonFile
+    }
+
+    public class Map_Data_Class
+    {
+        public List<int> block_vlue = new List<int>();
+        public List<int> block_pos_x = new List<int>();
+        public List<int> block_pos_y = new List<int>();
+        public int Width;
+        public int Height;
+    }
+
+    public Map_Data_Class map_data_class;
+    public MapTyape mapTyape;
+    public TextAsset Map_Data;
 
     //-------------------------------------------------------------------------
 
@@ -26,81 +47,160 @@ public class MapManager : MonoBehaviour
     [SerializeField]
     public int MAP_HEIGHT = 9;// マップの縦(奥行)の幅
     [SerializeField]
-    //private int GENERATE_RATIO_GRASS = 80;// 草ブロックが生成される確率
+    private int GENERATE_RATIO_GRASS = 80;// 草ブロックが生成される確率
 
     //-------------------------------------------------------------------------
 
     void Start()
     {
-        //マップを手動で生成する場合
-
         SceneName = SceneManager.GetActiveScene().name;
-        // マップデータを初期化
-        mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
 
-        //手動で配置したブロックを取得
-        var objs = blockParentobj.GetComponentsInChildren<MapBlock>();
-
-        // ブロック生成位置の基点となる座標を設定
-        Vector3 defaultPos = new Vector3(0.0f, 0.0f, 0.0f);
-        defaultPos.x = -(MAP_WIDTH / 2);
-        defaultPos.z = -(MAP_HEIGHT / 2);
-
-        int index = 0;
-
-        //取得したブロックを２次元配列で管理して２次元座標と比較しやすくする
-        for (int i = 0; i < MAP_WIDTH; i++)
+        if(mapTyape == MapTyape.Manual)
         {
-            for(int j = 0; j < MAP_HEIGHT; j++)
-            {
-                Vector3 pos = defaultPos;
-                pos.x += i;
-                pos.z += j;
+            //マップを手動で生成する場合
 
-                mapBlocks[i, j] = objs[index];
-                mapBlocks[i, j].transform.position = pos;
-                mapBlocks[i, j].XPos = (int)pos.x;
-                mapBlocks[i, j].ZPos = (int)pos.z;
-                if (index < (MAP_WIDTH * MAP_HEIGHT))
-                    index++;
+            // マップデータを初期化
+            mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
+
+            //手動で配置したブロックを取得
+            var objs = blockParentobj.GetComponentsInChildren<MapBlock>();
+
+            // ブロック生成位置の基点となる座標を設定
+            Vector3 defaultPos = new Vector3(0.0f, 0.0f, 0.0f);
+            defaultPos.x = -(MAP_WIDTH / 2);
+            defaultPos.z = -(MAP_HEIGHT / 2);
+
+            int index = 0;
+
+            //取得したブロックを２次元配列で管理して２次元座標と比較しやすくする
+            for (int i = 0; i < MAP_WIDTH; i++)
+            {
+                for (int j = 0; j < MAP_HEIGHT; j++)
+                {
+                    Vector3 pos = defaultPos;
+                    pos.x += i;
+                    pos.z += j;
+
+                    mapBlocks[i, j] = objs[index];
+                    mapBlocks[i, j].transform.position = pos;
+                    mapBlocks[i, j].XPos = (int)pos.x;
+                    mapBlocks[i, j].ZPos = (int)pos.z;
+                    if (index < (MAP_WIDTH * MAP_HEIGHT))
+                        index++;
+                }
             }
         }
 
         //-------------------------------------------------------------------------
-        //マップをランダムで生成する場合
 
-        /*// ブロック生成処理
-        for (int i = 0; i < MAP_WIDTH; i++)
+        if(mapTyape==MapTyape.Random)
         {
-            for (int j = 0; j < MAP_HEIGHT; j++)
+            //マップをランダムで生成する場合
+
+            // マップデータを初期化
+            mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
+
+            // ブロック生成位置の基点となる座標を設定
+            Vector3 defaultPos = new Vector3(0.0f, 0.0f, 0.0f);
+            defaultPos.x = -(MAP_WIDTH / 2);
+            defaultPos.z = -(MAP_HEIGHT / 2);
+
+            // ブロック生成処理
+            for (int i = 0; i < MAP_WIDTH; i++)
             {
-                Vector3 pos = defaultPos;
-                pos.x += i;
-                pos.z += j;
+                for (int j = 0; j < MAP_HEIGHT; j++)
+                {
+                    Vector3 pos = defaultPos;
+                    pos.x += i;
+                    pos.z += j;
 
-                // ブロックの種類を決定
-                int rand = Random.Range(0, 100);
-                bool isGrass = false;
+                    // ブロックの種類を決定
+                    int rand = Random.Range(0, 100);
+                    bool isGrass = false;
 
-                if (rand < GENERATE_RATIO_GRASS) { isGrass = true; }
+                    if (rand < GENERATE_RATIO_GRASS) { isGrass = true; }
 
+                    GameObject obj;
+
+                    if (isGrass) { obj = Instantiate(blockPrefab_Grass, blockParent); }// blockParentの子に草ブロックを生成
+
+                    else { obj = Instantiate(blockPrefab_Water, blockParent); }// blockParentの子に水場ブロックを生成
+
+                    obj.transform.position = pos;
+
+                    // 配列mapBlocksにブロックデータを格納
+                    var mapBlock = obj.GetComponent<MapBlock>();
+                    mapBlocks[i, j] = mapBlock;
+
+                    // ブロックデータ設定
+                    mapBlock.XPos = (int)pos.x;
+                    mapBlock.ZPos = (int)pos.z;
+                }
+            }
+        }
+
+        //-------------------------------------------------------------------------
+
+        if(mapTyape == MapTyape.JsonFile)
+        {
+            //マップをJsonFileで生成する場合
+
+            string jsonstr = Map_Data.ToString();
+
+            map_data_class = JsonMapper.ToObject<Map_Data_Class>(jsonstr);
+
+            MAP_WIDTH = map_data_class.Width;
+            MAP_HEIGHT = map_data_class.Height;
+
+            // マップデータを初期化
+            mapBlocks = new MapBlock[MAP_WIDTH, MAP_HEIGHT];
+
+            // ブロック生成位置の基点となる座標を設定
+            Vector3 defaultPos = new Vector3(0.0f, 0.0f, 0.0f);
+            defaultPos.x = -(MAP_WIDTH / 2);
+            defaultPos.z = -(MAP_HEIGHT / 2);
+
+            int p = 0;
+            int j = 0;
+
+            for (int i = 0; i < map_data_class.block_vlue.Count; i++)
+            {
                 GameObject obj;
 
-                if (isGrass) { obj = Instantiate(blockPrefab_Grass, blockParent); }// blockParentの子に草ブロックを生成
+                Vector3 obj_pos = new Vector3(map_data_class.block_pos_x[i], 0, map_data_class.block_pos_y[i]);
 
-                else { obj = Instantiate(blockPrefab_Water, blockParent); }// blockParentの子に水場ブロックを生成
+                obj_pos.x += defaultPos.x;
+                obj_pos.z += defaultPos.z;
 
-                obj.transform.position = pos;
+                if (map_data_class.block_vlue[i] == 0)
+                    obj = Instantiate(blockPrefab_Null, blockParent);
+                else if (map_data_class.block_vlue[i] == 1)
+                    obj = Instantiate(blockPrefab_Grass, blockParent);
+                else if (map_data_class.block_vlue[i] == 2)
+                    obj = Instantiate(blockPrefab_Water, blockParent);
+                else
+                    obj = Instantiate(blockPrefab_Null, blockParent);
+
+                obj.transform.position = obj_pos;
 
                 // 配列mapBlocksにブロックデータを格納
                 var mapBlock = obj.GetComponent<MapBlock>();
-                mapBlocks[i, j] = mapBlock;
+                mapBlocks[p, j] = mapBlock;
 
                 // ブロックデータ設定
-                mapBlock.XPos = (int)pos.x;
-                mapBlock.ZPos = (int)pos.z;
+                mapBlock.XPos = (int)obj_pos.x;
+                mapBlock.ZPos = (int)obj_pos.z;
+
+                if (j < MAP_HEIGHT-1)
+                    j++;
+                else
+                    j = 0;
+
+                if (j == 0)
+                    p++;
             }
-        }*/
+        }
+
     }
 
     //-------------------------------------------------------------------------

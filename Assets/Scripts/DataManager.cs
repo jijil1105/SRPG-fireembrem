@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using LitJson;
+using System.Linq;
 
 public class DataManager : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class DataManager : MonoBehaviour
 	public static DataManager _instance;
 
 	string filePath;//セーブデータを書き込むパス
+
+	[SerializeField]
 	private SaveData saveData;//セーブするデータ
 
 	private void Awake()
@@ -33,6 +36,7 @@ public class DataManager : MonoBehaviour
 		//Debug.Log(Save_HP + ":" + Save_Atk + ":" + Save_Def);
 	}
 
+	
 	public SaveData GetSaveData()
     {
 		return saveData;
@@ -52,19 +56,47 @@ public class DataManager : MonoBehaviour
 		//キャラデータをセーブデータ型のクラスに格納
 		foreach (var chara in charactors)
         {
-			saveData.name.Add(chara.charaName);
-			saveData.maxHp.Add(chara.maxHP);
-			saveData.atk.Add(chara.atk);
-			saveData.def.Add(chara.def);
-			saveData.Int.Add(chara.Int);
-			saveData.res.Add(chara.Res);
-			saveData.atrr.Add(chara.attribute);
-			saveData.movetype.Add(chara.moveType);
-			saveData.skill.Add(chara.skill);
-			saveData.isMagicAttack.Add(chara.isMagicAttac);
-			saveData.Lv.Add(chara.Lv);
-			saveData.nowExp.Add(chara.nowExp);
-			saveData.ExpPerLv.Add(chara.ExpPerLv);
+			var chara_name = saveData.name.FirstOrDefault(name => name == chara.charaName);
+
+			if(chara_name == null)
+            {
+				saveData.name.Add(chara.charaName);
+				saveData.maxHp.Add(chara.maxHP);
+				saveData.atk.Add(chara.atk);
+				saveData.def.Add(chara.def);
+				saveData.Int.Add(chara.Int);
+				saveData.res.Add(chara.Res);
+				saveData.atrr.Add(chara.attribute);
+				saveData.movetype.Add(chara.moveType);
+				saveData.skill.Add(chara.skill);
+				saveData.isMagicAttack.Add(chara.isMagicAttac);
+				saveData.Lv.Add(chara.Lv);
+				saveData.nowExp.Add(chara.nowExp);
+				saveData.ExpPerLv.Add(chara.ExpPerLv);
+			}
+			else
+            {
+				for(int i = 0; i < saveData.name.Count; i++)
+                {
+					if(saveData.name[i]==chara_name)
+                    {
+						saveData.name[i] = chara.charaName;
+						saveData.maxHp[i] = chara.maxHP;
+						saveData.atk[i] = chara.atk;
+						saveData.def[i] = chara.def;
+						saveData.Int[i] = chara.Int;
+						saveData.res[i] = chara.Res;
+						saveData.atrr[i] = chara.attribute;
+						saveData.movetype[i] = chara.moveType;
+						saveData.skill[i] = chara.skill;
+						saveData.isMagicAttack[i] = chara.isMagicAttac;
+						saveData.Lv[i] = chara.Lv;
+						saveData.nowExp[i] = chara.nowExp;
+						saveData.ExpPerLv[i] = chara.ExpPerLv;
+						break;
+                    }
+                }
+            }
         }
 /*
 		public string charaName;//キャラ名
@@ -134,16 +166,49 @@ public class DataManager : MonoBehaviour
 		streamWriter.Close();
 	}
 
+	public void DeleteCharaData(Charactor chara)
+    {
+		var chara_name = saveData.name.FirstOrDefault(name => name == chara.charaName);
+
+		if (chara_name != null)
+		{
+			for (int i = 0; i < saveData.name.Count; i++)
+			{
+				if (saveData.name[i] == chara_name)
+				{
+					saveData.name.RemoveAt(i);
+					saveData.maxHp.RemoveAt(i);
+					saveData.atk.RemoveAt(i);
+					saveData.def.RemoveAt(i);
+					saveData.Int.RemoveAt(i);
+					saveData.res.RemoveAt(i);
+					saveData.atrr.RemoveAt(i);
+					saveData.movetype.RemoveAt(i);
+					saveData.skill.RemoveAt(i);
+					saveData.isMagicAttack.RemoveAt(i);
+					saveData.Lv.RemoveAt(i);
+					saveData.nowExp.RemoveAt(i);
+					saveData.ExpPerLv.RemoveAt(i);
+					break;
+				}
+			}
+		}
+	}
+
     public void Save_ClearMap (string name)
     {
 		if(name == "Battle_1")
         {
 			saveData.SceneName = "Battle_2";
         }
+		else if(name == "Battle_2")
+        {
+			saveData.SceneName = "Battle_3";
+
+		}
 		else
         {
 			saveData.SceneName = "Delete Data";
-
 		}
     }
 }
@@ -151,7 +216,7 @@ public class DataManager : MonoBehaviour
 /// <summary>
 /// セーブデータクラス
 /// </summary>
-[SerializeField]
+[System.Serializable]
 public class SaveData
 {
 	public string SceneName;
