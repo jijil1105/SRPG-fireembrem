@@ -35,6 +35,7 @@ public class LoadScene : MonoBehaviour
         DataManager._instance.DeleteData();
 
         //最初のマップに遷移
+        //SceneManager.LoadScene("Battle_1");
         SceneManager.LoadScene("Battle_1");
     }
 

@@ -157,6 +157,7 @@ public class DataManager : MonoBehaviour
 
 		saveData = new SaveData();
 		saveData.SceneName = "Delete Data";
+		
 
 		string json = LitJson.JsonMapper.ToJson(saveData);
 
@@ -204,6 +205,11 @@ public class DataManager : MonoBehaviour
 		else if(name == "Battle_2")
         {
 			saveData.SceneName = "Battle_3";
+
+		}
+		else if(name == "Battle_3")
+        {
+			saveData.SceneName = "Battle_4";
 
 		}
 		else
