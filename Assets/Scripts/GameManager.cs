@@ -67,6 +67,9 @@ public class GameManager : MonoBehaviour
     private Phase nowPhase;//現在の進行モード
 
     //------------------------------------------------------------------------
+   
+
+    //------------------------------------------------------------------------
 
     //変数の初期化
 
@@ -79,6 +82,12 @@ public class GameManager : MonoBehaviour
         attackableBlocks = new List<MapBlock>();
         nowPhase = Phase.Myturn_Start;
         AudioManager.instance.Play("BGM_1");
+
+        DOVirtual.DelayedCall(0.05f, () =>
+        {
+            var chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+            Camera.main.GetComponent<CameraController>().get_chara_subject.OnNext(chara);
+        });
     }
 
     //-------------------------------------------------------------------------
@@ -329,6 +338,9 @@ public class GameManager : MonoBehaviour
                         charaData.SetInCapacitited(false);
 
                     ChangePhase(Phase.Myturn_Start);
+
+                    var chara_data = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+                    Camera.main.GetComponent<CameraController>().get_chara_subject.OnNext(chara_data);
                     return;
                 }
 
@@ -684,14 +696,14 @@ public class GameManager : MonoBehaviour
 
         // 攻撃可能な相手が見つからなかった場合
         // 移動させる１体をランダムに選ぶ
-        int randValue = Random.Range(0, enemycharas.Count);
+        int randValue = UnityEngine.Random.Range(0, enemycharas.Count);
         var chara = enemycharas[randValue];
 
         // 対象の移動可能場所リストの中から1つの場所をランダムに選ぶ
         reachableBlocks = mapManager.SearchReachableBlocks(chara.XPos, chara.ZPos);
         if(reachableBlocks.Count > 0)
         {
-            randValue = Random.Range(0, reachableBlocks.Count-1);
+            randValue = UnityEngine.Random.Range(0, reachableBlocks.Count-1);
             MapBlock toMoveblock = reachableBlocks[randValue];// 移動対象のブロックデータ
             chara.MovePosition(toMoveblock.XPos, toMoveblock.ZPos);// 敵キャラクター移動処理
         }

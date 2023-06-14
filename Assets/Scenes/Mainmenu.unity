@@ -839,6 +839,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d06b2de39779541cab334924518fdb22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveData:
+    SceneName: 
+    name: []
+    maxHp: 
+    atk: 
+    def: 
+    Int: 
+    res: 
+    atrr: 
+    movetype: 
+    skill: 
+    isMagicAttack: 
+    Lv: 
+    nowExp: 
+    ExpPerLv: 
+    chara_sprite: []
 --- !u!4 &1676727740
 Transform:
   m_ObjectHideFlags: 0

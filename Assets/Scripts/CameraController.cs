@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using UniRx;
 
 public class CameraController : MonoBehaviour
 {
@@ -15,6 +17,23 @@ public class CameraController : MonoBehaviour
 
     // 定数定義
     const float SPEED = 30.0f; // 回転速度
+
+    [SerializeField]
+    public Vector3 offset = Vector3.zero;
+
+    private Subject<Charactor> chara_subject = new Subject<Charactor>();
+
+    public Subject<Charactor> get_chara_subject
+    {
+        get { return chara_subject; }
+    }
+
+    private void Start()
+    {
+        offset = this.transform.position - Vector3.zero;
+
+        chara_subject.Subscribe(chara => this.transform.position = chara.transform.position + offset);
+    }
 
     void Update()
     {

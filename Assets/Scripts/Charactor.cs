@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UniRx;
+using System;
 
 public class Charactor : MonoBehaviour
 {
@@ -79,6 +81,8 @@ public class Charactor : MonoBehaviour
     //Main Camera
     private Camera MainCamera;
 
+    bool following_to_chara;
+
     //-------------------------------------------------------------------------
 
     void Start()
@@ -98,6 +102,8 @@ public class Charactor : MonoBehaviour
 
         //Set camera from MainCamera
         MainCamera = Camera.main;
+
+        following_to_chara = false;
     }
 
     //-------------------------------------------------------------------------
@@ -110,6 +116,11 @@ public class Charactor : MonoBehaviour
         camerPos.y = transform.position.y;
         transform.LookAt(MainCamera.transform);
         //MainCamera.transform.LookAt(this.transform);
+
+        if(following_to_chara&&isEnemy)
+        {
+            MainCamera.GetComponent<CameraController>().get_chara_subject.OnNext(this);
+        }
     }
 
     //-------------------------------------------------------------------------
@@ -121,6 +132,8 @@ public class Charactor : MonoBehaviour
 	/// <param name="targetZPos">z座標</param>
     public void MovePosition(int targetXPos, int targetZPos)
     {
+        following_to_chara = true;
+
         Vector3 movePos = Vector3.zero;
         movePos.x = targetXPos - XPos;
         movePos.z = targetZPos - ZPos;
@@ -131,6 +144,11 @@ public class Charactor : MonoBehaviour
         // キャラクターデータに位置を保存
         XPos = targetXPos;
         ZPos = targetZPos;
+
+        DOVirtual.DelayedCall(0.5f, () =>
+        {
+            following_to_chara = false;
+        });
     }
 
     /// <summary>
