@@ -1,51 +1,65 @@
 Shader "Custom/Toon_Shadeer"
 {
-    Properties
-    {
-        _Color ("Color", Color) = (1,1,1,1)
-        _MainTex ("Albedo (RGB)", 2D) = "white" {}
-        _RampTex ("Ramp", 2D) = "white" {}
+    // プロパティ
+    Properties {
+        // ベースとなる色
+        _Color("Color", Color) = (1, 1, 1, 1)
+        // メインテクスチャ
+        _MainTex("Albedo(RGB)", 2D) = "white" {}
+        // rampテクスチャ
+        _RampTex("Ramp", 2D) = "white" {}
     }
-    SubShader
-    {
-        Tags { "RenderType"="Opaque" }
+
+    // Shaderの中身を記述
+    SubShader {
+        // 一般的なShaderを使用
+        Tags {"RenderType" = "Opaque"}
+        // しきい値
         LOD 200
 
+        // cg言語記述
         CGPROGRAM
-        // Physically based Standard lighting model, and enable shadows on all light types
+        // メソッド名がLightingToonRampのカスタムライティング宣言
         #pragma surface surf ToonRamp
-
-        // Use shader model 3.0 target, to get nicer looking lighting
+        // Shader Model
         #pragma target 3.0
 
+        // メインテクスチャ
         sampler2D _MainTex;
+        // rampテクスチャ
         sampler2D _RampTex;
 
-        struct Input
-        {
+        // input構造体
+        struct Input {
+            // uv座標
             float2 uv_MainTex;
         };
 
+        // ベースとなる色
         fixed4 _Color;
 
-        fixed4 LightingToonRamp (SurfaceOutput s, fixed3 lightDir, fixed atten)
-        {
-            half d = dot(s.Normal, lightDir)*0.5 + 0.5;
-            fixed3 ramp = tex2D(_RampTex, fixed2(d, 0.5)).rgb;
+        // カスタムライティング
+        fixed4 LightingToonRamp(SurfaceOutput s, fixed3 lightDir, fixed atten) {
+            // 内積を取得
+            half diff = dot(s.Normal, lightDir);
+            // rampテクスチャのuv値を取得
+            fixed3 ramp = tex2D(_RampTex, fixed2(diff, diff)).rgb;
+            // rampテクスチャのuv値から色を取得
             fixed4 c;
-            c.rgb = s.Albedo * _LightColor0.rgb * ramp;
-            c.a = 0;
+            c.rgb = s.Albedo * _LightColor0.rgb * ramp * atten;
+            c.a = s.Alpha;
             return c;
         }
 
-        void surf (Input IN, inout SurfaceOutput o)
-        {
-            fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
+        // surf関数
+        void surf(Input IN, inout SurfaceOutput o) {
+            fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c.rgb;
             o.Alpha = c.a;
         }
-
+        // Shaderの記述終了
         ENDCG
     }
-    FallBack "Diffuse"
+    // SubShaderが失敗した時に呼ばれる
+    Fallback "Diffuse"
 }
