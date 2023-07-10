@@ -1,4 +1,4 @@
-Shader "Custom/NewSurfaceShader"
+Shader "Custom/stainsill_buffer_shader"
 {
     Properties
     {

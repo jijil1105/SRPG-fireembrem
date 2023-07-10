@@ -2,13 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System;
+using UniRx;
 
 public class LoadScene : MonoBehaviour
 {
+    private Subject<string> subject = new Subject<string>();
+
+    public Subject<string> OnInitializedAsync
+    {
+        get { return subject; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        OnInitializedAsync
+        .Select(str => int.Parse(str))
+        .OnErrorRetry((FormatException error)=>
+        {
+            Debug.Log("Resubscribe because Error Occurred");
+        })
+        .Subscribe(
+            x => Debug.Log("succes : " + x),
+            ex => Debug.Log("exception : " + ex),
+            () => Debug.Log("OnCompleted"));
     }
 
     // Update is called once per frame
@@ -50,7 +68,11 @@ public class LoadScene : MonoBehaviour
         //セーブデータからキャラステータス反映（仮）、セーブデータに保存されているマップへ遷移
         if (data != null && data.SceneName != "Delete Data")
         {
-            Debug.Log(data.SceneName);
+            OnInitializedAsync.OnNext("1");
+            OnInitializedAsync.OnNext("2");
+            OnInitializedAsync.OnNext(data.SceneName);
+            OnInitializedAsync.OnNext("4");
+            OnInitializedAsync.OnCompleted();
 
             for(int i = 0; i < data.atk.Count; i++)
             {
