@@ -14,19 +14,40 @@ public class LoadScene : MonoBehaviour
         get { return subject; }
     }
 
+    IDisposable disposable1;
+    IDisposable disposable2;
+
     // Start is called before the first frame update
     void Start()
     {
-        OnInitializedAsync
-        .Select(str => int.Parse(str))
-        .OnErrorRetry((FormatException error)=>
-        {
-            Debug.Log("Resubscribe because Error Occurred");
-        })
-        .Subscribe(
-            x => Debug.Log("succes : " + x),
-            ex => Debug.Log("exception : " + ex),
-            () => Debug.Log("OnCompleted"));
+        disposable1 = OnInitializedAsync
+            .Select(str => int.Parse(str))
+            .OnErrorRetry((FormatException error)=>
+            {
+                Debug.Log("1 : Resubscribe because Error Occurred");
+            })
+            .Subscribe(
+                x => Debug.Log("1 : succes : " + x),
+                ex => Debug.Log("1 : exception : " + ex),
+                () => Debug.Log("1 : OnCompleted")
+            );
+
+        disposable2 = OnInitializedAsync
+            .Select
+            (
+                str => int.Parse(str)
+            )
+            .OnErrorRetry((FormatException error) =>
+            {
+                Debug.Log("2 : Resubscribe because Error Occurred");
+            })
+            .Subscribe
+            (
+                x => Debug.Log("2 : success : " + x),
+                ex => Debug.Log("2 : exception : " + ex),
+                () => Debug.Log("2: Oncompleted")
+            ); 
+
     }
 
     // Update is called once per frame
@@ -71,6 +92,7 @@ public class LoadScene : MonoBehaviour
             OnInitializedAsync.OnNext("1");
             OnInitializedAsync.OnNext("2");
             OnInitializedAsync.OnNext(data.SceneName);
+            disposable1.Dispose();
             OnInitializedAsync.OnNext("4");
             OnInitializedAsync.OnCompleted();
 
