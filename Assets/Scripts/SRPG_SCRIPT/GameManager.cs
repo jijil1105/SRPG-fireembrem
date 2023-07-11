@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;*/
 
+    
     //-------------------------------------------------------------------------
     //各マネージャークラスの宣言
 
@@ -204,7 +205,7 @@ public class GameManager : MonoBehaviour
                     //選択ブロックのデバッグ出力
                     Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
                 }
-
+                
                 break;
 
             //自分のターン：移動先選択中
