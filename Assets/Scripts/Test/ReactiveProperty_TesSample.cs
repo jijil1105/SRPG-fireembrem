@@ -31,13 +31,28 @@ public class ReactiveProperty_TesSample : MonoBehaviour
 
         rp.Value = 30;
 
-        rp.Subscribe(x => Debug.Log(x));
+        rp.SetValueAndForceNotify(30);
+
+        rp.Subscribe(x => Debug.Log(x)).AddTo(gameObject);
+
+//--------------------------------------------------------------------------------        
+
+        playerHealth.Subscribe(x => Debug.Log("IntType : " + x)).AddTo(gameObject);
+
+//--------------------------------------------------------------------------------        
+
+        playerHealth.Where(x => x >= 120 && x <= 200).DistinctUntilChanged().Subscribe(x =>
+            {
+                Debug.Log("JJJJJJJJ : " + x);
+            }).AddTo(gameObject);
 
         //--------------------------------------------------------------------------------
 
-        playerHealth.Subscribe(x => Debug.Log("IntType : " + x));
+        playerHealth.Where(x => x >= 200).Subscribe(x =>
+        {
+            Destroy(gameObject);
+        }).AddTo(gameObject);
 
-//--------------------------------------------------------------------------------
 
     }
 
@@ -47,6 +62,9 @@ public class ReactiveProperty_TesSample : MonoBehaviour
         if(Input.GetKey(KeyCode.A))
         {
             samplereactive.Value += 10;
+            playerHealth.Value++;
+
         }
+        samplereactive.SetValueAndForceNotify(30);
     }
 }
