@@ -284,8 +284,6 @@ public class MapManager : MonoBehaviour
                 for (int i = baseX - 1, j = baseZ - 1; i >= 0 && j >= 0; i--, j--)
                     if (AddReachableList(results, mapBlocks[i, j]))
                         break;
-
-
             }
         }
 

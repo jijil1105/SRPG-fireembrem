@@ -46,6 +46,7 @@ public class DataManager : MonoBehaviour
     /// セーブするデータをJsonFileに書き込み
     /// </summary>
     /// <param name="charactors">セーブするキャラデータ</param>
+    /// <param name="clear_scene_name">クリアしたシーン名</param>
 	public void WriteSaveData(List<Charactor> charactors, string clear_scene_name)
     {
 		Debug.Log("Save Data");
@@ -167,6 +168,10 @@ public class DataManager : MonoBehaviour
 		streamWriter.Close();
 	}
 
+	/// <summary>
+    /// 
+    /// </summary>
+    /// <param name="chara"></param>
 	public void DeleteCharaData(Charactor chara)
     {
 		var chara_name = saveData.name.FirstOrDefault(name => name == chara.charaName);

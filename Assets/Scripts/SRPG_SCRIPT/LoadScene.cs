@@ -7,46 +7,9 @@ using UniRx;
 
 public class LoadScene : MonoBehaviour
 {
-    private Subject<string> subject = new Subject<string>();
-
-    public Subject<string> OnInitializedAsync
-    {
-        get { return subject; }
-    }
-
-    IDisposable disposable1;
-    IDisposable disposable2;
-
     // Start is called before the first frame update
     void Start()
     {
-        disposable1 = OnInitializedAsync
-            .Select(str => int.Parse(str))
-            .OnErrorRetry((FormatException error)=>
-            {
-                Debug.Log("1 : Resubscribe because Error Occurred");
-            })
-            .Subscribe(
-                x => Debug.Log("1 : succes : " + x),
-                ex => Debug.Log("1 : exception : " + ex),
-                () => Debug.Log("1 : OnCompleted")
-            );
-
-        disposable2 = OnInitializedAsync
-            .Select
-            (
-                str => int.Parse(str)
-            )
-            .OnErrorRetry((FormatException error) =>
-            {
-                Debug.Log("2 : Resubscribe because Error Occurred");
-            })
-            .Subscribe
-            (
-                x => Debug.Log("2 : success : " + x),
-                ex => Debug.Log("2 : exception : " + ex),
-                () => Debug.Log("2: Oncompleted")
-            ); 
 
     }
 
@@ -89,13 +52,6 @@ public class LoadScene : MonoBehaviour
         //セーブデータからキャラステータス反映（仮）、セーブデータに保存されているマップへ遷移
         if (data != null && data.SceneName != "Delete Data")
         {
-            OnInitializedAsync.OnNext("1");
-            OnInitializedAsync.OnNext("2");
-            OnInitializedAsync.OnNext(data.SceneName);
-            disposable1.Dispose();
-            OnInitializedAsync.OnNext("4");
-            OnInitializedAsync.OnCompleted();
-
             for(int i = 0; i < data.atk.Count; i++)
             {
                 Debug.Log(
