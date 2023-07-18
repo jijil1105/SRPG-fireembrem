@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using DG.Tweening;
+using Photon.Pun;
 
 public class CharactorManager : MonoBehaviour
 {
@@ -20,75 +21,168 @@ public class CharactorManager : MonoBehaviour
 
     public List<Vector3> initPos = new List<Vector3>();
 
+    [SerializeField]
+    private bool isMulti;
+
     //-------------------------------------------------------------------------
 
     // Start is called before the first frame update
     void Start()
     {
-        if (DataManager._instance.GetSaveData().SceneName != "Delete Data")
+        switch(isMulti)
         {
-            SaveData SaveData = DataManager._instance.GetSaveData();
-            if (SaveData != null)
-            {
-                int initX = -1;
-                int initZ = -4;
-                for(int i = 0; i < SaveData.name.Count(); i++)
+            case true :
+
+                if (DataManager._instance.GetSaveData().SceneName != "Delete Data")
                 {
-                    var obj = GetCharaObj(SaveData.name[i]);
-
-                    obj.GetComponent<Charactor>().name = SaveData.name[i];
-                    obj.GetComponent<Charactor>().maxHP = SaveData.maxHp[i];
-                    obj.GetComponent<Charactor>().atk = SaveData.atk[i];
-                    obj.GetComponent<Charactor>().def = SaveData.def[i];
-                    obj.GetComponent<Charactor>().Int = SaveData.Int[i];
-                    obj.GetComponent<Charactor>().Res = SaveData.res[i];
-                    obj.GetComponent<Charactor>().attribute = SaveData.atrr[i];
-                    obj.GetComponent<Charactor>().moveType = SaveData.movetype[i];
-                    obj.GetComponent<Charactor>().skill = SaveData.skill[i];
-                    obj.GetComponent<Charactor>().isMagicAttac = SaveData.isMagicAttack[i];
-
-                    obj.GetComponent<Charactor>().Lv = SaveData.Lv[i];
-                    obj.GetComponent<Charactor>().nowExp = SaveData.nowExp[i];
-                    obj.GetComponent<Charactor>().ExpPerLv = SaveData.ExpPerLv[i];
-                    /*
-		            public string charaName;//キャラ名
-		            public int maxHP;//最大Hp
-		            public int atk;//物理攻撃力
-		            public int def;//物理防御力
-		            public int Int;//魔法攻撃力
-		            public int Res;//魔法防御力
-		            public Attribute attribute;// 属性
-		            public MoveType moveType;//移動タイプ
-		            public SkillDefine.Skill skill;//スキル
-		            public bool isMagicAttac;//魔法攻撃flg
-
-		            public int Lv;//レベル
-		            public int nowExp;//現在の経験値
-		            public int ExpPerLv;//次のレベルに必要な経験値
-                    */
-
-                    if(initPos.Count>0)
+                    SaveData SaveData = DataManager._instance.GetSaveData();
+                    if (SaveData != null)
                     {
-                        obj.GetComponent<Charactor>().initPos_X = ((int)initPos[i].x);
-                        obj.GetComponent<Charactor>().initPos_Z = ((int)initPos[i].z);
-                    }
-                    else
-                    {
-                        obj.GetComponent<Charactor>().initPos_X = initX;
-                        obj.GetComponent<Charactor>().initPos_Z = initZ;
-                        initX++;
-                    }
-                    
+                        int initX = -1;
+                        int initZ = -4;
+                        for (int i = 0; i < SaveData.name.Count(); i++)
+                        {
+                            var obj = GetCharaObj(SaveData.name[i]);
 
-                    Instantiate(obj , charactorParent);
+                            obj.GetComponent<Charactor>().charaName = SaveData.name[i];
+                            obj.GetComponent<Charactor>().maxHP = SaveData.maxHp[i];
+                            obj.GetComponent<Charactor>().atk = SaveData.atk[i];
+                            obj.GetComponent<Charactor>().def = SaveData.def[i];
+                            obj.GetComponent<Charactor>().Int = SaveData.Int[i];
+                            obj.GetComponent<Charactor>().Res = SaveData.res[i];
+                            obj.GetComponent<Charactor>().attribute = SaveData.atrr[i];
+                            obj.GetComponent<Charactor>().moveType = SaveData.movetype[i];
+                            obj.GetComponent<Charactor>().skill = SaveData.skill[i];
+                            obj.GetComponent<Charactor>().isMagicAttac = SaveData.isMagicAttack[i];
+
+                            obj.GetComponent<Charactor>().Lv = SaveData.Lv[i];
+                            obj.GetComponent<Charactor>().nowExp = SaveData.nowExp[i];
+                            obj.GetComponent<Charactor>().ExpPerLv = SaveData.ExpPerLv[i];
+                            /*
+                            public string charaName;//キャラ名
+                            public int maxHP;//最大Hp
+                            public int atk;//物理攻撃力
+                            public int def;//物理防御力
+                            public int Int;//魔法攻撃力
+                            public int Res;//魔法防御力
+                            public Attribute attribute;// 属性
+                            public MoveType moveType;//移動タイプ
+                            public SkillDefine.Skill skill;//スキル
+                            public bool isMagicAttac;//魔法攻撃flg
+
+                            public int Lv;//レベル
+                            public int nowExp;//現在の経験値
+                            public int ExpPerLv;//次のレベルに必要な経験値
+                            */
+
+                            if (initPos.Count > 0)
+                            {
+                                obj.GetComponent<Charactor>().initPos_X = ((int)initPos[i].x);
+                                obj.GetComponent<Charactor>().initPos_Z = ((int)initPos[i].z);
+                            }
+                            else
+                            {
+                                obj.GetComponent<Charactor>().initPos_X = initX;
+                                obj.GetComponent<Charactor>().initPos_Z = initZ;
+                                initX++;
+                            }
+
+                            //PhotonNetwork.PrefabPool = 
+                            /*var Obj = PhotonNetwork
+                                .Instantiate
+                                (
+                                    obj.name,
+                                    new Vector3(obj.GetComponent<Charactor>().initPos_X, obj.GetComponent<Charactor>().initPos_Z),
+                                    Quaternion.identity
+                                );*/
+
+                            obj.AddComponent<PhotonView>();
+
+                            var comp = obj.AddComponent<PhotonTransformView>();
+                            comp.m_SynchronizeScale = true;
+
+                            Instantiate(obj, charactorParent);
+                        }
+                    }
                 }
-                
-            }
-        }
 
-        // マップ上の全キャラクターデータを取得
-        // (charactersParent以下の全Characterコンポーネントを検索しリストに格納)
-        charactorParent.GetComponentsInChildren(Charactors);
+                // マップ上の全キャラクターデータを取得
+                // (charactersParent以下の全Characterコンポーネントを検索しリストに格納)
+                charactorParent.GetComponentsInChildren(Charactors);
+
+                Debug.Log("True");
+
+                break;
+
+            case false:
+
+                if (DataManager._instance.GetSaveData().SceneName != "Delete Data")
+                {
+                    SaveData SaveData = DataManager._instance.GetSaveData();
+                    if (SaveData != null)
+                    {
+                        int initX = -1;
+                        int initZ = -4;
+                        for (int i = 0; i < SaveData.name.Count(); i++)
+                        {
+                            var obj = GetCharaObj(SaveData.name[i]);
+
+                            obj.GetComponent<Charactor>().name = SaveData.name[i];
+                            obj.GetComponent<Charactor>().maxHP = SaveData.maxHp[i];
+                            obj.GetComponent<Charactor>().atk = SaveData.atk[i];
+                            obj.GetComponent<Charactor>().def = SaveData.def[i];
+                            obj.GetComponent<Charactor>().Int = SaveData.Int[i];
+                            obj.GetComponent<Charactor>().Res = SaveData.res[i];
+                            obj.GetComponent<Charactor>().attribute = SaveData.atrr[i];
+                            obj.GetComponent<Charactor>().moveType = SaveData.movetype[i];
+                            obj.GetComponent<Charactor>().skill = SaveData.skill[i];
+                            obj.GetComponent<Charactor>().isMagicAttac = SaveData.isMagicAttack[i];
+
+                            obj.GetComponent<Charactor>().Lv = SaveData.Lv[i];
+                            obj.GetComponent<Charactor>().nowExp = SaveData.nowExp[i];
+                            obj.GetComponent<Charactor>().ExpPerLv = SaveData.ExpPerLv[i];
+                            /*
+                            public string charaName;//キャラ名
+                            public int maxHP;//最大Hp
+                            public int atk;//物理攻撃力
+                            public int def;//物理防御力
+                            public int Int;//魔法攻撃力
+                            public int Res;//魔法防御力
+                            public Attribute attribute;// 属性
+                            public MoveType moveType;//移動タイプ
+                            public SkillDefine.Skill skill;//スキル
+                            public bool isMagicAttac;//魔法攻撃flg
+
+                            public int Lv;//レベル
+                            public int nowExp;//現在の経験値
+                            public int ExpPerLv;//次のレベルに必要な経験値
+                            */
+
+                            if (initPos.Count > 0)
+                            {
+                                obj.GetComponent<Charactor>().initPos_X = ((int)initPos[i].x);
+                                obj.GetComponent<Charactor>().initPos_Z = ((int)initPos[i].z);
+                            }
+                            else
+                            {
+                                obj.GetComponent<Charactor>().initPos_X = initX;
+                                obj.GetComponent<Charactor>().initPos_Z = initZ;
+                                initX++;
+                            }
+
+                            Instantiate(obj, charactorParent);
+                        }
+                    }
+                }
+
+                // マップ上の全キャラクターデータを取得
+                // (charactersParent以下の全Characterコンポーネントを検索しリストに格納)
+                charactorParent.GetComponentsInChildren(Charactors);
+
+                Debug.Log("false");
+
+                break;
+        }
     }
 
     //-------------------------------------------------------------------------

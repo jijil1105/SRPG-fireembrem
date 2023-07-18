@@ -2369,7 +2369,7 @@ MonoBehaviour:
   blockParentobj: {fileID: 169811917}
   blockPrefab_Grass: {fileID: 5834167874720143618, guid: 37928c98a240e421f9c9db5e9501c3e8, type: 3}
   blockPrefab_Water: {fileID: 526010217631796985, guid: a48c715194adc42beb167ded66c31b7b, type: 3}
-  blockPrefab_Null: {fileID: 0}
+  blockPrefab_Null: {fileID: 526010217631796985, guid: 2bd37535443f14b50a0244194ec7ef51, type: 3}
   SceneName: 
   mapTyape: 0
   Map_Data: {fileID: 0}
@@ -2736,6 +2736,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 609acac536a2347b1a9e0b138ea4a9af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  offset: {x: 0, y: 0, z: 0}
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
