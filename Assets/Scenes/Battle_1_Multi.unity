@@ -2419,10 +2419,13 @@ MonoBehaviour:
   charaObjs:
   - charaObj: {fileID: 8516334276831482043, guid: 1d98b4bd730c342d591e2bf87377b5bc, type: 3}
     Character_Name: "\u5263\u58EB"
+    Character_ObjName: Charactor_Actor_01
   - charaObj: {fileID: 8516334276831482043, guid: 973a7a36ffb8d4d02a3667257470a530, type: 3}
     Character_Name: "\u6226\u58EB"
+    Character_ObjName: Charactor_Actor_02
   - charaObj: {fileID: 8516334276831482043, guid: ae3f65c450b804a82867e28296652955, type: 3}
     Character_Name: "\u9B54\u8853\u5E2B"
+    Character_ObjName: Charactor_Actor_03
   initPos:
   - {x: 0, y: 0, z: 0}
   - {x: 1, y: 0, z: 0}

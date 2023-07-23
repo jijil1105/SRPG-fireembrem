@@ -15,6 +15,7 @@ public class CharactorManager : MonoBehaviour
     {
         public GameObject charaObj;
         public string Character_Name;
+        public string Character_ObjName;
     }
     [SerializeField]
     public CharaDatas[] charaObjs;
@@ -42,7 +43,7 @@ public class CharactorManager : MonoBehaviour
                         int initZ = -4;
                         for (int i = 0; i < SaveData.name.Count(); i++)
                         {
-                            var obj = GetCharaObj(SaveData.name[i]);
+                            var obj = GetCharaPhotonObj(SaveData.name[i]);
 
                             obj.GetComponent<Charactor>().charaName = SaveData.name[i];
                             obj.GetComponent<Charactor>().maxHP = SaveData.maxHp[i];
@@ -198,10 +199,27 @@ public class CharactorManager : MonoBehaviour
         return Charactors.FirstOrDefault(cha => cha.XPos == X && cha.ZPos == Z);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="chara_name"></param>
+    /// <returns></returns>
     public GameObject GetCharaObj(string chara_name)
     {
         var obj = charaObjs.FirstOrDefault(chara => chara.Character_Name == chara_name);
         return obj.charaObj;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="chara_name"></param>
+    /// <returns></returns>
+    public GameObject GetCharaPhotonObj(string chara_name)
+    {
+        var obj = charaObjs.FirstOrDefault(chara => chara.Character_Name == chara_name);
+        var photon_obj = (GameObject)Resources.Load(obj.Character_ObjName + "_Photon");
+        return photon_obj;
     }
     /// <summary>
 	/// 指定したキャラクターを削除する
