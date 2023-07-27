@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2336360642440602846}
   - component: {fileID: 3360908307870512068}
   - component: {fileID: -2672153347749419245}
+  - component: {fileID: 5330524882852151648}
   m_Layer: 0
   m_Name: Charactor_Actor_01_Photon
   m_TagString: Untagged
@@ -101,9 +102,9 @@ MonoBehaviour:
   isEnemy: 0
   charaName: "\u5263\u58EB"
   maxHP: 30
-  atk: 1000
+  atk: 999
   def: 3
-  Int: 2
+  Int: 1
   Res: 3
   attribute: 0
   moveType: 2
@@ -133,7 +134,24 @@ MonoBehaviour:
   Synchronization: 3
   OwnershipTransfer: 0
   observableSearch: 2
-  ObservedComponents: []
+  ObservedComponents:
+  - {fileID: 5330524882852151648}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &5330524882852151648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8516334276831482043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 1
+  m_UseLocal: 1

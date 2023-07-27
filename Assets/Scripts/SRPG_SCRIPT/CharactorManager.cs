@@ -88,21 +88,22 @@ public class CharactorManager : MonoBehaviour
                                 initX++;
                             }
 
-                            //PhotonNetwork.PrefabPool = 
-                            /*var Obj = PhotonNetwork
+                            var Obj = PhotonNetwork
                                 .Instantiate
                                 (
                                     obj.name,
                                     new Vector3(obj.GetComponent<Charactor>().initPos_X, obj.GetComponent<Charactor>().initPos_Z),
                                     Quaternion.identity
-                                );*/
+                                );
 
-                            obj.AddComponent<PhotonView>();
+                            Obj.transform.SetParent(charactorParent);
 
-                            var comp = obj.AddComponent<PhotonTransformView>();
-                            comp.m_SynchronizeScale = true;
+                            //obj.AddComponent<PhotonView>();
 
-                            Instantiate(obj, charactorParent);
+                            //var comp = obj.AddComponent<PhotonTransformView>();
+                            //comp.m_SynchronizeScale = true;
+
+                            //Instantiate(obj, charactorParent);
                         }
                     }
                 }

@@ -72,6 +72,8 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
 		    public int nowExp;//現在の経験値
 		    public int ExpPerLv;//次のレベルに必要な経験値
             */
+
+            SceneManager.LoadScene("Battle_1_Multi");
         }
         else
             Debug.Log("Dont have Data");
@@ -79,6 +81,6 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
 
     public override void OnCreatedRoom()
     {
-        SceneManager.LoadScene("Battle_1_Multi");
+        Debug.Log("Create Room");
     }
 }
