@@ -101,17 +101,17 @@ MonoBehaviour:
   initPos_Z: 0
   isEnemy: 0
   charaName: "\u5263\u58EB"
-  maxHP: 30
-  atk: 999
-  def: 3
-  Int: 1
-  Res: 3
+  maxHP: 31
+  atk: 1000
+  def: 2
+  Int: 2
+  Res: 2
   attribute: 0
   moveType: 2
   skill: 1
   isMagicAttac: 0
   Lv: 2
-  nowExp: 143
+  nowExp: 68
   ExpPerLv: 150
   isSkillLock: 0
   isDefBreak: 0
