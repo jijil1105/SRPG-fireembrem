@@ -5,10 +5,11 @@ using DG.Tweening;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
+using UnityEngine.UI;
 
-public class GameManager_Multi : MonoBehaviourPunCallbacks
+public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
 {
-    /*  GameManagerで色々なクラスを使用してゲームの進行を行っています
+/*  GameManagerで色々なクラスを使用してゲームの進行を行っています
  *  ここの処理ではゲームマネージャーのシングルトン化を行っています。
  */
 
@@ -69,9 +70,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
-
-    //------------------------------------------------------------------------
-
     //変数の初期化
 
     public void Start()
@@ -119,9 +117,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //-------------------------------------------------------------------------
 
-    //プレイヤーがタッチしたフィールド上のブロックをRayを飛ばして取得しています
-
     /// <summary>
+    /// 
     /// タップ先のオブジェクト取得、選択処理を開始
     /// </summary>
     private void GetMapBlockByTapPos()
@@ -915,5 +912,24 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         // 進行モードを戻す(ターンの最初へ)
         ChangePhase(Phase.Myturn_Start, true);
+    }
+
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if(stream.IsWriting)
+        {
+            if(selectingChara)
+            {
+                stream.SendNext(selectingChara.NowHp);
+                Debug.Log("Send" + selectingChara.NowHp);
+            }
+        }
+
+        else
+        {
+            var pp = (int)stream.ReceiveNext();
+
+            Debug.Log("Receive" + pp);
+        }
     }
 }

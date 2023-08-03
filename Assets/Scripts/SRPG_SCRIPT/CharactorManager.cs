@@ -88,7 +88,9 @@ public class CharactorManager : MonoBehaviour
                                 initX++;
                             }
 
-                            var Obj = PhotonNetwork
+                            DOVirtual.DelayedCall(1.0f, () =>
+                            {
+                                var Obj = PhotonNetwork
                                 .Instantiate
                                 (
                                     obj.name,
@@ -96,7 +98,8 @@ public class CharactorManager : MonoBehaviour
                                     Quaternion.identity
                                 );
 
-                            Obj.transform.SetParent(charactorParent);
+                                Obj.transform.SetParent(charactorParent);
+                            });
 
                             //obj.AddComponent<PhotonView>();
 
@@ -244,5 +247,12 @@ public class CharactorManager : MonoBehaviour
 
         if (gm_muti)
             gm_muti.CheckGameSet();
+    }
+
+    public void SetCharaList()
+    {
+        // マップ上の全キャラクターデータを取得
+        // (charactersParent以下の全Characterコンポーネントを検索しリストに格納)
+        charactorParent.GetComponentsInChildren(Charactors);
     }
 }
