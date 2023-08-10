@@ -33,8 +33,24 @@ public class CharactorManager : MonoBehaviour
         switch(isMulti)
         {
             case true :
+                /*
+                            public string charaName;//キャラ名
+                            public int maxHP;//最大Hp
+                            public int atk;//物理攻撃力
+                            public int def;//物理防御力
+                            public int Int;//魔法攻撃力
+                            public int Res;//魔法防御力
+                            public Attribute attribute;// 属性
+                            public MoveType moveType;//移動タイプ
+                            public SkillDefine.Skill skill;//スキル
+                            public bool isMagicAttac;//魔法攻撃flg
 
-                if (DataManager._instance.GetSaveData().SceneName != "Delete Data")
+                            public int Lv;//レベル
+                            public int nowExp;//現在の経験値
+                            public int ExpPerLv;//次のレベルに必要な経験値
+                            */
+
+                /*if (DataManager._instance.GetSaveData().SceneName != "Delete Data")
                 {
                     SaveData SaveData = DataManager._instance.GetSaveData();
                     if (SaveData != null)
@@ -59,22 +75,6 @@ public class CharactorManager : MonoBehaviour
                             obj.GetComponent<Charactor>().Lv = SaveData.Lv[i];
                             obj.GetComponent<Charactor>().nowExp = SaveData.nowExp[i];
                             obj.GetComponent<Charactor>().ExpPerLv = SaveData.ExpPerLv[i];
-                            /*
-                            public string charaName;//キャラ名
-                            public int maxHP;//最大Hp
-                            public int atk;//物理攻撃力
-                            public int def;//物理防御力
-                            public int Int;//魔法攻撃力
-                            public int Res;//魔法防御力
-                            public Attribute attribute;// 属性
-                            public MoveType moveType;//移動タイプ
-                            public SkillDefine.Skill skill;//スキル
-                            public bool isMagicAttac;//魔法攻撃flg
-
-                            public int Lv;//レベル
-                            public int nowExp;//現在の経験値
-                            public int ExpPerLv;//次のレベルに必要な経験値
-                            */
 
                             if (initPos.Count > 0)
                             {
@@ -88,9 +88,7 @@ public class CharactorManager : MonoBehaviour
                                 initX++;
                             }
 
-                            DOVirtual.DelayedCall(1.0f, () =>
-                            {
-                                var Obj = PhotonNetwork
+                            var Obj = PhotonNetwork
                                 .Instantiate
                                 (
                                     obj.name,
@@ -98,22 +96,16 @@ public class CharactorManager : MonoBehaviour
                                     Quaternion.identity
                                 );
 
-                                Obj.transform.SetParent(charactorParent);
-                            });
-
-                            //obj.AddComponent<PhotonView>();
-
-                            //var comp = obj.AddComponent<PhotonTransformView>();
-                            //comp.m_SynchronizeScale = true;
-
-                            //Instantiate(obj, charactorParent);
+                            Obj.transform.SetParent(charactorParent);
                         }
                     }
                 }
 
                 // マップ上の全キャラクターデータを取得
                 // (charactersParent以下の全Characterコンポーネントを検索しリストに格納)
-                charactorParent.GetComponentsInChildren(Charactors);
+                charactorParent.GetComponentsInChildren(Charactors);*/
+
+                InitChara();
 
                 Debug.Log("True");
 
@@ -254,5 +246,78 @@ public class CharactorManager : MonoBehaviour
         // マップ上の全キャラクターデータを取得
         // (charactersParent以下の全Characterコンポーネントを検索しリストに格納)
         charactorParent.GetComponentsInChildren(Charactors);
+    }
+
+    public void InitChara()
+    {
+        if (DataManager._instance.GetSaveData().SceneName != "Delete Data")
+        {
+            SaveData SaveData = DataManager._instance.GetSaveData();
+            if (SaveData != null)
+            {
+                int initX = -1;
+                int initZ = -4;
+                for (int i = 0; i < SaveData.name.Count(); i++)
+                {
+                    var obj = GetCharaPhotonObj(SaveData.name[i]);
+
+                    obj.GetComponent<Charactor>().charaName = SaveData.name[i];
+                    obj.GetComponent<Charactor>().maxHP = SaveData.maxHp[i];
+                    obj.GetComponent<Charactor>().atk = SaveData.atk[i];
+                    obj.GetComponent<Charactor>().def = SaveData.def[i];
+                    obj.GetComponent<Charactor>().Int = SaveData.Int[i];
+                    obj.GetComponent<Charactor>().Res = SaveData.res[i];
+                    obj.GetComponent<Charactor>().attribute = SaveData.atrr[i];
+                    obj.GetComponent<Charactor>().moveType = SaveData.movetype[i];
+                    obj.GetComponent<Charactor>().skill = SaveData.skill[i];
+                    obj.GetComponent<Charactor>().isMagicAttac = SaveData.isMagicAttack[i];
+
+                    obj.GetComponent<Charactor>().Lv = SaveData.Lv[i];
+                    obj.GetComponent<Charactor>().nowExp = SaveData.nowExp[i];
+                    obj.GetComponent<Charactor>().ExpPerLv = SaveData.ExpPerLv[i];
+                    /*
+                    public string charaName;//キャラ名
+                    public int maxHP;//最大Hp
+                    public int atk;//物理攻撃力
+                    public int def;//物理防御力
+                    public int Int;//魔法攻撃力
+                    public int Res;//魔法防御力
+                    public Attribute attribute;// 属性
+                    public MoveType moveType;//移動タイプ
+                    public SkillDefine.Skill skill;//スキル
+                    public bool isMagicAttac;//魔法攻撃flg
+
+                    public int Lv;//レベル
+                    public int nowExp;//現在の経験値
+                    public int ExpPerLv;//次のレベルに必要な経験値
+                    */
+
+                    if (initPos.Count > 0)
+                    {
+                        obj.GetComponent<Charactor>().initPos_X = ((int)initPos[i].x);
+                        obj.GetComponent<Charactor>().initPos_Z = ((int)initPos[i].z);
+                    }
+                    else
+                    {
+                        obj.GetComponent<Charactor>().initPos_X = initX;
+                        obj.GetComponent<Charactor>().initPos_Z = initZ;
+                        initX++;
+                    }
+
+                    var Obj = PhotonNetwork
+                        .Instantiate
+                        (
+                            obj.name,
+                            new Vector3(obj.GetComponent<Charactor>().initPos_X, obj.GetComponent<Charactor>().initPos_Z),
+                            Quaternion.identity,
+                            0
+                        );
+
+                    Obj.transform.SetParent(charactorParent);
+
+                    charactorParent.GetComponentsInChildren(Charactors);
+                }
+            }
+        }
     }
 }
