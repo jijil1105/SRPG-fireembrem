@@ -50,7 +50,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
 
     //-------------------------------------------------------------------------
 
-    private Charactor selectingChara;//選択中のキャラクター（マップフィールド上のキャラクターを選択していない時はnull）
+    private Character_Multi selectingChara;//選択中のキャラクター（マップフィールド上のキャラクターを選択していない時はnull）
     private List<MapBlock> reachableBlocks;//選択キャラの移動可能範囲
     private List<MapBlock> attackableBlocks;//選択キャラの攻撃可能範囲
     private SkillDefine.Skill selectingSkill;//選択中の特技(通常攻撃時はNONE固定)
@@ -84,8 +84,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
 
         DOVirtual.DelayedCall(0.05f, () =>
         {
-            var chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-            Camera.main.GetComponent<CameraController>().get_chara_subject.OnNext(chara);
+            var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+            Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara);
         });
     }
 
@@ -160,7 +160,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
                 targetBlock.SetSelectionMode(MapBlock.Highlight.Select);
 
                 //選択したブロックの座標にキャラクターが居ればキャラクター情報取得、居なければnull
-                Charactor charaData = charactorManager.GetCharactor(targetBlock.XPos, targetBlock.ZPos);
+                Character_Multi charaData = charactorManager.GetCharactor_Multi(targetBlock.XPos, targetBlock.ZPos);
 
                 //選択したブロックの座標にキャラクターが居た場合の処理
                 if (charaData)
@@ -314,12 +314,12 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
             // 自分のターン：開始時
             case Phase.Myturn_Start:
                 //行動可能な自キャラが居るかチェック
-                var chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+                var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
                 //動かせるキャラが居なかった場合
                 if (!chara)
                 {
                     //味方キャラ取得
-                    var charas = charactorManager.Charactors.Where(chara => chara.isEnemy == false);
+                    var charas = charactorManager.Charactors_Multis.Where(chara => chara.isEnemy == false);
                     //行動可能にする
                     foreach (var charaData in charas)
                         charaData.SetInCapacitited(false);
@@ -334,21 +334,21 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
 
             // 敵のターン：開始時
             case Phase.Enemyturn_Start:
-                var enemy = charactorManager.Charactors.FirstOrDefault(chara => chara.isEnemy == true && chara.isIncapacitated != true);
+                var enemy = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == true && chara.isIncapacitated != true);
                 Debug.Log("" + enemy);
                 //動かせるキャラが居なかった場合
                 if (!enemy)
                 {
                     //敵キャラ取得
-                    var charas = charactorManager.Charactors.Where(chara => chara.isEnemy == true);
+                    var charas = charactorManager.Charactors_Multis.Where(chara => chara.isEnemy == true);
                     //行動可能にする
                     foreach (var charaData in charas)
                         charaData.SetInCapacitited(false);
 
                     ChangePhase(Phase.Myturn_Start);
 
-                    var chara_data = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-                    Camera.main.GetComponent<CameraController>().get_chara_subject.OnNext(chara_data);
+                    var chara_data = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+                    Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara_data);
                     return;
                 }
 
@@ -447,7 +447,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
 	/// </summary>
 	/// <param name="attackchara">攻撃側キャラデータ</param>
 	/// <param name="defensechara">防御側キャラデータ</param>
-    private void CharaAttack(Charactor attackchara, Charactor defensechara)
+    private void CharaAttack(Character_Multi attackchara, Character_Multi defensechara)
     {
         // ダメージ計算処理
         int damagevalue;// ダメージ量
@@ -540,7 +540,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
                     //現在の経験値から次レベルに必要な経験値の差を記憶
                     float EndExp = (float)attackchara.nowExp - (float)attackchara.ExpPerLv;
                     //キャラのレベルをアップ
-                    var up_list = GetComponent<LevelManager>().LevelUp(attackchara);
+                    //var up_list = GetComponent<LevelManager>().LevelUp(attackchara);
                     //レベルアップ後の次レベルに必要な経験値で経験値バーのfillamountに適応する値を求める
                     float endvalue = EndExp / (float)attackchara.ExpPerLv;
 
@@ -568,7 +568,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
                     DOVirtual.DelayedCall(2.6f, () =>
                     {
                         guiManager.HideGetExpWindow();
-                        guiManager.ShowLeveUpWindow(attackchara, up_list);
+                        //guiManager.ShowLeveUpWindow(attackchara, up_list);
                     });
 
                     DOVirtual.DelayedCall(4.5f, () =>
@@ -619,7 +619,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
 
     //------------------------------------------------------------------------
 
-    public int SkillAttack(int damagevalue, int atkpoint, Charactor attackchara, Charactor defensechara)
+    public int SkillAttack(int damagevalue, int atkpoint, Character_Multi attackchara, Character_Multi defensechara)
     {
         // 選択したスキルによるダメージ値補正および効果処理
         switch (selectingSkill)
@@ -674,8 +674,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
     private void EnemyCommand()
     {
         // 生存中の敵キャラクター&&行動可能キャラクターのリストを作成する
-        var enemyCharas = charactorManager.Charactors.Where(chara => chara.isEnemy && chara.isIncapacitated != true);
-        var enemycharas = new List<Charactor>();
+        var enemyCharas = charactorManager.Charactors_Multis.Where(chara => chara.isEnemy && chara.isIncapacitated != true);
+        var enemycharas = new List<Character_Multi>();
 
         // 全生存キャラクターから敵フラグの立っているキャラクターをリストに追加
         foreach (var enemyChara in enemyCharas)
@@ -694,7 +694,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
             // (移動後のタイミングで攻撃開始するよう遅延実行)
             DOVirtual.DelayedCall(1.0f, () =>
             {
-                CharaAttack(actionPlan.charaData, actionPlan.toAttackChara);
+                CharaAttack(actionPlan.charaData_Multi, actionPlan.toAttackChara_Multi);
             });
 
             // 進行モード＜敵ターン：行動結果表示中＞へ変更
@@ -738,52 +738,52 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
     /// <param name="attackChara">攻撃側のキャラ</param>
     /// <param name="defenseChara">防御側のキャラ</param>
     /// <returns></returns>
-    private float GetDamegeRatioByAttribute(Charactor attackChara, Charactor defenseChara)
+    private float GetDamegeRatioByAttribute(Character_Multi attackChara, Character_Multi defenseChara)
     {
         const float RATIO_NORMAL = 1.0f;//通常
         const float RATIO_GOOD = 1.2f;//効果抜群
         const float RATIO_BAD = 0.8f;//効果いまひとつ
 
-        Charactor.Attribute atkAttr = attackChara.attribute;//攻撃側の属性
-        Charactor.Attribute defAttr = defenseChara.attribute;//防御側の属性
+        Character_Multi.Attribute atkAttr = attackChara.attribute;//攻撃側の属性
+        Character_Multi.Attribute defAttr = defenseChara.attribute;//防御側の属性
 
         switch (atkAttr)
         {
-            case Charactor.Attribute.Water://攻撃側の属性：水属性
-                if (defAttr == Charactor.Attribute.Fire)
+            case Character_Multi.Attribute.Water://攻撃側の属性：水属性
+                if (defAttr == Character_Multi.Attribute.Fire)
                     return RATIO_GOOD;
 
-                else if (defAttr == Charactor.Attribute.Soil)
+                else if (defAttr == Character_Multi.Attribute.Soil)
                     return RATIO_BAD;
 
                 else
                     return RATIO_NORMAL;
 
-            case Charactor.Attribute.Fire://攻撃側の属性：火属性
-                if (defAttr == Charactor.Attribute.Wind)
+            case Character_Multi.Attribute.Fire://攻撃側の属性：火属性
+                if (defAttr == Character_Multi.Attribute.Wind)
                     return RATIO_GOOD;
 
-                else if (defAttr == Charactor.Attribute.Water)
+                else if (defAttr == Character_Multi.Attribute.Water)
                     return RATIO_BAD;
 
                 else
                     return RATIO_NORMAL;
 
-            case Charactor.Attribute.Wind://攻撃側の属性：風属性
-                if (defAttr == Charactor.Attribute.Soil)
+            case Character_Multi.Attribute.Wind://攻撃側の属性：風属性
+                if (defAttr == Character_Multi.Attribute.Soil)
                     return RATIO_GOOD;
 
-                else if (defAttr == Charactor.Attribute.Fire)
+                else if (defAttr == Character_Multi.Attribute.Fire)
                     return RATIO_BAD;
 
                 else
                     return RATIO_NORMAL;
 
-            case Charactor.Attribute.Soil://攻撃側の属性：土属性
-                if (defAttr == Charactor.Attribute.Water)
+            case Character_Multi.Attribute.Soil://攻撃側の属性：土属性
+                if (defAttr == Character_Multi.Attribute.Water)
                     return RATIO_GOOD;
 
-                else if (defAttr == Charactor.Attribute.Wind)
+                else if (defAttr == Character_Multi.Attribute.Wind)
                     return RATIO_BAD;
 
                 else
@@ -814,10 +814,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
     public void CheckGameSet()
     {
         //敵キャラが居るかチェック
-        var Enemychara = charactorManager.Charactors.FirstOrDefault(chara => chara.isEnemy == true);
+        var Enemychara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == true);
 
         //味方キャラが居るかチェック
-        var Chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isEnemy == false);
+        var Chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == false);
 
         if (!Chara || !Enemychara)
         {
@@ -825,14 +825,14 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
             isGameSet = true;
             if (Chara)
             {
-                List<Charactor> charalist = new List<Charactor>();
-                foreach (var chara in charactorManager.Charactors)
+                List<Character_Multi> charalist = new List<Character_Multi>();
+                foreach (var chara in charactorManager.Charactors_Multis)
                 {
                     if (!chara.isEnemy)
                         charalist.Add(chara);
                 }
                 //セーブデータ
-                DataManager._instance.WriteSaveData(charalist, SceneManager.GetActiveScene().name);
+               // DataManager._instance.WriteSaveData(charalist, SceneManager.GetActiveScene().name);
             }
 
 
@@ -875,7 +875,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
 
         // 攻撃対象の位置に居るキャラクターのデータを取得
         var targetChara =
-            charactorManager.GetCharactor(attackBlock.XPos, attackBlock.ZPos);
+            charactorManager.GetCharactor_Multi(attackBlock.XPos, attackBlock.ZPos);
         if (targetChara != null)
         {// 攻撃対象のキャラクターが存在する
          // キャラクター攻撃処理

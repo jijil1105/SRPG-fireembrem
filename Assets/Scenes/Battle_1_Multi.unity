@@ -1635,7 +1635,7 @@ GameObject:
   m_Component:
   - component: {fileID: 450547394}
   - component: {fileID: 450547396}
-  - component: {fileID: 450547395}
+  - component: {fileID: 450547397}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -1657,37 +1657,6 @@ Transform:
   m_Father: {fileID: 1348453198}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &450547395
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 450547393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 778389293cb554e03883ad16f81eb89a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initPos_X: 0
-  initPos_Z: 4
-  isEnemy: 1
-  charaName: boss
-  maxHP: 50
-  atk: 15
-  def: 10
-  Int: 0
-  Res: 0
-  attribute: 1
-  moveType: 2
-  skill: 1
-  isMagicAttac: 0
-  Lv: 5
-  nowExp: 0
-  ExpPerLv: 0
-  isSkillLock: 0
-  isDefBreak: 0
-  isIncapacitated: 0
 --- !u!212 &450547396
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1739,6 +1708,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &450547397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450547393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32f6c037e32c54168b6fd0f0c0956be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initPos_X: 0
+  initPos_Z: 4
+  isEnemy: 1
+  charaName: boss
+  maxHP: 50
+  atk: 15
+  def: 10
+  Int: 0
+  Res: 0
+  attribute: 0
+  moveType: 0
+  skill: 0
+  isMagicAttac: 0
+  Lv: 5
+  nowExp: 0
+  ExpPerLv: 0
+  isSkillLock: 0
+  isDefBreak: 0
+  isIncapacitated: 0
 --- !u!1 &460623586
 GameObject:
   m_ObjectHideFlags: 0
@@ -2530,6 +2530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   charactorParent: {fileID: 1348453198}
   Charactors: []
+  Charactors_Multis: []
   charaObjs:
   - charaObj: {fileID: 8516334276831482043, guid: 1d98b4bd730c342d591e2bf87377b5bc, type: 3}
     Character_Name: "\u5263\u58EB"

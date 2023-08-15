@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4334622638152197802}
   - component: {fileID: 2336360642440602846}
-  - component: {fileID: 3360908307870512068}
   - component: {fileID: -2672153347749419245}
   - component: {fileID: 5330524882852151648}
+  - component: {fileID: -596645134167384018}
   m_Layer: 0
   m_Name: Charactor_Actor_01_Photon
   m_TagString: Untagged
@@ -85,37 +85,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &3360908307870512068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8516334276831482043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 778389293cb554e03883ad16f81eb89a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initPos_X: 0
-  initPos_Z: 0
-  isEnemy: 0
-  charaName: "\u5263\u58EB"
-  maxHP: 31
-  atk: 1000
-  def: 2
-  Int: 2
-  Res: 2
-  attribute: 0
-  moveType: 2
-  skill: 1
-  isMagicAttac: 0
-  Lv: 2
-  nowExp: 68
-  ExpPerLv: 150
-  isSkillLock: 0
-  isDefBreak: 0
-  isIncapacitated: 0
 --- !u!114 &-2672153347749419245
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,3 +124,34 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 1
   m_UseLocal: 1
+--- !u!114 &-596645134167384018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8516334276831482043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32f6c037e32c54168b6fd0f0c0956be5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initPos_X: 0
+  initPos_Z: 0
+  isEnemy: 0
+  charaName: "\u5263\u58EB"
+  maxHP: 31
+  atk: 1000
+  def: 2
+  Int: 2
+  Res: 2
+  attribute: 0
+  moveType: 2
+  skill: 1
+  isMagicAttac: 0
+  Lv: 2
+  nowExp: 68
+  ExpPerLv: 150
+  isSkillLock: 0
+  isDefBreak: 0
+  isIncapacitated: 0

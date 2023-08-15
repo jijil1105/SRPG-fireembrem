@@ -7,8 +7,10 @@ public static class TargetFinder
     public class ActionPlan
     {
         public Charactor charaData;// 行動する敵キャラクター
+        public Character_Multi charaData_Multi;
         public MapBlock toMoveBlock;// 移動先の位置
         public Charactor toAttackChara;// 攻撃相手のキャラクター
+        public Character_Multi toAttackChara_Multi;// 攻撃相手のキャラクター
     }
 
     /// <summary>
@@ -54,6 +56,59 @@ public static class TargetFinder
                         newPlan.charaData = enemyData;
                         newPlan.toMoveBlock = block;
                         newPlan.toAttackChara = chara;
+
+                        // 全行動プランリストに追加
+                        actionPlans.Add(newPlan);
+                    }
+                }
+            }
+        }
+
+        // 検索終了後、行動プランが１つでもあるならその内の１つをランダムに返す
+        if (actionPlans.Count > 0)
+            return actionPlans[Random.Range(0, actionPlans.Count)];
+
+        // 行動プランが無いならnullを返す
+        else
+            return null;
+    }
+
+    public static ActionPlan GetRandomActionPlan(MapManager mapManager, CharactorManager charactorManager, List<Character_Multi> enemyCharas)
+    {
+        // 全行動プラン(攻撃可能な相手が見つかる度に追加される)
+        var actionPlans = new List<ActionPlan>();
+
+        // 移動範囲リスト
+        var reachableBlocks = new List<MapBlock>();
+
+        // 攻撃範囲リスト
+        var attackableBlocks = new List<MapBlock>();
+
+        // 全行動プラン検索処理
+        foreach (var enemyData in enemyCharas)
+        {
+            // 移動可能な場所リストを取得する
+            reachableBlocks = mapManager.SearchReachableBlocks(enemyData.XPos, enemyData.ZPos);
+
+            // それぞれの移動可能な場所ごとの処理
+            foreach (var block in reachableBlocks)
+            {
+                // 攻撃可能な場所リストを取得する
+                attackableBlocks = mapManager.SearchAttackableBlocks(block.XPos, block.ZPos);
+
+                // それぞれの攻撃可能な場所ごとの処理
+                foreach (var attackBlock in attackableBlocks)
+                {
+                    // 攻撃できる相手キャラクター(プレイヤー側のキャラクター)を探す
+                    var chara = charactorManager.GetCharactor_Multi(attackBlock.XPos, attackBlock.ZPos);
+
+                    if (chara && !chara.isEnemy)
+                    {
+                        var newPlan = new ActionPlan();
+
+                        newPlan.charaData_Multi = enemyData;
+                        newPlan.toMoveBlock = block;
+                        newPlan.toAttackChara_Multi = chara;
 
                         // 全行動プランリストに追加
                         actionPlans.Add(newPlan);

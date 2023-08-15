@@ -6,7 +6,7 @@ using Photon.Pun;
 using UniRx;
 using System;
 
-public class Charactor : MonoBehaviour
+public class Character_Multi : MonoBehaviour
 {
     // キャラクター初期設定(インスペクタから入力)
     [Header("Init Position(-4~4)"), SerializeField]
@@ -158,7 +158,83 @@ public class Charactor : MonoBehaviour
 	/// <param name="targetCharaData">相手キャラクター</param>
     public void AttackAnimation(Charactor targetCharaData, SkillDefine.Skill skill)
     {
-        switch(skill)
+        switch (skill)
+        {
+            case SkillDefine.Skill._None:
+                // 攻撃アニメーション(DoTween)
+                // 相手キャラクターの位置へジャンプで近づき、同じ動きで元の場所に戻る
+                transform.DOJump(targetCharaData.transform.position, 1.0f, 1, 0.5f)
+                    .SetEase(Ease.Linear) // イージング(変化の度合)を設定
+                    .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
+
+                // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
+                DOVirtual.DelayedCall(0.5f, () =>
+                {
+                    AudioManager.instance.Play("SE_2");
+                });
+                break;
+
+            case SkillDefine.Skill.Critical:
+                // 攻撃アニメーション(DoTween)
+                // 相手キャラクターの位置へジャンプで近づき、同じ動きで元の場所に戻る
+                transform.DOJump(targetCharaData.transform.position, 1.0f, 1, 0.5f)
+                    .SetEase(Ease.Linear) // イージング(変化の度合)を設定
+                    .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
+
+                // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
+                DOVirtual.DelayedCall(0.5f, () =>
+                {
+                    AudioManager.instance.Play("SE_2");
+                });
+                break;
+
+            case SkillDefine.Skill.DefBreak:
+                // 攻撃アニメーション(DoTween)
+                // 相手キャラクターの位置へジャンプで近づき、同じ動きで元の場所に戻る
+                transform.DOJump(targetCharaData.transform.position, 1.0f, 1, 0.5f)
+                    .SetEase(Ease.Linear) // イージング(変化の度合)を設定
+                    .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
+
+                // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
+                DOVirtual.DelayedCall(0.5f, () =>
+                {
+                    AudioManager.instance.Play("SE_2");
+                });
+                break;
+
+            case SkillDefine.Skill.Heal:
+                /*// 攻撃アニメーション(DoTween)
+                // 相手キャラクターの位置へジャンプで近づき、同じ動きで元の場所に戻る
+                transform.DOJump(targetCharaData.transform.position, 1.0f, 1, 0.5f)
+                    .SetEase(Ease.Linear) // イージング(変化の度合)を設定
+                    .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
+
+                // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
+                DOVirtual.DelayedCall(0.5f, () =>
+                {
+                    AudioManager.instance.Play("SE_2");
+                });*/
+                break;
+
+            case SkillDefine.Skill.FireBall:
+                /*// 攻撃アニメーション(DoTween)
+                // 相手キャラクターの位置へジャンプで近づき、同じ動きで元の場所に戻る
+                transform.DOJump(targetCharaData.transform.position, 1.0f, 1, 0.5f)
+                    .SetEase(Ease.Linear) // イージング(変化の度合)を設定
+                    .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
+
+                // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
+                DOVirtual.DelayedCall(0.5f, () =>
+                {
+                    AudioManager.instance.Play("SE_2");
+                });*/
+                break;
+        }
+    }
+
+    public void AttackAnimation(Character_Multi targetCharaData, SkillDefine.Skill skill)
+    {
+        switch (skill)
         {
             case SkillDefine.Skill._None:
                 // 攻撃アニメーション(DoTween)

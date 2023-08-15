@@ -157,6 +157,63 @@ public class GUIManager : MonoBehaviour
         ExpText.text = charaData.nowExp + "/" + charaData.ExpPerLv;
     }
 
+    public void ShowStatusWindow(Character_Multi charaData)
+    {
+        // オブジェクトアクティブ化
+        statusWindow.SetActive(true);
+
+        // 名前Text表示
+        nameText.text = charaData.charaName;
+
+        // 属性Image表示（キャラの属性によってアイコン変更）
+        switch (charaData.attribute)
+        {
+            case Character_Multi.Attribute.Water:
+                attributeIcon.sprite = attr_Water;
+                break;
+            case Character_Multi.Attribute.Fire:
+                attributeIcon.sprite = attr_Fire;
+                break;
+            case Character_Multi.Attribute.Wind:
+                attributeIcon.sprite = attr_Wind;
+                break;
+            case Character_Multi.Attribute.Soil:
+                attributeIcon.sprite = attr_Soil;
+                break;
+        }
+
+        // HPゲージ表示
+        // 最大値に対する現在HPの割合をゲージImageのfillAmountにセットする
+        float ratio = (float)charaData.NowHp / charaData.maxHP;
+        hpGageImage.fillAmount = ratio;
+
+        // HPText表示(現在値と最大値両方を表示)
+        hpText.text = charaData.NowHp + "/" + charaData.maxHP;
+
+        if (charaData.isMagicAttac)
+            // 魔法攻撃力Text表示(intからstringに変換)
+            atkText.text = charaData.Int.ToString();
+        else
+            // 物理攻撃力Text表示(intからstringに変換)
+            atkText.text = charaData.atk.ToString();
+
+        if (charaData.isDefBreak)//防御力０化状態以上だったら赤色で強調表示
+            defText.text = "<color=red>0</color>";
+
+        else// 防御力Text表示(intからstringに変換)
+            defText.text = charaData.def.ToString();
+
+        //キャラのレベルをステータスウィンドウにに表示
+        LvText.text = "Lv : " + charaData.Lv;
+
+        //キャラの次レベルまでに必要な経験値と現在の経験値の割合を経験値バーのfillAmountにセット
+        float Expratio = (float)charaData.nowExp / charaData.ExpPerLv;
+        ExpGageImage.fillAmount = Expratio;
+
+        //経験値テキストに表示
+        ExpText.text = charaData.nowExp + "/" + charaData.ExpPerLv;
+    }
+
     //-------------------------------------------------------------------------
 
     /// <summary>
@@ -174,6 +231,27 @@ public class GUIManager : MonoBehaviour
     /// </summary>
     /// <param name="charaData">SkillInfo表示に使用するキャラデータ</param>
     public void ShowCommandButtons(Charactor charaData)
+    {
+        commandButtons.SetActive(true);
+
+        SkillDefine.Skill skill = charaData.skill;
+        string skillname = SkillDefine.dec_SkillName[skill];
+        string skillInfo = SkillDefine.dec_SkillInfo[skill];
+
+        skillText.text = "<size=40>" + skillname + "</size>\n" + skillInfo;
+
+        // スキル使用不可状態なら特技ボタンを押せなくする
+        if (charaData.isSkillLock)
+            skillCommandButton.interactable = false;
+        else
+            skillCommandButton.interactable = true;
+    }
+
+    // <summary>
+    /// コマンドボタンを表示する
+    /// </summary>
+    /// <param name="charaData">SkillInfo表示に使用するキャラデータ</param>
+    public void ShowCommandButtons(Character_Multi charaData)
     {
         commandButtons.SetActive(true);
 
@@ -305,6 +383,12 @@ public class GUIManager : MonoBehaviour
         GetExpWindow.SetActive(true);
     }
 
+    public void ShowGetExpWindow(Character_Multi charadata)
+    {
+        GetExpWindow_charaname_text.text = charadata.charaName + ":" + charadata.Lv;
+        GetExpWindow.SetActive(true);
+    }
+
     //-------------------------------------------------------------------------
 
     public void HideGetExpWindow()
@@ -326,6 +410,37 @@ public class GUIManager : MonoBehaviour
         levelupwindow_name_text.text = charaData.charaName + " : LV" + charaData.Lv;
 
         if(list[0] != 0)
+            levelupwindow_hp_text.text = "Hp : " + charaData.maxHP + " <color=red> +" + list[0] + "</color>";
+        else
+            levelupwindow_hp_text.text = "Hp : " + charaData.maxHP;
+
+        if (list[1] != 0)
+            levelupwindow_atk_text.text = "Atk : " + charaData.atk + " <color=red> +" + list[1] + "</color>";
+        else
+            levelupwindow_atk_text.text = "Atk : " + charaData.atk;
+
+        if (list[2] != 0)
+            levelupwindow_def_text.text = "Def : " + charaData.def + " <color=red> +" + list[2] + "</color>";
+        else
+            levelupwindow_def_text.text = "Def : " + charaData.def;
+
+        if (list[3] != 0)
+            levelupwindow_int_text.text = "Int : " + charaData.Int + " <color=red> +" + list[3] + "</color>";
+        else
+            levelupwindow_int_text.text = "Int : " + charaData.Int;
+
+        if (list[4] != 0)
+            levelupwindow_res_text.text = "Res : " + charaData.Res + " <color=red> +" + list[4] + "</color>";
+        else
+            levelupwindow_res_text.text = "Res : " + charaData.Res;
+    }
+
+    public void ShowLeveUpWindow(Character_Multi charaData, List<int> list)
+    {
+        LevelUpWindow.SetActive(true);
+        levelupwindow_name_text.text = charaData.charaName + " : LV" + charaData.Lv;
+
+        if (list[0] != 0)
             levelupwindow_hp_text.text = "Hp : " + charaData.maxHP + " <color=red> +" + list[0] + "</color>";
         else
             levelupwindow_hp_text.text = "Hp : " + charaData.maxHP;

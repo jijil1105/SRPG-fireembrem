@@ -22,10 +22,16 @@ public class CameraController : MonoBehaviour
     public Vector3 offset = Vector3.zero;
 
     private Subject<Charactor> chara_subject = new Subject<Charactor>();
+    private Subject<Character_Multi> chara_subject_Multi = new Subject<Character_Multi>();
 
     public Subject<Charactor> get_chara_subject
     {
         get { return chara_subject; }
+    }
+
+    public Subject<Character_Multi> get_chara_subject_Multi
+    {
+        get { return chara_subject_Multi; }
     }
 
     private void Start()

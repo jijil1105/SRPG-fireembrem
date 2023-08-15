@@ -99,6 +99,8 @@ public class DataManager : MonoBehaviour
                 }
             }
         }
+
+
 /*
 		public string charaName;//キャラ名
 		public int maxHP;//最大Hp
@@ -201,7 +203,40 @@ public class DataManager : MonoBehaviour
 		}
 	}
 
-    public void Save_ClearMap (string name)
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="chara"></param>
+	public void DeleteCharaData(Character_Multi chara)
+	{
+		var chara_name = saveData.name.FirstOrDefault(name => name == chara.charaName);
+
+		if (chara_name != null)
+		{
+			for (int i = 0; i < saveData.name.Count; i++)
+			{
+				if (saveData.name[i] == chara_name)
+				{
+					saveData.name.RemoveAt(i);
+					saveData.maxHp.RemoveAt(i);
+					saveData.atk.RemoveAt(i);
+					saveData.def.RemoveAt(i);
+					saveData.Int.RemoveAt(i);
+					saveData.res.RemoveAt(i);
+					saveData.atrr.RemoveAt(i);
+					saveData.movetype.RemoveAt(i);
+					saveData.skill.RemoveAt(i);
+					saveData.isMagicAttack.RemoveAt(i);
+					saveData.Lv.RemoveAt(i);
+					saveData.nowExp.RemoveAt(i);
+					saveData.ExpPerLv.RemoveAt(i);
+					break;
+				}
+			}
+		}
+	}
+
+	public void Save_ClearMap (string name)
     {
 		if(name == "Battle_1")
         {
