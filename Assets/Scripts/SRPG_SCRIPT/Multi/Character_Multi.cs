@@ -6,7 +6,7 @@ using Photon.Pun;
 using UniRx;
 using System;
 
-public class Character_Multi : MonoBehaviour
+public class Character_Multi : MonoBehaviourPunCallbacks
 {
     // キャラクター初期設定(インスペクタから入力)
     [Header("Init Position(-4~4)"), SerializeField]
@@ -105,6 +105,20 @@ public class Character_Multi : MonoBehaviour
         MainCamera = Camera.main;
 
         following_to_chara = false;
+
+        if(photonView)
+        {
+            if (PhotonNetwork.MasterClient.UserId == PhotonNetwork.LocalPlayer.UserId)
+            {
+                photonView.RPC(nameof(Init), RpcTarget.All, false);
+            }
+
+            else
+            {
+                photonView.RPC(nameof(Init), RpcTarget.All, true);
+            }
+
+        }
     }
 
     //-------------------------------------------------------------------------

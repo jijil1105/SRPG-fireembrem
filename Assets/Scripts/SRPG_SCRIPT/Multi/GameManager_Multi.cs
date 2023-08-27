@@ -180,7 +180,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks, IPunObservable
                             return;
 
                         //選択キャラの移動可能ブロックリストを取得
-                        reachableBlocks = mapManager.SearchReachableBlocks(charaData.XPos, charaData.ZPos);
+                        reachableBlocks = mapManager.SearchReachableBlocks_Multi(charaData.XPos, charaData.ZPos);
 
                         //移動可能ブロックを青色に強調表示
                         foreach (MapBlock mapblock in reachableBlocks)

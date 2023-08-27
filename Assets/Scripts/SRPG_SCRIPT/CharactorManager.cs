@@ -290,6 +290,13 @@ public class CharactorManager : MonoBehaviour
             {
                 int initX = -1;
                 int initZ = -4;
+
+                if (PhotonNetwork.MasterClient.UserId == PhotonNetwork.LocalPlayer.UserId)
+                {
+                    initX = 1;
+                    initZ = 4;
+                }
+
                 for (int i = 0; i < SaveData.name.Count(); i++)
                 {
                     var obj = GetCharaPhotonObj(SaveData.name[i]);
@@ -325,26 +332,23 @@ public class CharactorManager : MonoBehaviour
                     public int ExpPerLv;//次のレベルに必要な経験値
                     */
 
-                    if (initPos.Count > 0)
+                    if (PhotonNetwork.MasterClient.UserId == PhotonNetwork.LocalPlayer.UserId)
                     {
-                        obj.GetComponent<Character_Multi>().initPos_X = ((int)initPos[i].x);
-                        obj.GetComponent<Character_Multi>().initPos_Z = ((int)initPos[i].z);
-                    }
-                    else
-                    {
+                        obj.GetComponent<Character_Multi>().isEnemy = false;
+                        //obj.GetComponent<PhotonView>().RPC(nameof(chara.Init, RpcTarget.All, false));
+
                         obj.GetComponent<Character_Multi>().initPos_X = initX;
                         obj.GetComponent<Character_Multi>().initPos_Z = initZ;
-                        initX++;
-                    }
-
-                    if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
-                    {
-                        var chara = obj.GetComponent<Charactor>();
-                        //obj.GetComponent<PhotonView>().RPC(nameof(chara.Init, RpcTarget.All, false));
+                        initX--;
+                        
                     }
                     else
                     {
                         obj.GetComponent<Character_Multi>().isEnemy = true;
+                        obj.GetComponent<Character_Multi>().initPos_X = initX;
+                        obj.GetComponent<Character_Multi>().initPos_Z = initZ;
+                        initX++;
+                        
                     }
 
                     var Obj = PhotonNetwork

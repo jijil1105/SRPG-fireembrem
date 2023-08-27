@@ -137,7 +137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initPos_X: -1
-  initPos_Z: 0
+  initPos_Z: 4
   isEnemy: 0
   charaName: "\u9B54\u8853\u5E2B"
   maxHP: 15

@@ -292,6 +292,75 @@ public class MapManager : MonoBehaviour
         return results;
     }
 
+    public List<MapBlock> SearchReachableBlocks_Multi(int xPos, int zPos)
+    {
+        var results = new List<MapBlock>();
+
+        int baseX = -1, baseZ = -1;
+
+        for (int i = 0; i < MAP_WIDTH; i++)
+        {
+            for (int j = 0; j < MAP_HEIGHT; j++)
+            {
+                if ((mapBlocks[i, j].XPos == xPos) && (mapBlocks[i, j].ZPos == zPos))
+                {
+                    baseX = i;
+                    baseZ = j;
+                    break;
+                }
+            }
+            if (baseX != -1) { break; }
+        }
+
+
+        var moveChara = GetComponent<CharactorManager>().GetCharactor_Multi(xPos, zPos);
+
+        if (moveChara)
+        {
+            if (moveChara.moveType == Character_Multi.MoveType.Rook || moveChara.moveType == Character_Multi.MoveType.Queen)
+            {
+                for (int i = baseX + 1; i < MAP_WIDTH; i++)
+                    if (AddReachableList_Multi(results, mapBlocks[i, baseZ]))
+                        break;
+
+                for (int i = baseX - 1; i >= 0; i--)
+                    if (AddReachableList_Multi(results, mapBlocks[i, baseZ]))
+                        break;
+
+                for (int i = baseZ + 1; i < MAP_HEIGHT; i++)
+                    if (AddReachableList_Multi(results, mapBlocks[baseX, i]))
+                        break;
+
+                for (int i = baseZ - 1; i >= 0; i--)
+                    if (AddReachableList_Multi(results, mapBlocks[baseX, i]))
+                        break;
+            }
+
+            if (moveChara.moveType == Character_Multi.MoveType.Bishop || moveChara.moveType == Character_Multi.MoveType.Queen)
+            {
+                for (int i = baseX + 1, j = baseZ + 1; i < MAP_WIDTH && j < MAP_HEIGHT; i++, j++)
+                    if (AddReachableList_Multi(results, mapBlocks[i, j]))
+                        break;
+
+                for (int i = baseX - 1, j = baseZ + 1; i >= 0 && j < MAP_HEIGHT; i--, j++)
+                    if (AddReachableList_Multi(results, mapBlocks[i, j]))
+                        break;
+
+                for (int i = baseX + 1, j = baseZ - 1; i < MAP_WIDTH && j >= 0; i++, j--)
+                    if (AddReachableList_Multi(results, mapBlocks[i, j]))
+                        break;
+
+                for (int i = baseX - 1, j = baseZ - 1; i >= 0 && j >= 0; i--, j--)
+                    if (AddReachableList_Multi(results, mapBlocks[i, j]))
+                        break;
+            }
+        }
+
+        results.Add(mapBlocks[baseX, baseZ]);
+
+        return results;
+    }
+
     //-------------------------------------------------------------------------
 
     /// <summary>
@@ -307,6 +376,19 @@ public class MapManager : MonoBehaviour
             return true;
 
         var charaData = GetComponent<CharactorManager>().GetCharactor(targetBlock.XPos, targetBlock.ZPos);
+        if (charaData != null)
+            return false;
+
+        reachableList.Add(targetBlock);
+        return false;
+    }
+
+    private bool AddReachableList_Multi(List<MapBlock> reachableList, MapBlock targetBlock)
+    {
+        if (!targetBlock.passable)
+            return true;
+
+        var charaData = GetComponent<CharactorManager>().GetCharactor_Multi(targetBlock.XPos, targetBlock.ZPos);
         if (charaData != null)
             return false;
 
