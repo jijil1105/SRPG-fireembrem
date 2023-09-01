@@ -157,6 +157,10 @@ public class GUIManager : MonoBehaviour
         ExpText.text = charaData.nowExp + "/" + charaData.ExpPerLv;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="charaData"></param>
     public void ShowStatusWindow(Character_Multi charaData)
     {
         // オブジェクトアクティブ化
@@ -377,12 +381,20 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="charadata"></param>
     public void ShowGetExpWindow(Charactor charadata)
     {
         GetExpWindow_charaname_text.text = charadata.charaName + ":" + charadata.Lv;
         GetExpWindow.SetActive(true);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="charadata"></param>
     public void ShowGetExpWindow(Character_Multi charadata)
     {
         GetExpWindow_charaname_text.text = charadata.charaName + ":" + charadata.Lv;
@@ -391,6 +403,9 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void HideGetExpWindow()
     {
         GetExpWindow.SetActive(false);
@@ -398,12 +413,23 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="startvalue"></param>
+    /// <param name="endvalue"></param>
+    /// <param name="duration"></param>
     public void moveExpbar(float startvalue, float endvalue, float duration)
     {
         GetExpWindow_ExpBar.fillAmount = startvalue;
         GetExpWindow_ExpBar.DOFillAmount(endvalue, duration);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="charaData"></param>
+    /// <param name="list"></param>
     public void ShowLeveUpWindow(Charactor charaData, List<int> list)
     {
         LevelUpWindow.SetActive(true);
@@ -435,6 +461,11 @@ public class GUIManager : MonoBehaviour
             levelupwindow_res_text.text = "Res : " + charaData.Res;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="charaData"></param>
+    /// <param name="list"></param>
     public void ShowLeveUpWindow(Character_Multi charaData, List<int> list)
     {
         LevelUpWindow.SetActive(true);
@@ -466,6 +497,9 @@ public class GUIManager : MonoBehaviour
             levelupwindow_res_text.text = "Res : " + charaData.Res;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void HideLevelUpWindow()
     {
         LevelUpWindow.SetActive(false);

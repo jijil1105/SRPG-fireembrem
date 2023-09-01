@@ -337,6 +337,10 @@ public class Character_Multi : MonoBehaviourPunCallbacks
             this.GetComponent<SpriteRenderer>().color = new Color32(100, 100, 100, 255);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="isEnemy"></param>
     [PunRPC]
     public void Init(bool isEnemy)
     {
