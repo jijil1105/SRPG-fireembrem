@@ -136,9 +136,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32f6c037e32c54168b6fd0f0c0956be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initPos_X: 1
+  initPos_X: -1
   initPos_Z: 4
-  isEnemy: 0
+  isEnemy: 1
   charaName: "\u9B54\u8853\u5E2B"
   maxHP: 15
   atk: 2

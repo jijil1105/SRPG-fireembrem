@@ -44,6 +44,7 @@ MonoBehaviour:
   - InitChara
   - Init
   - Synchronization
+  - RpcSend
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -236,8 +236,19 @@ public class CharactorManager : MonoBehaviour
             SaveData SaveData = DataManager._instance.GetSaveData();
             if (SaveData != null)
             {
-                int initX = -1;
-                int initZ = -4;
+                int initX;
+                int initZ;
+
+                if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+                {
+                    initX = 1;
+                    initZ = 4;
+                }
+                else
+                {
+                    initX = -1;
+                    initZ = -4;
+                }
 
                 for (int i = 0; i < SaveData.name.Count(); i++)
                 {
@@ -275,17 +286,12 @@ public class CharactorManager : MonoBehaviour
 
                     if (PhotonNetwork.MasterClient.UserId == PhotonNetwork.LocalPlayer.UserId)
                     {
-                        initX = 1;
-                        initZ = 4;
-
-                        obj.GetComponent<Character_Multi>().isEnemy = false;
                         obj.GetComponent<Character_Multi>().initPos_X = initX;
                         obj.GetComponent<Character_Multi>().initPos_Z = initZ;
-                        initX--;    
+                        initX--;
                     }
                     else
                     {
-                        obj.GetComponent<Character_Multi>().isEnemy = true;
                         obj.GetComponent<Character_Multi>().initPos_X = initX;
                         obj.GetComponent<Character_Multi>().initPos_Z = initZ;
                         initX++;

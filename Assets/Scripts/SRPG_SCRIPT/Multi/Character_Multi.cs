@@ -106,18 +106,19 @@ public class Character_Multi : MonoBehaviourPunCallbacks
 
         following_to_chara = false;
 
-        if(photonView)
+        if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
         {
-            if (PhotonNetwork.MasterClient.UserId == PhotonNetwork.LocalPlayer.UserId)
+            if(photonView.IsMine)
             {
-                photonView.RPC(nameof(Init), RpcTarget.All, false);
-            }
-
-            else
+                isEnemy = false;
+            }            
+        }
+        else
+        {
+            if (photonView.IsMine)
             {
-                photonView.RPC(nameof(Init), RpcTarget.All, true);
+                isEnemy = true;
             }
-
         }
     }
 
@@ -127,6 +128,10 @@ public class Character_Multi : MonoBehaviourPunCallbacks
     // (スプライトオブジェクトをメインカメラの方向に向ける)
     void Update()
     {
+        if(photonView.IsMine)
+        {
+            photonView.RPC(nameof(RpcSend), RpcTarget.All, this.isEnemy, this.transform.position.x, this.transform.position.y, this.transform.position.z);
+        }
         /*Vector3 camerPos = MainCamera.transform.position;
         camerPos.y = transform.position.y;
         transform.LookAt(MainCamera.transform);
@@ -136,6 +141,21 @@ public class Character_Multi : MonoBehaviourPunCallbacks
         {
             MainCamera.GetComponent<CameraController>().get_chara_subject.OnNext(this);
         }*/
+    }
+
+    //-------------------------------------------------------------------------
+
+    [PunRPC]
+    private void RpcSend(bool isEnemy, float x, float y, float z)
+    {
+        this.isEnemy = isEnemy;
+        Vector3 pos = new Vector3();
+
+        pos.x = x;
+        pos.y = y;
+        pos.z = z;
+
+        transform.position = pos;
     }
 
     //-------------------------------------------------------------------------
@@ -335,15 +355,5 @@ public class Character_Multi : MonoBehaviourPunCallbacks
 
         else
             this.GetComponent<SpriteRenderer>().color = new Color32(100, 100, 100, 255);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="isEnemy"></param>
-    [PunRPC]
-    public void Init(bool isEnemy)
-    {
-        this.isEnemy = isEnemy;
     }
 }
