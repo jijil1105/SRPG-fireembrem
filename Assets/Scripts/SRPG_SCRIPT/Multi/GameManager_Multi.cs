@@ -116,7 +116,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         if (!Input.GetMouseButton(0)) { isCalledOnce = false; }
 
-        photonView.RPC(nameof(Synchronization), RpcTarget.All, nowPhase);
+        //photonView.RPC(nameof(Synchronization), RpcTarget.All, nowPhase);
 
     }
 
@@ -126,6 +126,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     private void Synchronization(Phase phase)
     {
         nowPhase = phase;
+
+        Debug.Log(phase);
     }
 
     //-------------------------------------------------------------------------
@@ -444,6 +446,9 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         // モード変更を保存
         nowPhase = NowPhase;
         Debug.Log("Change" + nowPhase);
+
+        photonView.RPC(nameof(Synchronization), RpcTarget.All, nowPhase);
+
 
         // 特定のモードに切り替わったタイミングで行う処理
         switch (nowPhase)
