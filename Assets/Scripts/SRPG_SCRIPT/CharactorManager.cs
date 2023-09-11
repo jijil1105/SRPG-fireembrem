@@ -307,9 +307,9 @@ public class CharactorManager : MonoBehaviour
                         );
 
                     Obj.transform.SetParent(charactorParent);
-
-                    charactorParent.GetComponentsInChildren(Charactors_Multis);
                 }
+
+                charactorParent.GetComponentsInChildren(Charactors_Multis);
             }
         }
     }

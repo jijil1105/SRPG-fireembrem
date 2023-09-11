@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using DG.Tweening;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
+using Photon.Realtime;
 
 public class GameManager_Multi : MonoBehaviourPunCallbacks
 {
@@ -72,6 +74,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
+    
+
+    //------------------------------------------------------------------------
+
     //変数の初期化
 
     public void Start()
@@ -118,6 +124,21 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         //photonView.RPC(nameof(Synchronization), RpcTarget.All, nowPhase);
 
+    }
+
+    //-------------------------------------------------------------------------
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        base.OnPlayerEnteredRoom(newPlayer);
+
+        var charas = UnityEngine.EventSystems.EventSystem.FindObjectsOfType<Character_Multi>();
+
+        Debug.Log(newPlayer + " " + "Entered Room");
+
+        foreach (var chara in charas)
+            charactorManager.Charactors_Multis.Add(chara);
+            
     }
 
     //-------------------------------------------------------------------------

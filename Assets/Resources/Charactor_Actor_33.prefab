@@ -10,11 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4334622638152197802}
   - component: {fileID: 2336360642440602846}
-  - component: {fileID: 1292772652280456266}
-  - component: {fileID: -1608678244843464409}
-  - component: {fileID: 7445869939072328428}
+  - component: {fileID: 3360908307870512068}
   m_Layer: 0
-  m_Name: Charactor_Actor_03_Photon
+  m_Name: Charactor_Actor_33
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,7 +83,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1292772652280456266
+--- !u!114 &3360908307870512068
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,64 +92,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8516334276831482043}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Script: {fileID: 11500000, guid: 778389293cb554e03883ad16f81eb89a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: -1608678244843464409}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &-1608678244843464409
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8516334276831482043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 1
-  m_UseLocal: 1
---- !u!114 &7445869939072328428
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8516334276831482043}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32f6c037e32c54168b6fd0f0c0956be5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  initPos_X: -1
-  initPos_Z: 4
-  isEnemy: 1
+  initPos_X: 1
+  initPos_Z: -4
+  isEnemy: 0
   charaName: "\u9B54\u8853\u5E2B"
-  maxHP: 15
-  atk: 2
-  def: 2
+  maxHP: 16
+  atk: 3
+  def: 3
   Int: 20
   Res: 10
   attribute: 1
   moveType: 1
   skill: 4
   isMagicAttac: 1
-  Lv: 1
-  nowExp: 0
-  ExpPerLv: 100
+  Lv: 2
+  nowExp: 50
+  ExpPerLv: 150
   isSkillLock: 0
   isDefBreak: 0
   isIncapacitated: 0

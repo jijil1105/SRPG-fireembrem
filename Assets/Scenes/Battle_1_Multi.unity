@@ -2428,6 +2428,9 @@ MonoBehaviour:
   - charaObj: {fileID: 8516334276831482043, guid: ae3f65c450b804a82867e28296652955, type: 3}
     Character_Name: "\u9B54\u8853\u5E2B"
     Character_ObjName: Charactor_Actor_03
+  - charaObj: {fileID: 8516334276831482043, guid: c558317673b1346a8884610866fd89b4, type: 3}
+    Character_Name: "\u9B54\u8853\u5E2B"
+    Character_ObjName: Charactor_Actor_033
   initPos:
   - {x: 0, y: 0, z: 0}
   - {x: 1, y: 0, z: 0}
