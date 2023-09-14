@@ -10,11 +10,11 @@ public class Character_Multi : MonoBehaviourPunCallbacks
 {
     // キャラクター初期設定(インスペクタから入力)
     [Header("Init Position(-4~4)"), SerializeField]
-    public int initPos_X;//初期位置：X
+    public int initPos_X;//初期位置：X/
     [Header("Init Position(-4~4)"), SerializeField]
-    public int initPos_Z;//初期位置：Z
+    public int initPos_Z;//初期位置：Z/
     [Header("EnemyFlg true: EnemyCharactor")]
-    public bool isEnemy;// 敵フラグ
+    public bool isEnemy;// 敵フラグ/
     [Header("Charactor's Name")]
     public string charaName;//キャラ名
     [Header("maxHP")]

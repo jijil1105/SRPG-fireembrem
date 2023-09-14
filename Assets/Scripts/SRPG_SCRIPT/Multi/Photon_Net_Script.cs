@@ -18,21 +18,6 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
         
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(Input.GetMouseButton(0))
-        {
-            //photonView.RPC(nameof(RpcSendMessage), RpcTarget.All, "konnitiwa");
-        }
-    }
-
-    [PunRPC]
-    public void RpcSendMessage(string m)
-    {
-        Debug.Log(m);
-    }
-
     public void Multi_Button()
     {
         PhotonNetwork.ConnectUsingSettings();

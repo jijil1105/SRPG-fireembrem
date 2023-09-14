@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
+using System;
 
 public class GameManager_Multi : MonoBehaviourPunCallbacks
 {
@@ -132,13 +133,20 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     {
         base.OnPlayerEnteredRoom(newPlayer);
 
-        var charas = UnityEngine.EventSystems.EventSystem.FindObjectsOfType<Character_Multi>();
-
         Debug.Log(newPlayer + " " + "Entered Room");
 
-        foreach (var chara in charas)
+        //photonView.RPC(nameof(SynchedCharacters), RpcTarget.All, charactorManager.Charactors_Multis);
+    }
+
+    //-------------------------------------------------------------------------
+
+    [PunRPC]
+    private void SynchedCharacters(Character_Multi[] charactors)
+    {
+        foreach(var chara in charactors)
+        {
             charactorManager.Charactors_Multis.Add(chara);
-            
+        }
     }
 
     //-------------------------------------------------------------------------
@@ -1097,3 +1105,74 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         ChangePhase(Phase.Myturn_Start, true);
     }
 }
+
+/*public static class CharacterSerializer
+{
+    public static void Register()
+    {
+        ExitGames.Client.Photon.PhotonPeer.RegisterType(typeof(Character_Multi), (byte)'C', SerializeCharacter_Muliti, DeserializeCharacterMulti);
+    }
+
+    private static byte[] SerializeCharacter_Muliti(object i_customobject)
+    {
+        Character_Multi character_Multi = (Character_Multi)i_customobject;
+
+        var bytes = new byte[(4 * sizeof(int))];
+        int index = 0;
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.initPos_X, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.initPos_Z, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(Convert.ToInt32(character_Multi.isEnemy), bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(Convert.ToInt32(character_Multi.charaName), bytes, ref index);
+
+        return bytes;
+    }
+
+    private static object DeserializeCharacterMulti(byte[] i_bytes)
+    {
+        var character_multi = new Character_Multi();
+        int index = 0;
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.initPos_X, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.initPos_Z, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out Convert.ToInt64(character_multi.isEnemy), i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out color.a, i_bytes, ref index);
+
+        return color;
+    }
+}*/
+
+
+
+public static class ColorSerializer
+{
+    public static void Register()
+    {
+        ExitGames.Client.Photon.PhotonPeer.RegisterType(typeof(Color), (byte)'C', SerializeColor, DeserializeColor);
+    }
+
+    private static byte[] SerializeColor(object i_customobject)
+    {
+        Color color = (Color)i_customobject;
+
+        var bytes = new byte[4 * sizeof(float)];
+        int index = 0;
+        ExitGames.Client.Photon.Protocol.Serialize(color.r, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(color.g, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(color.b, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(color.a, bytes, ref index);
+
+        return bytes;
+    }
+
+    private static object DeserializeColor(byte[] i_bytes)
+    {
+        var color = new Color();
+        int index = 0;
+        ExitGames.Client.Photon.Protocol.Deserialize(out color.r, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out color.g, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out color.b, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out color.a, i_bytes, ref index);
+
+        return color;
+    }
+
+} // class ColorSerializer
