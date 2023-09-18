@@ -196,64 +196,66 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         {
             //自分のターン：開始時
             case Phase.Myturn_Start:
-
-                //全ブロックの選択状態解除
-                mapManager.AllSelectionModeClear();
-                //ブロックを選択状態として白色に強調表示にする
-                targetBlock.SetSelectionMode(MapBlock.Highlight.Select);
-
-                //選択したブロックの座標にキャラクターが居ればキャラクター情報取得、居なければnull
-                Character_Multi charaData = charactorManager.GetCharactor_Multi(targetBlock.XPos, targetBlock.ZPos);
-
-                //選択したブロックの座標にキャラクターが居た場合の処理
-                if (charaData)
+                if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                 {
-                    if(charaData.GetComponent<PhotonView>().IsMine)
+                    //全ブロックの選択状態解除
+                    mapManager.AllSelectionModeClear();
+                    //ブロックを選択状態として白色に強調表示にする
+                    targetBlock.SetSelectionMode(MapBlock.Highlight.Select);
+
+                    //選択したブロックの座標にキャラクターが居ればキャラクター情報取得、居なければnull
+                    Character_Multi charaData = charactorManager.GetCharactor_Multi(targetBlock.XPos, targetBlock.ZPos);
+
+                    //選択したブロックの座標にキャラクターが居た場合の処理
+                    if (charaData)
                     {
-                        //選択ブロックに居たキャラクターの記憶
-                        selectingChara = charaData;
-                        // 選択キャラクターの現在位置を記憶
-                        charaStartPos_X = selectingChara.XPos;
-                        charaStartPos_Z = selectingChara.ZPos;
-                        //選択キャラのステータスをUI表示する
-                        guiManager.ShowStatusWindow(charaData);
+                        if (charaData.GetComponent<PhotonView>().IsMine)
+                        {
+                            //選択ブロックに居たキャラクターの記憶
+                            selectingChara = charaData;
+                            // 選択キャラクターの現在位置を記憶
+                            charaStartPos_X = selectingChara.XPos;
+                            charaStartPos_Z = selectingChara.ZPos;
+                            //選択キャラのステータスをUI表示する
+                            guiManager.ShowStatusWindow(charaData);
 
-                        //行動不能状態なら処理しない
-                        if (charaData.isIncapacitated)
-                            return;
+                            //行動不能状態なら処理しない
+                            if (charaData.isIncapacitated)
+                                return;
 
-                        //選択キャラの移動可能ブロックリストを取得
-                        reachableBlocks = mapManager.SearchReachableBlocks_Multi(charaData.XPos, charaData.ZPos);
+                            //選択キャラの移動可能ブロックリストを取得
+                            reachableBlocks = mapManager.SearchReachableBlocks_Multi(charaData.XPos, charaData.ZPos);
 
-                        //移動可能ブロックを青色に強調表示
-                        foreach (MapBlock mapblock in reachableBlocks)
-                            mapblock.SetSelectionMode(MapBlock.Highlight.Reachable);
+                            //移動可能ブロックを青色に強調表示
+                            foreach (MapBlock mapblock in reachableBlocks)
+                                mapblock.SetSelectionMode(MapBlock.Highlight.Reachable);
 
-                        //移動キャンセルボタン表示
-                        guiManager.ShowMoveCancelButton(true);
+                            //移動キャンセルボタン表示
+                            guiManager.ShowMoveCancelButton(true);
 
-                        //進行モード＜自分のターン：移動先選択中＞に変更
-                        ChangePhase(Phase.Myturn_Moving);
+                            //進行モード＜自分のターン：移動先選択中＞に変更
+                            ChangePhase(Phase.Myturn_Moving);
 
-                        //選択キャラのデバッグ出力
-                        Debug.Log("Select Charactor :" + charaData.gameObject.name + " : position :" + charaData.XPos + " : " + charaData.ZPos);
-                        Debug.Log("IsMine");
+                            //選択キャラのデバッグ出力
+                            Debug.Log("Select Charactor :" + charaData.gameObject.name + " : position :" + charaData.XPos + " : " + charaData.ZPos);
+                            Debug.Log("IsMine");
+                        }
+                        else
+                        {
+                            //選択中キャラを初期化
+                            ClearSelectingChara();
+                            Debug.Log("Isn't Mine");
+                        }
                     }
+
                     else
-                    {
+                    {//選択ブロック座標にキャラが居ない場合
+
                         //選択中キャラを初期化
                         ClearSelectingChara();
-                        Debug.Log("Isn't Mine");
+                        //選択ブロックのデバッグ出力
+                        Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
                     }
-                }
-
-                else
-                {//選択ブロック座標にキャラが居ない場合
-
-                    //選択中キャラを初期化
-                    ClearSelectingChara();
-                    //選択ブロックのデバッグ出力
-                    Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
                 }
 
                 break;
@@ -261,124 +263,133 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             //自分のターン：移動先選択中
             case Phase.Myturn_Moving:
 
-                //選択キャラが敵キャラクターなら移動先選択状態を解除
-                if (selectingChara.isEnemy)
+                if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                 {
-                    CancelMoving();
-                    break;
-                }
+                    //選択キャラが敵キャラクターなら移動先選択状態を解除
+                    if (selectingChara.isEnemy)
+                    {
+                        CancelMoving();
+                        break;
+                    }
 
-                // 選択ブロックが移動可能な場所リスト内にある場合、移動処理を開始
-                if (reachableBlocks.Contains(targetBlock))
-                {
-                    //選択キャラを選択ブロックへ移動
-                    selectingChara.MovePosition(targetBlock.XPos, targetBlock.ZPos);
+                    // 選択ブロックが移動可能な場所リスト内にある場合、移動処理を開始
+                    if (reachableBlocks.Contains(targetBlock))
+                    {
+                        //選択キャラを選択ブロックへ移動
+                        selectingChara.MovePosition(targetBlock.XPos, targetBlock.ZPos);
 
-                    //移動可能ブロックリストを初期化
-                    reachableBlocks.Clear();
+                        //移動可能ブロックリストを初期化
+                        reachableBlocks.Clear();
 
-                    //全ブロックの選択状態解除
-                    mapManager.AllSelectionModeClear();
+                        //全ブロックの選択状態解除
+                        mapManager.AllSelectionModeClear();
 
-                    //キャンセルボタン非表示
-                    guiManager.ShowMoveCancelButton(false);
+                        //キャンセルボタン非表示
+                        guiManager.ShowMoveCancelButton(false);
 
-                    // 0.5秒数経過後に処理を実行する
-                    DOVirtual.DelayedCall(0.5f, () =>
-                    {　　//コマンドボタン表示
-                        guiManager.ShowCommandButtons(selectingChara);
+                        // 0.5秒数経過後に処理を実行する
+                        DOVirtual.DelayedCall(0.5f, () =>
+                        {  //コマンドボタン表示
+                            guiManager.ShowCommandButtons(selectingChara);
 
-                        //進行モード＜自分のターン：移動後のコマンド選択中＞に変更
-                        ChangePhase(Phase.Myturn_Command);
-                    });
+                            //進行モード＜自分のターン：移動後のコマンド選択中＞に変更
+                            ChangePhase(Phase.Myturn_Command);
+                        });
+                    }
                 }
                 break;
             //自分のターン：移動後のコマンド選択中
             case Phase.Myturn_Command:
-                // キャラクター攻撃処理
-                // (攻撃可能ブロックを選択した場合に攻撃処理を呼び出す)
-                if (attackableBlocks.Contains(targetBlock))
+                if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                 {
-                    // 攻撃先のブロック情報を記憶
-                    attackBlock = targetBlock;
+                    // キャラクター攻撃処理
+                    // (攻撃可能ブロックを選択した場合に攻撃処理を呼び出す)
+                    if (attackableBlocks.Contains(targetBlock))
+                    {
+                        // 攻撃先のブロック情報を記憶
+                        attackBlock = targetBlock;
 
-                    // 行動決定・キャンセルボタンを表示する
-                    guiManager.ShowDecideButtons();
+                        // 行動決定・キャンセルボタンを表示する
+                        guiManager.ShowDecideButtons();
 
-                    // 攻撃可能な場所リストを初期化する
-                    attackableBlocks.Clear();
+                        // 攻撃可能な場所リストを初期化する
+                        attackableBlocks.Clear();
 
-                    // 全ブロックの選択状態を解除
-                    mapManager.AllSelectionModeClear();
+                        // 全ブロックの選択状態を解除
+                        mapManager.AllSelectionModeClear();
 
-                    // 攻撃先のブロックを強調表示する
-                    attackBlock.SetSelectionMode(MapBlock.Highlight.Attackable);
+                        // 攻撃先のブロックを強調表示する
+                        attackBlock.SetSelectionMode(MapBlock.Highlight.Attackable);
 
-                    // 進行モードを進める：攻撃の対象を選択中
-                    ChangePhase(Phase.Myturn_Targeting);
+                        // 進行モードを進める：攻撃の対象を選択中
+                        ChangePhase(Phase.Myturn_Targeting);
+                    }
                 }
                 break;
 
             //敵ターン：開始時
             case Phase.Enemyturn_Start:
 
-                //全ブロックの選択状態解除
-                mapManager.AllSelectionModeClear();
-                //ブロックを選択状態として白色に強調表示にする
-                targetBlock.SetSelectionMode(MapBlock.Highlight.Select);
-
-                //選択したブロックの座標にキャラクターが居ればキャラクター情報取得、居なければnull
-                Character_Multi EnemyData = charactorManager.GetCharactor_Multi(targetBlock.XPos, targetBlock.ZPos);
-
-                //選択したブロックの座標にキャラクターが居た場合の処理
-                if (EnemyData)
+                if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
-                    if (EnemyData.GetComponent<PhotonView>().IsMine)
+                    //全ブロックの選択状態解除
+                    mapManager.AllSelectionModeClear();
+                    //ブロックを選択状態として白色に強調表示にする
+                    targetBlock.SetSelectionMode(MapBlock.Highlight.Select);
+
+                    //選択したブロックの座標にキャラクターが居ればキャラクター情報取得、居なければnull
+                    Character_Multi EnemyData = charactorManager.GetCharactor_Multi(targetBlock.XPos, targetBlock.ZPos);
+
+                    //選択したブロックの座標にキャラクターが居た場合の処理
+                    if (EnemyData)
                     {
-                        //選択ブロックに居たキャラクターの記憶
-                        selectingChara = EnemyData;
-                        // 選択キャラクターの現在位置を記憶
-                        charaStartPos_X = selectingChara.XPos;
-                        charaStartPos_Z = selectingChara.ZPos;
-                        //選択キャラのステータスをUI表示する
-                        guiManager.ShowStatusWindow(EnemyData);
+                        if (EnemyData.GetComponent<PhotonView>().IsMine)
+                        {
+                            //選択ブロックに居たキャラクターの記憶
+                            selectingChara = EnemyData;
+                            // 選択キャラクターの現在位置を記憶
+                            charaStartPos_X = selectingChara.XPos;
+                            charaStartPos_Z = selectingChara.ZPos;
+                            //選択キャラのステータスをUI表示する
+                            guiManager.ShowStatusWindow(EnemyData);
 
-                        //行動不能状態なら処理しない
-                        if (EnemyData.isIncapacitated)
-                            return;
+                            //行動不能状態なら処理しない
+                            if (EnemyData.isIncapacitated)
+                                return;
 
-                        //選択キャラの移動可能ブロックリストを取得
-                        reachableBlocks = mapManager.SearchReachableBlocks_Multi(EnemyData.XPos, EnemyData.ZPos);
+                            //選択キャラの移動可能ブロックリストを取得
+                            reachableBlocks = mapManager.SearchReachableBlocks_Multi(EnemyData.XPos, EnemyData.ZPos);
 
-                        //移動可能ブロックを青色に強調表示
-                        foreach (MapBlock mapblock in reachableBlocks)
-                            mapblock.SetSelectionMode(MapBlock.Highlight.Reachable);
+                            //移動可能ブロックを青色に強調表示
+                            foreach (MapBlock mapblock in reachableBlocks)
+                                mapblock.SetSelectionMode(MapBlock.Highlight.Reachable);
 
-                        //移動キャンセルボタン表示
-                        guiManager.ShowMoveCancelButton(true);
+                            //移動キャンセルボタン表示
+                            guiManager.ShowMoveCancelButton(true);
 
-                        //進行モード＜自分のターン：移動先選択中＞に変更
-                        ChangePhase(Phase.Enemyturn_Moving);
+                            //進行モード＜自分のターン：移動先選択中＞に変更
+                            ChangePhase(Phase.Enemyturn_Moving);
 
-                        //選択キャラのデバッグ出力
-                        Debug.Log("Select Charactor :" + EnemyData.gameObject.name + " : position :" + EnemyData.XPos + " : " + EnemyData.ZPos);
-                        Debug.Log("IsMine");
+                            //選択キャラのデバッグ出力
+                            Debug.Log("Select Charactor :" + EnemyData.gameObject.name + " : position :" + EnemyData.XPos + " : " + EnemyData.ZPos);
+                            Debug.Log("IsMine");
+                        }
+                        else
+                        {
+                            //選択中キャラを初期化
+                            ClearSelectingChara();
+                            Debug.Log("Isn't Mine");
+                        }
                     }
+
                     else
-                    {
+                    {//選択ブロック座標にキャラが居ない場合
+
                         //選択中キャラを初期化
                         ClearSelectingChara();
-                        Debug.Log("Isn't Mine");
+                        //選択ブロックのデバッグ出力
+                        Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
                     }
-                }
-
-                else
-                {//選択ブロック座標にキャラが居ない場合
-
-                    //選択中キャラを初期化
-                    ClearSelectingChara();
-                    //選択ブロックのデバッグ出力
-                    Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
                 }
 
                 break;
@@ -386,61 +397,67 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             //敵ターン：移動先選択中
             case Phase.Enemyturn_Moving:
 
-                //選択キャラが敵キャラクターなら移動先選択状態を解除
-                if (selectingChara.isEnemy)
+                if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
-                    CancelMoving(false);
-                    break;
-                }
+                    //選択キャラが敵キャラクターなら移動先選択状態を解除
+                    if (!selectingChara.isEnemy)
+                    {
+                        CancelMoving(false);
+                        break;
+                    }
 
-                // 選択ブロックが移動可能な場所リスト内にある場合、移動処理を開始
-                if (reachableBlocks.Contains(targetBlock))
-                {
-                    //選択キャラを選択ブロックへ移動
-                    selectingChara.MovePosition(targetBlock.XPos, targetBlock.ZPos);
+                    // 選択ブロックが移動可能な場所リスト内にある場合、移動処理を開始
+                    if (reachableBlocks.Contains(targetBlock))
+                    {
+                        //選択キャラを選択ブロックへ移動
+                        selectingChara.MovePosition(targetBlock.XPos, targetBlock.ZPos);
 
-                    //移動可能ブロックリストを初期化
-                    reachableBlocks.Clear();
+                        //移動可能ブロックリストを初期化
+                        reachableBlocks.Clear();
 
-                    //全ブロックの選択状態解除
-                    mapManager.AllSelectionModeClear();
+                        //全ブロックの選択状態解除
+                        mapManager.AllSelectionModeClear();
 
-                    //キャンセルボタン非表示
-                    guiManager.ShowMoveCancelButton(false);
+                        //キャンセルボタン非表示
+                        guiManager.ShowMoveCancelButton(false);
 
-                    // 0.5秒数経過後に処理を実行する
-                    DOVirtual.DelayedCall(0.5f, () =>
-                    {　　//コマンドボタン表示
-                        guiManager.ShowCommandButtons(selectingChara);
+                        // 0.5秒数経過後に処理を実行する
+                        DOVirtual.DelayedCall(0.5f, () =>
+                        {  //コマンドボタン表示
+                            guiManager.ShowCommandButtons(selectingChara);
 
-                        //進行モード＜自分のターン：移動後のコマンド選択中＞に変更
-                        ChangePhase(Phase.Enemyturn_Command);
-                    });
+                            //進行モード＜自分のターン：移動後のコマンド選択中＞に変更
+                            ChangePhase(Phase.Enemyturn_Command);
+                        });
+                    }
                 }
                 break;
             //敵ターン：移動後のコマンド選択中
             case Phase.Enemyturn_Command:
-                // キャラクター攻撃処理
-                // (攻撃可能ブロックを選択した場合に攻撃処理を呼び出す)
-                if (attackableBlocks.Contains(targetBlock))
+                if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
-                    // 攻撃先のブロック情報を記憶
-                    attackBlock = targetBlock;
+                    // キャラクター攻撃処理
+                    // (攻撃可能ブロックを選択した場合に攻撃処理を呼び出す)
+                    if (attackableBlocks.Contains(targetBlock))
+                    {
+                        // 攻撃先のブロック情報を記憶
+                        attackBlock = targetBlock;
 
-                    // 行動決定・キャンセルボタンを表示する
-                    guiManager.ShowDecideButtons();
+                        // 行動決定・キャンセルボタンを表示する
+                        guiManager.ShowDecideButtons();
 
-                    // 攻撃可能な場所リストを初期化する
-                    attackableBlocks.Clear();
+                        // 攻撃可能な場所リストを初期化する
+                        attackableBlocks.Clear();
 
-                    // 全ブロックの選択状態を解除
-                    mapManager.AllSelectionModeClear();
+                        // 全ブロックの選択状態を解除
+                        mapManager.AllSelectionModeClear();
 
-                    // 攻撃先のブロックを強調表示する
-                    attackBlock.SetSelectionMode(MapBlock.Highlight.Attackable);
+                        // 攻撃先のブロックを強調表示する
+                        attackBlock.SetSelectionMode(MapBlock.Highlight.Attackable);
 
-                    // 進行モードを進める：攻撃の対象を選択中
-                    ChangePhase(Phase.Enemyturn_Targeting);
+                        // 進行モードを進める：攻撃の対象を選択中
+                        ChangePhase(Phase.Enemyturn_Targeting);
+                    }
                 }
                 break;
         }
@@ -484,55 +501,51 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         {
             // 自分のターン：開始時
             case Phase.Myturn_Start:
-                //行動可能な自キャラが居るかチェック
-                var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-                //動かせるキャラが居なかった場合
-                if (!chara)
+                if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                 {
-                    //味方キャラ取得
-                    var charas = charactorManager.Charactors_Multis.Where(chara => chara.isEnemy == false);
-                    //行動可能にする
-                    foreach (var charaData in charas)
-                        charaData.SetInCapacitited(false);
+                    //行動可能な自キャラが居るかチェック
+                    var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+                    //動かせるキャラが居なかった場合
+                    if (!chara)
+                    {
+                        //味方キャラ取得
+                        var charas = charactorManager.Charactors_Multis.Where(chara => chara.isEnemy == false);
+                        //行動可能にする
+                        foreach (var charaData in charas)
+                            charaData.SetInCapacitited(false);
 
-                    ChangePhase(Phase.Enemyturn_Start);
+                        ChangePhase(Phase.Enemyturn_Start);
+                    }
+
+                    // 自分のターン開始時のロゴを表示
+                    if (!noLogos)
+                        guiManager.ShowLogoChangeTurn(true);
                 }
 
-                // 自分のターン開始時のロゴを表示
-                if (!noLogos)
-                    guiManager.ShowLogoChangeTurn(true);
                 break;
 
             // 敵のターン：開始時
             case Phase.Enemyturn_Start:
-                var enemy = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == true && chara.isIncapacitated != true);
-                Debug.Log("" + enemy);
-                //動かせるキャラが居なかった場合
-                if (!enemy)
+                if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
-                    //敵キャラ取得
-                    var charas = charactorManager.Charactors_Multis.Where(chara => chara.isEnemy == true);
-                    //行動可能にする
-                    foreach (var charaData in charas)
-                        charaData.SetInCapacitited(false);
+                    var enemy = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == true && chara.isIncapacitated != true);
+                    Debug.Log("" + enemy);
+                    //動かせるキャラが居なかった場合
+                    if (!enemy)
+                    {
+                        //敵キャラ取得
+                        var charas = charactorManager.Charactors_Multis.Where(chara => chara.isEnemy == true);
+                        //行動可能にする
+                        foreach (var charaData in charas)
+                            charaData.SetInCapacitited(false);
 
-                    ChangePhase(Phase.Myturn_Start);
+                        ChangePhase(Phase.Myturn_Start);
+                    }
 
-                    /*var chara_data = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-                    Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara_data);
-                    return;*/
+                    // 敵のターン開始時のロゴを表示
+                    if (!noLogos)
+                        guiManager.ShowLogoChangeTurn(false);
                 }
-
-                // 敵のターン開始時のロゴを表示
-                if (!noLogos)
-                    guiManager.ShowLogoChangeTurn(false);
-
-                // 敵の行動を開始する処理
-                // (ロゴ表示後に開始させる為、遅延処理にする)
-                /*DOVirtual.DelayedCall(1.0f, () =>
-                {　　//1秒遅延実行する内容
-                    EnemyCommand();
-                });*/
 
                 break;
         }
@@ -571,8 +584,17 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         selectingChara = null;
 
-        // 進行モード＜自ターン：開始時＞に変更
-        ChangePhase(Phase.Myturn_Start, true);
+        if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+        {
+            // 進行モード＜自ターン：開始時＞に変更
+            ChangePhase(Phase.Myturn_Start, true);
+        }
+
+        if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
+        {
+            // 進行モード＜敵ターン：開始時＞に変更
+            ChangePhase(Phase.Enemyturn_Start, true);
+        }
     }
 
     //------------------------------------------------------------------------
