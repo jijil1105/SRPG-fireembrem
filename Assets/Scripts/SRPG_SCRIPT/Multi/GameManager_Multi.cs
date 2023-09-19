@@ -75,7 +75,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
-    
+    [SerializeField]
+    public List<GameObject> gameObjects = new List<GameObject>();
 
     //------------------------------------------------------------------------
 
@@ -135,8 +136,15 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         Debug.Log(newPlayer + " " + "Entered Room");
 
-        //photonView.RPC(nameof(SynchedCharacters), RpcTarget.All, charactorManager.Charactors_Multis);
+        foreach(var p in PhotonNetwork.PhotonViewCollection)
+        {
+            var obj = p.gameObject;
+            gameObjects.Add(obj);
+        }
     }
+
+    //-------------------------------------------------------------------------
+
 
     //-------------------------------------------------------------------------
 
