@@ -55,7 +55,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     private Character_Multi selectingChara;//選択中のキャラクター（マップフィールド上のキャラクターを選択していない時はnull）
     private List<MapBlock> reachableBlocks;//選択キャラの移動可能範囲
     private List<MapBlock> attackableBlocks;//選択キャラの攻撃可能範囲
-    private SkillDefine.Skill selectingSkill;//選択中の特技(通常攻撃時はNONE固定)
+    private SkillDefine.Skill selectingSkill;//選択中の特技(通常攻撃時はNONE固定
 
     private enum Phase
     {
@@ -75,8 +75,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
-    [SerializeField]
-    public List<GameObject> gameObjects = new List<GameObject>();
+
 
     //------------------------------------------------------------------------
 
@@ -123,9 +122,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         }
 
         if (!Input.GetMouseButton(0)) { isCalledOnce = false; }
-
-        //photonView.RPC(nameof(Synchronization), RpcTarget.All, nowPhase);
-
     }
 
     //-------------------------------------------------------------------------
@@ -136,25 +132,24 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         Debug.Log(newPlayer + " " + "Entered Room");
 
-        foreach(var p in PhotonNetwork.PhotonViewCollection)
-        {
-            var obj = p.gameObject;
-            gameObjects.Add(obj);
-        }
+        photonView.RPC(nameof(SynchedCharacters), RpcTarget.All, charactorManager.Charactors_Multis[0]);
     }
 
     //-------------------------------------------------------------------------
 
 
+
     //-------------------------------------------------------------------------
 
     [PunRPC]
-    private void SynchedCharacters(Character_Multi[] charactors)
+    private void SynchedCharacters(Character_Multi charactor)
     {
-        foreach(var chara in charactors)
-        {
-            charactorManager.Charactors_Multis.Add(chara);
-        }
+        Debug.Log(charactor.maxHP);
+        Debug.Log(charactor.atk);
+        Debug.Log(charactor.def);
+        Debug.Log(charactor.Int);
+        Debug.Log(charactor.initPos_X);
+        Debug.Log(charactor.initPos_Z);
     }
 
     //-------------------------------------------------------------------------
@@ -1136,7 +1131,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     }
 }
 
-/*public static class CharacterSerializer
+public static class CharacterSerializer
 {
     public static void Register()
     {
@@ -1147,12 +1142,15 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     {
         Character_Multi character_Multi = (Character_Multi)i_customobject;
 
-        var bytes = new byte[(4 * sizeof(int))];
+        var bytes = new byte[(7 * sizeof(int))];
         int index = 0;
         ExitGames.Client.Photon.Protocol.Serialize(character_Multi.initPos_X, bytes, ref index);
         ExitGames.Client.Photon.Protocol.Serialize(character_Multi.initPos_Z, bytes, ref index);
-        ExitGames.Client.Photon.Protocol.Serialize(Convert.ToInt32(character_Multi.isEnemy), bytes, ref index);
-        ExitGames.Client.Photon.Protocol.Serialize(Convert.ToInt32(character_Multi.charaName), bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.maxHP, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.atk, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.def, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.Int, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.Res, bytes, ref index);
 
         return bytes;
     }
@@ -1163,12 +1161,15 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         int index = 0;
         ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.initPos_X, i_bytes, ref index);
         ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.initPos_Z, i_bytes, ref index);
-        ExitGames.Client.Photon.Protocol.Deserialize(out Convert.ToInt64(character_multi.isEnemy), i_bytes, ref index);
-        ExitGames.Client.Photon.Protocol.Deserialize(out color.a, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.maxHP, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.atk, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.def, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.Int, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.Res, i_bytes, ref index);
 
-        return color;
+        return character_multi;
     }
-}*/
+}
 
 
 

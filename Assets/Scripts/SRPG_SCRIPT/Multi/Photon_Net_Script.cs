@@ -15,7 +15,7 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        
+        CharacterSerializer.Register();
     }
 
     public void Multi_Button()
