@@ -74,12 +74,12 @@ public class BattleWindowUI : MonoBehaviour
 
 		// ダメージ計算後の残りHPを取得する
 		// (ここでは対象キャラクターデータのHPは変化させない)
-		int nowHP = charadata.NowHp - damagevalue;
+		int nowHP = charadata.nowHp - damagevalue;
 		// HPが0～最大値の範囲に収まるよう補正
 		nowHP = Mathf.Clamp(nowHP, 0, charadata.maxHP);
 
 		// HPゲージ表示
-		float amount = (float)charadata.NowHp / charadata.maxHP;// 表示中のFillAmount(初期値はHP減少前のもの)
+		float amount = (float)charadata.nowHp / charadata.maxHP;// 表示中のFillAmount(初期値はHP減少前のもの)
 		float endAmount = (float)nowHP / charadata.maxHP;// アニメーション後のFillAmount
 														 // HPゲージを徐々に減少させるアニメーション
 														 // (DOFillAmountメソッドを使ってもよい)

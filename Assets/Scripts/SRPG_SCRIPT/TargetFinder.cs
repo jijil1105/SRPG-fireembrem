@@ -88,7 +88,7 @@ public static class TargetFinder
         foreach (var enemyData in enemyCharas)
         {
             // 移動可能な場所リストを取得する
-            reachableBlocks = mapManager.SearchReachableBlocks(enemyData.XPos, enemyData.ZPos);
+            reachableBlocks = mapManager.SearchReachableBlocks(enemyData.xPos, enemyData.zPos);
 
             // それぞれの移動可能な場所ごとの処理
             foreach (var block in reachableBlocks)

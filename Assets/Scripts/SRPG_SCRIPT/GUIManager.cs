@@ -188,11 +188,11 @@ public class GUIManager : MonoBehaviour
 
         // HPゲージ表示
         // 最大値に対する現在HPの割合をゲージImageのfillAmountにセットする
-        float ratio = (float)charaData.NowHp / charaData.maxHP;
+        float ratio = (float)charaData.nowHp / charaData.maxHP;
         hpGageImage.fillAmount = ratio;
 
         // HPText表示(現在値と最大値両方を表示)
-        hpText.text = charaData.NowHp + "/" + charaData.maxHP;
+        hpText.text = charaData.nowHp + "/" + charaData.maxHP;
 
         if (charaData.isMagicAttac)
             // 魔法攻撃力Text表示(intからstringに変換)

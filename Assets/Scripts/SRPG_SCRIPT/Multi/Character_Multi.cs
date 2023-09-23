@@ -39,13 +39,9 @@ public class Character_Multi : MonoBehaviourPunCallbacks
     //-------------------------------------------------------------------------
     // ゲーム中に変化するキャラクターデータ
 
-    private int xPos;
-    private int zPos;
-    private int nowHp;
-
-    public int XPos { get => xPos; set => xPos = value; }// 現在のx座標
-    public int ZPos { get => zPos; set => zPos = value; }// 現在のz座標
-    public int NowHp { get => nowHp; set => nowHp = value; }//現在のHp
+    public int xPos;// 現在のx座標
+    public int zPos;// 現在のz座標
+    public int nowHp;//現在のHp
 
     public int Lv;//レベル
     public int nowExp;//現在の経験値
@@ -91,15 +87,15 @@ public class Character_Multi : MonoBehaviourPunCallbacks
         // Set object's init position from chractor's data
         Vector3 pos = new Vector3();
         pos.x = initPos_X;
-        XPos = initPos_X;
+        xPos = initPos_X;
 
         pos.y = 1.0f;
 
         pos.z = initPos_Z;
-        ZPos = initPos_Z;
+        zPos = initPos_Z;
         transform.position = pos;
 
-        NowHp = maxHP;
+        nowHp = maxHP;
 
         //Set camera from MainCamera
         MainCamera = Camera.main;
@@ -170,15 +166,15 @@ public class Character_Multi : MonoBehaviourPunCallbacks
         following_to_chara = true;
 
         Vector3 movePos = Vector3.zero;
-        movePos.x = targetXPos - XPos;
-        movePos.z = targetZPos - ZPos;
+        movePos.x = targetXPos - xPos;
+        movePos.z = targetZPos - zPos;
 
         // DoTweenのTweenを使用して徐々に位置が変化するアニメーションを行う
         transform.DOMove(movePos, 0.5f).SetEase(Ease.Linear).SetRelative();
 
         // キャラクターデータに位置を保存
-        XPos = targetXPos;
-        ZPos = targetZPos;
+        xPos = targetXPos;
+        zPos = targetZPos;
 
         DOVirtual.DelayedCall(0.5f, () =>
         {

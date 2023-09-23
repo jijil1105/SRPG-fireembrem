@@ -133,7 +133,7 @@ public class CharactorManager : MonoBehaviour
     /// <returns></returns>
     public Character_Multi GetCharactor_Multi(int X, int Z)
     {
-        return Charactors_Multis.FirstOrDefault(cha => cha.XPos == X && cha.ZPos == Z);
+        return Charactors_Multis.FirstOrDefault(cha => cha.xPos == X && cha.zPos == Z);
     }
 
     /// <summary>

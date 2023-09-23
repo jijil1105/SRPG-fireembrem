@@ -144,12 +144,17 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     [PunRPC]
     private void SynchedCharacters(Character_Multi charactor)
     {
-        Debug.Log(charactor.maxHP);
-        Debug.Log(charactor.atk);
-        Debug.Log(charactor.def);
-        Debug.Log(charactor.Int);
-        Debug.Log(charactor.initPos_X);
-        Debug.Log(charactor.initPos_Z);
+        Debug.Log(
+              "charactor.initPos_X" + charactor.initPos_X + ": "
+            + "charactor.initPos_Z" + charactor.initPos_Z + ": "
+            + "charactor.maxHP" + charactor.maxHP+": "
+            + "charactor.atk" + charactor.atk + ": "
+            + "charactor.def" + charactor.def + ": "
+            + "charactor.Int" + charactor.Int + ": "
+            + "charactor.Res" + charactor.Res + ": "
+            + "charactor.xPos" + charactor.xPos + ": "
+            + "charactor.zPos" + charactor.zPos + ": "
+            + "charactor.nowHP" + charactor.nowHp + ": "); 
     }
 
     //-------------------------------------------------------------------------
@@ -217,8 +222,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             //選択ブロックに居たキャラクターの記憶
                             selectingChara = charaData;
                             // 選択キャラクターの現在位置を記憶
-                            charaStartPos_X = selectingChara.XPos;
-                            charaStartPos_Z = selectingChara.ZPos;
+                            charaStartPos_X = selectingChara.xPos;
+                            charaStartPos_Z = selectingChara.zPos;
                             //選択キャラのステータスをUI表示する
                             guiManager.ShowStatusWindow(charaData);
 
@@ -227,7 +232,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                                 return;
 
                             //選択キャラの移動可能ブロックリストを取得
-                            reachableBlocks = mapManager.SearchReachableBlocks_Multi(charaData.XPos, charaData.ZPos);
+                            reachableBlocks = mapManager.SearchReachableBlocks_Multi(charaData.xPos, charaData.zPos);
 
                             //移動可能ブロックを青色に強調表示
                             foreach (MapBlock mapblock in reachableBlocks)
@@ -240,7 +245,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             ChangePhase(Phase.Myturn_Moving);
 
                             //選択キャラのデバッグ出力
-                            Debug.Log("Select Charactor :" + charaData.gameObject.name + " : position :" + charaData.XPos + " : " + charaData.ZPos);
+                            Debug.Log("Select Charactor :" + charaData.gameObject.name + " : position :" + charaData.xPos + " : " + charaData.zPos);
                             Debug.Log("IsMine");
                         }
                         else
@@ -351,8 +356,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             //選択ブロックに居たキャラクターの記憶
                             selectingChara = EnemyData;
                             // 選択キャラクターの現在位置を記憶
-                            charaStartPos_X = selectingChara.XPos;
-                            charaStartPos_Z = selectingChara.ZPos;
+                            charaStartPos_X = selectingChara.xPos;
+                            charaStartPos_Z = selectingChara.zPos;
                             //選択キャラのステータスをUI表示する
                             guiManager.ShowStatusWindow(EnemyData);
 
@@ -361,7 +366,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                                 return;
 
                             //選択キャラの移動可能ブロックリストを取得
-                            reachableBlocks = mapManager.SearchReachableBlocks_Multi(EnemyData.XPos, EnemyData.ZPos);
+                            reachableBlocks = mapManager.SearchReachableBlocks_Multi(EnemyData.xPos, EnemyData.zPos);
 
                             //移動可能ブロックを青色に強調表示
                             foreach (MapBlock mapblock in reachableBlocks)
@@ -374,7 +379,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             ChangePhase(Phase.Enemyturn_Moving);
 
                             //選択キャラのデバッグ出力
-                            Debug.Log("Select Charactor :" + EnemyData.gameObject.name + " : position :" + EnemyData.XPos + " : " + EnemyData.ZPos);
+                            Debug.Log("Select Charactor :" + EnemyData.gameObject.name + " : position :" + EnemyData.xPos + " : " + EnemyData.zPos);
                             Debug.Log("IsMine");
                         }
                         else
@@ -630,7 +635,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         // 攻撃可能な場所リストを取得する
         else
-            attackableBlocks = mapManager.SearchAttackableBlocks(selectingChara.XPos, selectingChara.ZPos);
+            attackableBlocks = mapManager.SearchAttackableBlocks(selectingChara.xPos, selectingChara.zPos);
 
         // 攻撃可能な場所リストを表示する
         foreach (MapBlock block in attackableBlocks)
@@ -686,12 +691,12 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         guiManager.battleWindowUI.ShowWindow(defensechara, damagevalue);
 
         // ダメージ量分防御側のHPを減少
-        defensechara.NowHp -= damagevalue;
+        defensechara.nowHp -= damagevalue;
         // HPが0～最大値の範囲に収まるよう補正
-        defensechara.NowHp = Mathf.Clamp(defensechara.NowHp, 0, defensechara.maxHP);
+        defensechara.nowHp = Mathf.Clamp(defensechara.nowHp, 0, defensechara.maxHP);
 
         // HP0になったキャラクターを削除する
-        if (defensechara.NowHp == 0)
+        if (defensechara.nowHp == 0)
         {
             //味方キャラなら経験値更新処理
             if (!attackchara.isEnemy)
@@ -913,7 +918,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         var chara = enemycharas[randValue];
 
         // 対象の移動可能場所リストの中から1つの場所をランダムに選ぶ
-        reachableBlocks = mapManager.SearchReachableBlocks(chara.XPos, chara.ZPos);
+        reachableBlocks = mapManager.SearchReachableBlocks(chara.xPos, chara.zPos);
         if (reachableBlocks.Count > 0)
         {
             randValue = UnityEngine.Random.Range(0, reachableBlocks.Count - 1);
@@ -1142,7 +1147,7 @@ public static class CharacterSerializer
     {
         Character_Multi character_Multi = (Character_Multi)i_customobject;
 
-        var bytes = new byte[(7 * sizeof(int))];
+        var bytes = new byte[(10 * sizeof(int))];
         int index = 0;
         ExitGames.Client.Photon.Protocol.Serialize(character_Multi.initPos_X, bytes, ref index);
         ExitGames.Client.Photon.Protocol.Serialize(character_Multi.initPos_Z, bytes, ref index);
@@ -1151,6 +1156,9 @@ public static class CharacterSerializer
         ExitGames.Client.Photon.Protocol.Serialize(character_Multi.def, bytes, ref index);
         ExitGames.Client.Photon.Protocol.Serialize(character_Multi.Int, bytes, ref index);
         ExitGames.Client.Photon.Protocol.Serialize(character_Multi.Res, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.xPos, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.zPos, bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Serialize(character_Multi.nowHp, bytes, ref index);
 
         return bytes;
     }
@@ -1166,6 +1174,9 @@ public static class CharacterSerializer
         ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.def, i_bytes, ref index);
         ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.Int, i_bytes, ref index);
         ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.Res, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.xPos, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.zPos, i_bytes, ref index);
+        ExitGames.Client.Photon.Protocol.Deserialize(out character_multi.nowHp, i_bytes, ref index);
 
         return character_multi;
     }
