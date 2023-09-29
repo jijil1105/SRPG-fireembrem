@@ -3,20 +3,30 @@ using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Threading;
 using UnityEngine.Assertions;
+using UnityEngine.UI;
+using UniRx;
 
 public class UniTask_Sample1 : MonoBehaviour
 {
     float _waitTime = 3f;
     private CancellationTokenSource _ct = new CancellationTokenSource();
 
+    [SerializeField] private Button button;
+    [SerializeField] private Text text;
+
+    [SerializeField] BoolReactiveProperty isDead = new BoolReactiveProperty(false);
+
+    private 
+
     // Start is called before the first frame update
     async void Start()
     {
-        await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space),cancellationToken: this.GetCancellationTokenOnDestroy());
+        /*await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space),cancellationToken: this.GetCancellationTokenOnDestroy());
         Debug.Log("hogehoge");
 
         await UniTask.Delay(TimeSpan.FromSeconds(_waitTime));
@@ -29,6 +39,94 @@ public class UniTask_Sample1 : MonoBehaviour
 
         await work3();
         Debug.Log("END");
+
+        await MoveCoroutine();
+        Debug.Log("MoveCoroutine");
+
+        Debug.Log(Time.time);
+        await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
+        Debug.Log(Time.time);
+
+        Debug.Log(Time.frameCount);
+        await UniTask.DelayFrame(5);
+        Debug.Log(Time.frameCount);
+
+        await UniTask.DelayFrame(5, PlayerLoopTiming.FixedUpdate);
+        Debug.Log("End");*/
+
+        /*DoAysnc().Forget();
+
+        DoAsync2().Forget();
+
+        await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
+
+        isDead.Value = true;
+
+        var result = await Observable.Return(1);
+        Debug.Log(result);
+
+        Debug.Log(Thread.CurrentThread.ManagedThreadId);
+
+        await UniTask.SwitchToTaskPool();
+
+        Debug.Log(Thread.CurrentThread.ManagedThreadId);
+
+        await UniTask.Yield();
+
+        Debug.Log(Thread.CurrentThread.ManagedThreadId);
+
+        button.BindToOnClick(_ =>
+        {
+            return GetHtmlAsync().ToObservable().ForEachAsync(x => { text.text = x.Substring(0, 100); });
+        });
+
+        var request = UnityWebRequest.Get("https://unity3d.com");
+
+        var result = await request.SendWebRequest().ToUniTask().Timeout(TimeSpan.FromSeconds(3));
+
+        Debug.Log(result.downloadHandler.text);*/
+
+        var task1 = GetHtmlAsync("https://github.com");
+        var task2 = GetHtmlAsync("https://www.yahoo.co.jp");
+
+        var (github, yahoo) = await UniTask.WhenAll(task1, task2);
+
+        Debug.Log(github);
+        Debug.Log(yahoo);
+}
+
+    async UniTask DoAsync2(CancellationToken token)
+    {
+  
+    }
+
+    async UniTask<string> GetHtmlAsync(string uri)
+    {
+        var r = UnityWebRequest.Get(uri);
+        var result = await r.SendWebRequest();
+        return result.downloadHandler.text;
+    }
+
+    async UniTask DoAsync2()
+    {
+        await isDead;
+
+        Debug.Log("Dead");
+    }
+
+    async UniTask DoAysnc()
+    {
+        var token = this.GetCancellationTokenOnDestroy();
+
+        var asyncEventHandler = button.onClick.GetAsyncEventHandler(token);
+
+        await asyncEventHandler.OnInvokeAsync();
+
+        Debug.Log("1");
+
+        await asyncEventHandler.OnInvokeAsync();
+
+        Debug.Log("2");
     }
 
     async UniTask<string> Work2(CancellationToken ct = default)
@@ -154,6 +252,17 @@ public class UniTask_Sample1 : MonoBehaviour
     {
 
     }
+
+    IEnumerator MoveCoroutine()
+    {
+        var start = Time.time;
+        while(Time.time - start < 2)
+        {
+            transform.position += Vector3.forward * Time.deltaTime;
+            yield return null;
+        }
+    }
+
 }
 
 namespace Assets
