@@ -93,11 +93,11 @@ public class UniTask_Sample1 : MonoBehaviour
 
         Debug.Log(github);
         Debug.Log(yahoo);
-}
+    }
 
     async UniTask DoAsync2(CancellationToken token)
     {
-  
+
     }
 
     async UniTask<string> GetHtmlAsync(string uri)

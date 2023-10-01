@@ -29,7 +29,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
            }
        }
 
-       public static GameManager instance;*/
+       public static GameManager instance;
+    */
 
 
     //-------------------------------------------------------------------------
