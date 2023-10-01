@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Realtime;
 using Photon.Pun;
+using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using ExitGames.Client.Photon;
 using UnityEditor;
@@ -11,6 +12,7 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
 {
     public string MaseterClientId;
     private string[] teamUserIDs;
+    [SerializeField] AudioManager audioManager;
 
     // Start is called before the first frame update
     void Start()
@@ -20,6 +22,12 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
 
     public void Multi_Button()
     {
+        audioManager.Play("SE_1");
+
+        UniTask.WaitForSeconds(0.2f);
+
+        Debug.Log("Play SE");
+
         PhotonNetwork.ConnectUsingSettings();
     }
 

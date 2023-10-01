@@ -707,6 +707,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0218d7c0f761d4233b6d9fd7e808e5eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioManager: {fileID: 40322851}
 --- !u!4 &1244835424
 Transform:
   m_ObjectHideFlags: 0
@@ -1112,6 +1113,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b19056e7199a54fc0b7f4407fb077c27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MaseterClientId: 
+  audioManager: {fileID: 40322851}
 --- !u!4 &1707750697
 Transform:
   m_ObjectHideFlags: 0

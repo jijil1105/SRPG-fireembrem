@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Cysharp.Threading.Tasks;
 using System;
 using UniRx;
 
 public class LoadScene : MonoBehaviour
 {
+    [SerializeField] AudioManager audioManager;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,6 +36,13 @@ public class LoadScene : MonoBehaviour
     /// </summary>
     public void NewGaeme()
     {
+        //ニューゲームボタンのクリックSE再生
+        audioManager.Play("SE_1");
+        //SEが再生し終わるまで待機
+        UniTask.WaitForSeconds(0.2f);
+
+        Debug.Log("Play SE");
+        
         //セーブデータ初期化
         DataManager._instance.DeleteData();
 
@@ -46,6 +56,13 @@ public class LoadScene : MonoBehaviour
     /// </summary>
     public void LoadGame()
     {
+        //ニューゲームボタンのクリックSE再生
+        audioManager.Play("SE_1");
+        //SEが再生し終わるまで待機
+        UniTask.WaitForSeconds(0.2f);
+
+        Debug.Log("Play SE");
+
         //セーブデータ読み込み
         SaveData data = DataManager._instance.Load();
 
