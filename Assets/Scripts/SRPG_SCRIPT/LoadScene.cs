@@ -2,9 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Assertions;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 using System;
 using UniRx;
+using System.Threading.Tasks;
+
+
 
 public class LoadScene : MonoBehaviour
 {
@@ -13,7 +18,7 @@ public class LoadScene : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -39,7 +44,7 @@ public class LoadScene : MonoBehaviour
         //ニューゲームボタンのクリックSE再生
         audioManager.Play("SE_1");
         //SEが再生し終わるまで待機
-        UniTask.WaitForSeconds(0.2f);
+        UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
 
         Debug.Log("Play SE");
         
@@ -59,7 +64,7 @@ public class LoadScene : MonoBehaviour
         //ニューゲームボタンのクリックSE再生
         audioManager.Play("SE_1");
         //SEが再生し終わるまで待機
-        UniTask.WaitForSeconds(0.2f);
+        UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
 
         Debug.Log("Play SE");
 

@@ -5,6 +5,7 @@ using DG.Tweening;
 using Photon.Pun;
 using UniRx;
 using System;
+using Cysharp.Threading.Tasks;
 
 public class Charactor : MonoBehaviour
 {
@@ -146,10 +147,8 @@ public class Charactor : MonoBehaviour
         XPos = targetXPos;
         ZPos = targetZPos;
 
-        DOVirtual.DelayedCall(0.5f, () =>
-        {
-            following_to_chara = false;
-        });
+        UniTask.Delay(TimeSpan.FromSeconds(0.5f),cancellationToken: this.GetCancellationTokenOnDestroy());
+        following_to_chara = false;
     }
 
     /// <summary>
@@ -168,10 +167,9 @@ public class Charactor : MonoBehaviour
                     .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
 
                 // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
-                DOVirtual.DelayedCall(0.5f, () =>
-                {
-                    AudioManager.instance.Play("SE_2");
-                });
+                UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+                AudioManager.instance.Play("SE_2");
+                
                 break;
 
             case SkillDefine.Skill.Critical:
@@ -182,10 +180,9 @@ public class Charactor : MonoBehaviour
                     .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
 
                 // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
-                DOVirtual.DelayedCall(0.5f, () =>
-                {
-                    AudioManager.instance.Play("SE_2");
-                });
+                UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+                AudioManager.instance.Play("SE_2");
+                
                 break;
 
             case SkillDefine.Skill.DefBreak:
@@ -196,10 +193,9 @@ public class Charactor : MonoBehaviour
                     .SetLoops(2, LoopType.Yoyo);// ループ回数・ループ方式を指定
 
                 // アニメーション内で攻撃が当たったくらいのタイミングでSEを再生
-                DOVirtual.DelayedCall(0.5f, () =>
-                {
-                    AudioManager.instance.Play("SE_2");
-                });
+                UniTask.Delay(TimeSpan.FromSeconds(0.5f), cancellationToken: this.GetCancellationTokenOnDestroy());
+                AudioManager.instance.Play("SE_2");
+                
                 break;
 
             case SkillDefine.Skill.Heal:

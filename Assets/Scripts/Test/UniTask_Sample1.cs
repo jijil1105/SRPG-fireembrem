@@ -29,7 +29,7 @@ public class UniTask_Sample1 : MonoBehaviour
         /*await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space),cancellationToken: this.GetCancellationTokenOnDestroy());
         Debug.Log("hogehoge");
 
-        await UniTask.Delay(TimeSpan.FromSeconds(_waitTime));
+        await UniTask.Delay(TimeSpan.FromSeconds(_waitTime), cancellationToken: this.GetCancellationTokenOnDestroy());
         Debug.Log("Hello universe");
 
         var text = await Work2(this.GetCancellationTokenOnDestroy());

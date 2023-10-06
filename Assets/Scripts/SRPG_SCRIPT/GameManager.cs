@@ -68,7 +68,8 @@ public class GameManager : MonoBehaviour
     private Phase nowPhase;//現在の進行モード
 
     //------------------------------------------------------------------------
-   
+
+
 
     //------------------------------------------------------------------------
 
@@ -198,15 +199,14 @@ public class GameManager : MonoBehaviour
                 }
 
                else
-                {//選択ブロック座標にキャラが居ない場合
-
+               {//選択ブロック座標にキャラが居ない場合
                     //選択中キャラを初期化
                     ClearSelectingChara();
                     //選択ブロックのデバッグ出力
                     Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
-                }
+               }
                 
-                break;
+               break;
 
             //自分のターン：移動先選択中
             case Phase.Myturn_Moving:

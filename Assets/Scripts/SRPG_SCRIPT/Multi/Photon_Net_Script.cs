@@ -7,6 +7,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using ExitGames.Client.Photon;
 using UnityEditor;
+using System;
 
 public class Photon_Net_Script : MonoBehaviourPunCallbacks
 {
@@ -24,7 +25,7 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
     {
         audioManager.Play("SE_1");
 
-        UniTask.WaitForSeconds(0.2f);
+        UniTask.Delay(TimeSpan.FromSeconds(0.2), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
 
         Debug.Log("Play SE");
 
