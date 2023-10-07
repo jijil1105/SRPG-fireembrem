@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using DG.Tweening;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
 using Photon.Realtime;
+using Cysharp.Threading.Tasks;
+using UniRx;
 using System;
 
 public class GameManager_Multi : MonoBehaviourPunCallbacks
@@ -73,6 +74,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     }
 
     private Phase nowPhase;//現在の進行モード
+    [SerializeField]private int num_of_player;
 
     //------------------------------------------------------------------------
 
@@ -92,11 +94,12 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         nowPhase = Phase.Myturn_Start;
         AudioManager.instance.Play("BGM_1");
 
-        DOVirtual.DelayedCall(0.05f, () =>
-        {
-            var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-            Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara);
-        });
+        UniTask.Delay(TimeSpan.FromMilliseconds(0.05), cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+        Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara);
+
+        num_of_player = PhotonNetwork.CurrentRoom.PlayerCount;
     }
 
     //-------------------------------------------------------------------------
@@ -107,6 +110,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     void Update()
     {
+        if (num_of_player != 2)
+            return;
         //ゲーム終了後なら終了
         if (isGameSet)
             return;
@@ -134,6 +139,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         Debug.Log(newPlayer + " " + "Entered Room");
 
         photonView.RPC(nameof(SynchedCharacters), RpcTarget.All, charactorManager.Charactors_Multis[0]);
+
+        num_of_player = PhotonNetwork.CurrentRoom.PlayerCount; 
+
+        Debug.Log(num_of_player);
     }
 
     //-------------------------------------------------------------------------
