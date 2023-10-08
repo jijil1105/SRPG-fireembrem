@@ -9,6 +9,7 @@ using Photon.Realtime;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using System;
+using System.Threading.Tasks;
 
 public class GameManager_Multi : MonoBehaviourPunCallbacks
 {
@@ -79,13 +80,12 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
-    bool isAbleGame;
+    bool isAbleGame = false;
 
     //------------------------------------------------------------------------
 
     //変数の初期化
-
-    public void Start()
+    async void  Start()
     {
         mapManager = GetComponent<MapManager>();//
         charactorManager = GetComponent<CharactorManager>();
@@ -95,7 +95,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         nowPhase = Phase.Myturn_Start;
         AudioManager.instance.Play("BGM_1");
 
-        UniTask.Delay(TimeSpan.FromMilliseconds(0.05), cancellationToken: this.GetCancellationTokenOnDestroy());
+        await UniTask.Delay(TimeSpan.FromMilliseconds(0.05), cancellationToken: this.GetCancellationTokenOnDestroy());
 
         var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
         Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara);
@@ -112,7 +112,11 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             Debug.Log(x);
         }).AddTo(this);
 
+        guiManager.ShowWaitingWindow();
+        await UniTask.WaitUntil(() => isAbleGame, cancellationToken: this.GetCancellationTokenOnDestroy());
 
+        guiManager.HideWaitingWindow();
+        AudioManager.instance.Play("BGM_1");
     }
 
     //-------------------------------------------------------------------------
