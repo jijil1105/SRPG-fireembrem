@@ -74,11 +74,12 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     }
 
     private Phase nowPhase;//現在の進行モード
-    [SerializeField]private int num_of_player;
+
+    [SerializeField] ReactiveProperty<int> num_of_player;
 
     //------------------------------------------------------------------------
 
-
+    bool isAbleGame;
 
     //------------------------------------------------------------------------
 
@@ -99,7 +100,19 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
         Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara);
 
-        num_of_player = PhotonNetwork.CurrentRoom.PlayerCount;
+        num_of_player.Value = PhotonNetwork.CurrentRoom.PlayerCount;
+
+        num_of_player.Subscribe(x =>
+        {
+            if (x == 2)
+                isAbleGame = true;
+            else
+                isAbleGame = false;
+
+            Debug.Log(x);
+        }).AddTo(this);
+
+
     }
 
     //-------------------------------------------------------------------------
@@ -110,8 +123,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        if (num_of_player != 2)
+        //Playerの人数が２人じゃないならリターン
+        if (!isAbleGame)
             return;
+
         //ゲーム終了後なら終了
         if (isGameSet)
             return;
@@ -140,7 +155,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         photonView.RPC(nameof(SynchedCharacters), RpcTarget.All, charactorManager.Charactors_Multis[0]);
 
-        num_of_player = PhotonNetwork.CurrentRoom.PlayerCount; 
+        num_of_player.Value = PhotonNetwork.CurrentRoom.PlayerCount; 
 
         Debug.Log(num_of_player);
     }
