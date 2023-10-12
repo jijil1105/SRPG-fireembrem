@@ -2343,10 +2343,10 @@ GameObject:
   - component: {fileID: 871221859}
   - component: {fileID: 871221858}
   - component: {fileID: 871221861}
-  - component: {fileID: 871221862}
   - component: {fileID: 871221863}
   - component: {fileID: 871221860}
   - component: {fileID: 871221864}
+  - component: {fileID: 871221862}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -2447,7 +2447,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 871221857}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3f601ea0fcb34218b56827018c28ec5, type: 3}
+  m_Script: {fileID: 11500000, guid: e5ec325df2d2f48bdbcd5b010862dd42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   statusWindow: {fileID: 574805481}
@@ -2882,7 +2882,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &989507148
 RectTransform:
   m_ObjectHideFlags: 0

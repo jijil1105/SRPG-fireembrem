@@ -9,7 +9,6 @@ using Photon.Realtime;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using System;
-using System.Threading.Tasks;
 
 public class GameManager_Multi : MonoBehaviourPunCallbacks
 {
@@ -40,7 +39,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     private MapManager mapManager;//フィールドのブロックを管理するマネージャークラス
     private CharactorManager charactorManager;//フィールドのキャラクターを管理するクラス
-    private GUIManager guiManager;//UIを管理するクラス
+    private GUIManager_Multi guiManager_multi;//UIを管理するクラス
 
     //-------------------------------------------------------------------------
 
@@ -89,7 +88,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     {
         mapManager = GetComponent<MapManager>();//
         charactorManager = GetComponent<CharactorManager>();
-        guiManager = GetComponent<GUIManager>();
+        guiManager_multi = GetComponent<GUIManager_Multi>();
         reachableBlocks = new List<MapBlock>();
         attackableBlocks = new List<MapBlock>();
         nowPhase = Phase.Myturn_Start;
@@ -112,10 +111,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             Debug.Log(x);
         }).AddTo(this);
 
-        guiManager.ShowWaitingWindow();
+        guiManager_multi.ShowWaitingWindow();
         await UniTask.WaitUntil(() => isAbleGame, cancellationToken: this.GetCancellationTokenOnDestroy());
 
-        guiManager.HideWaitingWindow();
+        guiManager_multi.HideWaitingWindow();
         AudioManager.instance.Play("BGM_1");
     }
 
@@ -254,7 +253,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             charaStartPos_X = selectingChara.xPos;
                             charaStartPos_Z = selectingChara.zPos;
                             //選択キャラのステータスをUI表示する
-                            guiManager.ShowStatusWindow(charaData);
+                            guiManager_multi.ShowStatusWindow(charaData);
 
                             //行動不能状態なら処理しない
                             if (charaData.isIncapacitated)
@@ -268,7 +267,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                                 mapblock.SetSelectionMode(MapBlock.Highlight.Reachable);
 
                             //移動キャンセルボタン表示
-                            guiManager.ShowMoveCancelButton(true);
+                            guiManager_multi.ShowMoveCancelButton(true);
 
                             //進行モード＜自分のターン：移動先選択中＞に変更
                             ChangePhase(Phase.Myturn_Moving);
@@ -322,12 +321,12 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                         mapManager.AllSelectionModeClear();
 
                         //キャンセルボタン非表示
-                        guiManager.ShowMoveCancelButton(false);
+                        guiManager_multi.ShowMoveCancelButton(false);
 
                         // 0.5秒数経過後に処理を実行する
                         DOVirtual.DelayedCall(0.5f, () =>
                         {  //コマンドボタン表示
-                            guiManager.ShowCommandButtons(selectingChara);
+                            guiManager_multi.ShowCommandButtons(selectingChara);
 
                             //進行モード＜自分のターン：移動後のコマンド選択中＞に変更
                             ChangePhase(Phase.Myturn_Command);
@@ -347,7 +346,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                         attackBlock = targetBlock;
 
                         // 行動決定・キャンセルボタンを表示する
-                        guiManager.ShowDecideButtons();
+                        guiManager_multi.ShowDecideButtons();
 
                         // 攻撃可能な場所リストを初期化する
                         attackableBlocks.Clear();
@@ -388,7 +387,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             charaStartPos_X = selectingChara.xPos;
                             charaStartPos_Z = selectingChara.zPos;
                             //選択キャラのステータスをUI表示する
-                            guiManager.ShowStatusWindow(EnemyData);
+                            guiManager_multi.ShowStatusWindow(EnemyData);
 
                             //行動不能状態なら処理しない
                             if (EnemyData.isIncapacitated)
@@ -402,7 +401,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                                 mapblock.SetSelectionMode(MapBlock.Highlight.Reachable);
 
                             //移動キャンセルボタン表示
-                            guiManager.ShowMoveCancelButton(true);
+                            guiManager_multi.ShowMoveCancelButton(true);
 
                             //進行モード＜自分のターン：移動先選択中＞に変更
                             ChangePhase(Phase.Enemyturn_Moving);
@@ -456,12 +455,12 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                         mapManager.AllSelectionModeClear();
 
                         //キャンセルボタン非表示
-                        guiManager.ShowMoveCancelButton(false);
+                        guiManager_multi.ShowMoveCancelButton(false);
 
                         // 0.5秒数経過後に処理を実行する
                         DOVirtual.DelayedCall(0.5f, () =>
                         {  //コマンドボタン表示
-                            guiManager.ShowCommandButtons(selectingChara);
+                            guiManager_multi.ShowCommandButtons(selectingChara);
 
                             //進行モード＜自分のターン：移動後のコマンド選択中＞に変更
                             ChangePhase(Phase.Enemyturn_Command);
@@ -481,7 +480,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                         attackBlock = targetBlock;
 
                         // 行動決定・キャンセルボタンを表示する
-                        guiManager.ShowDecideButtons();
+                        guiManager_multi.ShowDecideButtons();
 
                         // 攻撃可能な場所リストを初期化する
                         attackableBlocks.Clear();
@@ -510,7 +509,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         // 選択中のキャラクターを初期化する
         selectingChara = null;
         // キャラクターのステータスUIを非表示にする
-        guiManager.HideStatusWindow();
+        guiManager_multi.HideStatusWindow();
     }
 
     //------------------------------------------------------------------------
@@ -556,7 +555,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                     // 自分のターン開始時のロゴを表示
                     if (!noLogos)
-                        guiManager.ShowLogoChangeTurn(true);
+                        guiManager_multi.ShowLogoChangeTurn(true);
                 }
 
                 break;
@@ -581,7 +580,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                     // 敵のターン開始時のロゴを表示
                     if (!noLogos)
-                        guiManager.ShowLogoChangeTurn(false);
+                        guiManager_multi.ShowLogoChangeTurn(false);
                 }
 
                 break;
@@ -614,7 +613,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         AudioManager.instance.Play("SE_1");
 
         // コマンドボタンを非表示にする
-        guiManager.HideCommandButtons();
+        guiManager_multi.HideCommandButtons();
 
         //行動不能状態にする
         selectingChara.SetInCapacitited(true);
@@ -656,7 +655,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     private void GetAttackableBlocks()
     {
         // コマンドボタンを非表示にする
-        guiManager.HideCommandButtons();
+        guiManager_multi.HideCommandButtons();
 
         // （特技：ファイアボールの場合はマップ全域に対応）
         if (selectingSkill == SkillDefine.Skill.FireBall)
@@ -717,7 +716,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         attackchara.AttackAnimation(defensechara, selectingSkill);
 
         // バトル結果表示ウィンドウの表示設定
-        guiManager.battleWindowUI.ShowWindow(defensechara, damagevalue);
+        guiManager_multi.battleWindowUI.ShowWindow(defensechara, damagevalue);
 
         // ダメージ量分防御側のHPを減少
         defensechara.nowHp -= damagevalue;
@@ -747,20 +746,20 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                     DOVirtual.DelayedCall(1.0f, () =>
                     {
                         // ウィンドウを非表示化
-                        guiManager.battleWindowUI.HideWindow();
+                        guiManager_multi.battleWindowUI.HideWindow();
                         //取得経験値をアニメーション再生する経験値バーを表示
-                        guiManager.ShowGetExpWindow(attackchara);
+                        guiManager_multi.ShowGetExpWindow(attackchara);
                         //経験値更新前から経験値更新後の値まで経験値バーをアニメーション再生する
-                        guiManager.moveExpbar(startvalue, endvalue, 1.0f);
+                        guiManager_multi.moveExpbar(startvalue, endvalue, 1.0f);
                     });
 
                     //経験値バーをアニメーション再生後、経験値バーを非表示
                     DOVirtual.DelayedCall(2.5f, () =>
                     {
                         //経験値バーを非表示
-                        guiManager.HideGetExpWindow();
+                        guiManager_multi.HideGetExpWindow();
                         //経験値更新後のステータスを表示
-                        guiManager.ShowStatusWindow(attackchara);
+                        guiManager_multi.ShowStatusWindow(attackchara);
                     });
                 }
 
@@ -778,33 +777,33 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                     DOVirtual.DelayedCall(1.0f, () =>
                     {
                         // ウィンドウを非表示化
-                        guiManager.battleWindowUI.HideWindow();
+                        guiManager_multi.battleWindowUI.HideWindow();
                         //取得経験値をアニメーション再生する経験値バーを表示
-                        guiManager.ShowGetExpWindow(attackchara);
+                        guiManager_multi.ShowGetExpWindow(attackchara);
                         //経験値バーをアニメーション再生
-                        guiManager.moveExpbar(startvalue, 1, 0.5f);
+                        guiManager_multi.moveExpbar(startvalue, 1, 0.5f);
                     });
 
                     DOVirtual.DelayedCall(1.6f, () =>
                     {
                         //経験値バーを表示するウィンドウを更新
-                        guiManager.ShowGetExpWindow(attackchara);
+                        guiManager_multi.ShowGetExpWindow(attackchara);
                         //ステータスウィンドウを更新
-                        guiManager.ShowStatusWindow(attackchara);
+                        guiManager_multi.ShowStatusWindow(attackchara);
                         //経験値バーをアニメーション再生
-                        guiManager.moveExpbar(0, endvalue, 0.5f);
+                        guiManager_multi.moveExpbar(0, endvalue, 0.5f);
                     });
 
                     //経験値バーのアニメーション再生終了後に非表示
                     DOVirtual.DelayedCall(2.6f, () =>
                     {
-                        guiManager.HideGetExpWindow();
+                        guiManager_multi.HideGetExpWindow();
                         //guiManager.ShowLeveUpWindow(attackchara, up_list);
                     });
 
                     DOVirtual.DelayedCall(4.5f, () =>
                     {
-                        guiManager.HideLevelUpWindow();
+                        guiManager_multi.HideLevelUpWindow();
                     });
                 }
             }
@@ -812,7 +811,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             //倒したキャラクターを削除
             charactorManager.DeleteCharaData(defensechara);
         }
-
 
 
         // Skillの選択状態を解除する
@@ -825,7 +823,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             {// 遅延実行する内容
 
                 // ウィンドウを非表示化
-                guiManager.battleWindowUI.HideWindow();
+                guiManager_multi.battleWindowUI.HideWindow();
                 // ターンを切り替える
                 if (nowPhase == Phase.Myturn_Result)
                 {
@@ -1047,7 +1045,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         ClearSelectingChara();
 
-        guiManager.ShowMoveCancelButton(false);
+        guiManager_multi.ShowMoveCancelButton(false);
 
         if(isMyturn)
             ChangePhase(Phase.Myturn_Start, true);
@@ -1092,14 +1090,14 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                 {
                     if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
                     {
-                        guiManager.ShowLogo_GameClear();
+                        guiManager_multi.ShowLogo_GameClear();
                     }
 
 
                     if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
-                        guiManager.ShowLogo_gameOver();
+                        guiManager_multi.ShowLogo_gameOver();
 
-                    guiManager.FadeIn(5.0f);
+                    guiManager_multi.FadeIn(5.0f);
                 });
 
             // Gameシーンの再読み込み(遅延実行)
@@ -1119,7 +1117,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     public void ActionDecideButton()
     {
         // 行動決定・キャンセルボタンを非表示にする
-        guiManager.HideDecideButtons();
+        guiManager_multi.HideDecideButtons();
         // 攻撃先のブロックの強調表示を解除する
         attackBlock.SetSelectionMode(MapBlock.Highlight.Off);
 
@@ -1151,7 +1149,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     public void ActionCancelButton()
     {
         // 行動決定・キャンセルボタンを非表示にする
-        guiManager.HideDecideButtons();
+        guiManager_multi.HideDecideButtons();
         // 攻撃先のブロックの強調表示を解除する
         attackBlock.SetSelectionMode(MapBlock.Highlight.Off);
 
@@ -1211,8 +1209,6 @@ public static class CharacterSerializer
     }
 }
 
-
-
 public static class ColorSerializer
 {
     public static void Register()
@@ -1246,4 +1242,4 @@ public static class ColorSerializer
         return color;
     }
 
-} // class ColorSerializer
+} // class ColorSerializer 
