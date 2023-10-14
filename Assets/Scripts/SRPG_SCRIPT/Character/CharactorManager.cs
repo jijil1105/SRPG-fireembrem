@@ -34,10 +34,7 @@ public class CharactorManager : MonoBehaviour
         switch(isMulti)
         {
             case true :
-
                 InitChara();
-
-                Debug.Log("True");
 
                 break;
 
@@ -105,8 +102,6 @@ public class CharactorManager : MonoBehaviour
                 // マップ上の全キャラクターデータを取得
                 // (charactersParent以下の全Characterコンポーネントを検索しリストに格納)
                 charactorParent.GetComponentsInChildren(Charactors);
-
-                Debug.Log("false");
 
                 break;
         }
@@ -289,12 +284,30 @@ public class CharactorManager : MonoBehaviour
                         obj.GetComponent<Character_Multi>().initPos_X = initX;
                         obj.GetComponent<Character_Multi>().initPos_Z = initZ;
                         initX--;
+
+                        if(obj.GetComponent<PhotonView>().IsMine)
+                        {
+                            obj.GetComponent<Character_Multi>().isEnemy = false;
+                        }
+                        else
+                        {
+                            obj.GetComponent<Character_Multi>().isEnemy = true;
+                        }
                     }
                     else
                     {
                         obj.GetComponent<Character_Multi>().initPos_X = initX;
                         obj.GetComponent<Character_Multi>().initPos_Z = initZ;
                         initX++;
+
+                        if (obj.GetComponent<PhotonView>().IsMine)
+                        {
+                            obj.GetComponent<Character_Multi>().isEnemy = true;
+                        }
+                        else
+                        {
+                            obj.GetComponent<Character_Multi>().isEnemy = false;
+                        }
                     }
 
                     var Obj = PhotonNetwork

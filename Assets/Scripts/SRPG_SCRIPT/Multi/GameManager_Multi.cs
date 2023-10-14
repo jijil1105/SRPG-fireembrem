@@ -114,6 +114,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         guiManager_multi.ShowWaitingWindow();
         await UniTask.WaitUntil(() => isAbleGame, cancellationToken: this.GetCancellationTokenOnDestroy());
 
+        int phtonviewID = charactorManager.Charactors_Multis[0].GetComponent<PhotonView>().ViewID;
+
+        photonView.RPC(nameof(AddObject), RpcTarget.All, phtonviewID);
+      
         guiManager_multi.HideWaitingWindow();
         AudioManager.instance.Play("BGM_1");
     }
@@ -154,18 +158,22 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     {
         base.OnPlayerEnteredRoom(newPlayer);
 
-        Debug.Log(newPlayer + " " + "Entered Room");
-
-        photonView.RPC(nameof(SynchedCharacters), RpcTarget.All, charactorManager.Charactors_Multis[0]);
-
-        num_of_player.Value = PhotonNetwork.CurrentRoom.PlayerCount; 
-
-        Debug.Log(num_of_player);
+        num_of_player.Value = PhotonNetwork.CurrentRoom.PlayerCount;
     }
 
     //-------------------------------------------------------------------------
 
+    [PunRPC]
+    void AddObject(int senderView)
+    {
+        var obj = PhotonView.Find(senderView).transform;
 
+        if (obj.GetComponent<PhotonView>().IsMine)
+            return;
+
+        Character_Multi chara = obj.GetComponent<Character_Multi>();
+        charactorManager.Charactors_Multis.Add(chara);
+    }
 
     //-------------------------------------------------------------------------
 
@@ -182,7 +190,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             + "charactor.Res" + charactor.Res + ": "
             + "charactor.xPos" + charactor.xPos + ": "
             + "charactor.zPos" + charactor.zPos + ": "
-            + "charactor.nowHP" + charactor.nowHp + ": "); 
+            + "charactor.nowHP" + charactor.nowHp + ": ");
+        charactorManager.Charactors_Multis.Add(charactor);
     }
 
     //-------------------------------------------------------------------------
@@ -271,16 +280,11 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                             //進行モード＜自分のターン：移動先選択中＞に変更
                             ChangePhase(Phase.Myturn_Moving);
-
-                            //選択キャラのデバッグ出力
-                            Debug.Log("Select Charactor :" + charaData.gameObject.name + " : position :" + charaData.xPos + " : " + charaData.zPos);
-                            Debug.Log("IsMine");
                         }
                         else
                         {
                             //選択中キャラを初期化
                             ClearSelectingChara();
-                            Debug.Log("Isn't Mine");
                         }
                     }
 
@@ -405,16 +409,11 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                             //進行モード＜自分のターン：移動先選択中＞に変更
                             ChangePhase(Phase.Enemyturn_Moving);
-
-                            //選択キャラのデバッグ出力
-                            Debug.Log("Select Charactor :" + EnemyData.gameObject.name + " : position :" + EnemyData.xPos + " : " + EnemyData.zPos);
-                            Debug.Log("IsMine");
                         }
                         else
                         {
                             //選択中キャラを初期化
                             ClearSelectingChara();
-                            Debug.Log("Isn't Mine");
                         }
                     }
 
@@ -564,8 +563,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             case Phase.Enemyturn_Start:
                 if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
-                    var enemy = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == true && chara.isIncapacitated != true);
-                    Debug.Log("" + enemy);
+                    var enemy = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy == true);
+
+                    Debug.Log(enemy);
+
                     //動かせるキャラが居なかった場合
                     if (!enemy)
                     {
@@ -726,88 +727,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         // HP0になったキャラクターを削除する
         if (defensechara.nowHp == 0)
         {
-            //味方キャラなら経験値更新処理
-            if (!attackchara.isEnemy)
-            {
-                //経験値を更新する前の値を記憶
-                float startvalue = (float)attackchara.nowExp / attackchara.ExpPerLv;
-
-                //キャラの現在の経験値を更新
-                attackchara.nowExp += (int)GetComponent<LevelManager>().GetExp(100, 1.5f, defensechara.Lv);
-
-                //更新した経験値量が次レベルに必要な経験値量を下回っていたら
-                if (attackchara.nowExp < attackchara.ExpPerLv)
-                {
-                    delay_time = 3;
-
-                    //経験値更新後の値を記憶
-                    float endvalue = (float)attackchara.nowExp / (float)attackchara.ExpPerLv;
-
-                    DOVirtual.DelayedCall(1.0f, () =>
-                    {
-                        // ウィンドウを非表示化
-                        guiManager_multi.battleWindowUI.HideWindow();
-                        //取得経験値をアニメーション再生する経験値バーを表示
-                        guiManager_multi.ShowGetExpWindow(attackchara);
-                        //経験値更新前から経験値更新後の値まで経験値バーをアニメーション再生する
-                        guiManager_multi.moveExpbar(startvalue, endvalue, 1.0f);
-                    });
-
-                    //経験値バーをアニメーション再生後、経験値バーを非表示
-                    DOVirtual.DelayedCall(2.5f, () =>
-                    {
-                        //経験値バーを非表示
-                        guiManager_multi.HideGetExpWindow();
-                        //経験値更新後のステータスを表示
-                        guiManager_multi.ShowStatusWindow(attackchara);
-                    });
-                }
-
-                //キャラの現在の経験値が次レベルに必要な経験値を上回っていたら
-                else
-                {
-                    delay_time = 5;
-                    //現在の経験値から次レベルに必要な経験値の差を記憶
-                    float EndExp = (float)attackchara.nowExp - (float)attackchara.ExpPerLv;
-                    //キャラのレベルをアップ
-                    //var up_list = GetComponent<LevelManager>().LevelUp(attackchara);
-                    //レベルアップ後の次レベルに必要な経験値で経験値バーのfillamountに適応する値を求める
-                    float endvalue = EndExp / (float)attackchara.ExpPerLv;
-
-                    DOVirtual.DelayedCall(1.0f, () =>
-                    {
-                        // ウィンドウを非表示化
-                        guiManager_multi.battleWindowUI.HideWindow();
-                        //取得経験値をアニメーション再生する経験値バーを表示
-                        guiManager_multi.ShowGetExpWindow(attackchara);
-                        //経験値バーをアニメーション再生
-                        guiManager_multi.moveExpbar(startvalue, 1, 0.5f);
-                    });
-
-                    DOVirtual.DelayedCall(1.6f, () =>
-                    {
-                        //経験値バーを表示するウィンドウを更新
-                        guiManager_multi.ShowGetExpWindow(attackchara);
-                        //ステータスウィンドウを更新
-                        guiManager_multi.ShowStatusWindow(attackchara);
-                        //経験値バーをアニメーション再生
-                        guiManager_multi.moveExpbar(0, endvalue, 0.5f);
-                    });
-
-                    //経験値バーのアニメーション再生終了後に非表示
-                    DOVirtual.DelayedCall(2.6f, () =>
-                    {
-                        guiManager_multi.HideGetExpWindow();
-                        //guiManager.ShowLeveUpWindow(attackchara, up_list);
-                    });
-
-                    DOVirtual.DelayedCall(4.5f, () =>
-                    {
-                        guiManager_multi.HideLevelUpWindow();
-                    });
-                }
-            }
-
             //倒したキャラクターを削除
             charactorManager.DeleteCharaData(defensechara);
         }
@@ -840,10 +759,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                     ChangePhase(Phase.Enemyturn_Start, true);
                 }
-
             });
-
-        Debug.Log("Atk:" + attackchara.charaName + " Def:" + defensechara.charaName);
     }
 
     //------------------------------------------------------------------------
@@ -904,69 +820,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
-    /// <summary>
-	/// (敵のターン開始時に呼出)
-	/// 敵キャラクターのうちいずれか一体を行動させてターンを終了する
-	/// </summary>
-    private void EnemyCommand()
-    {
-        // 生存中の敵キャラクター&&行動可能キャラクターのリストを作成する
-        var enemyCharas = charactorManager.Charactors_Multis.Where(chara => chara.isEnemy && chara.isIncapacitated != true);
-        var enemycharas = new List<Character_Multi>();
-
-        // 全生存キャラクターから敵フラグの立っているキャラクターをリストに追加
-        foreach (var enemyChara in enemyCharas)
-            enemycharas.Add(enemyChara);
-
-        // 攻撃可能なキャラクター・位置の組み合わせの内１つをランダムに取得
-        var actionPlan = TargetFinder.GetRandomActionPlan(mapManager, charactorManager, enemycharas);
-
-        // 組み合わせのデータが存在すれば攻撃開始
-        if (actionPlan != null)
-        {
-            // 敵キャラクター移動処理
-            actionPlan.charaData.MovePosition(actionPlan.toMoveBlock.XPos, actionPlan.toMoveBlock.ZPos);
-            // 敵キャラクター攻撃処理
-
-            // (移動後のタイミングで攻撃開始するよう遅延実行)
-            DOVirtual.DelayedCall(1.0f, () =>
-            {
-                CharaAttack(actionPlan.charaData_Multi, actionPlan.toAttackChara_Multi);
-            });
-
-            // 進行モード＜敵ターン：行動結果表示中＞へ変更
-            ChangePhase(Phase.Enemyturn_Result);
-            return;
-        }
-
-        // 攻撃可能な相手が見つからなかった場合
-        // 移動させる１体をランダムに選ぶ
-        int randValue = UnityEngine.Random.Range(0, enemycharas.Count);
-        var chara = enemycharas[randValue];
-
-        // 対象の移動可能場所リストの中から1つの場所をランダムに選ぶ
-        reachableBlocks = mapManager.SearchReachableBlocks(chara.xPos, chara.zPos);
-        if (reachableBlocks.Count > 0)
-        {
-            randValue = UnityEngine.Random.Range(0, reachableBlocks.Count - 1);
-            MapBlock toMoveblock = reachableBlocks[randValue];// 移動対象のブロックデータ
-            chara.MovePosition(toMoveblock.XPos, toMoveblock.ZPos);// 敵キャラクター移動処理
-        }
-
-        // 移動場所・攻撃場所リストをクリアする
-        reachableBlocks.Clear();
-        attackableBlocks.Clear();
-
-        // (移動後のタイミングで処理するよう遅延実行)
-        DOVirtual.DelayedCall(1.0f, () =>
-        {
-            //行動不能状態に
-            chara.SetInCapacitited(true);
-            // 進行モード＜敵ターン：開始時＞に変更
-            ChangePhase(Phase.Enemyturn_Start, true);
-        });
-    }
-
+  
     //------------------------------------------------------------------------
 
     /// <summary>
@@ -1079,8 +933,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                     if (!chara.isEnemy)
                         charalist.Add(chara);
                 }
-                //セーブデータ
-               // DataManager._instance.WriteSaveData(charalist, SceneManager.GetActiveScene().name);
             }
 
 
@@ -1124,6 +976,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         // 攻撃対象の位置に居るキャラクターのデータを取得
         var targetChara =
             charactorManager.GetCharactor_Multi(attackBlock.XPos, attackBlock.ZPos);
+
         if (targetChara != null)
         {// 攻撃対象のキャラクターが存在する
          // キャラクター攻撃処理

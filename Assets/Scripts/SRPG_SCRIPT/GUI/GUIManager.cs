@@ -101,7 +101,6 @@ public class GUIManager : MonoBehaviour
 
     public void ShowWaitingWindow()
     {
-        Debug.Log("SHOW WAITING WINDOW");
         waiting_window.SetActive(true);
         wait_text.text = "Waiting Other Player Enter this Room";
 
@@ -110,7 +109,6 @@ public class GUIManager : MonoBehaviour
 
     public void HideWaitingWindow()
     {
-        Debug.Log("HIDE WAIT WINDOW");
         waiting_window.SetActive(false);
     }
 

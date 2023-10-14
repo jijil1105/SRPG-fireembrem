@@ -46,6 +46,9 @@ MonoBehaviour:
   - Synchronization
   - RpcSend
   - SynchedCharacters
+  - AddObject
+  - SyncPos
+  - SyncStatus
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -94,14 +94,12 @@ public class GUIManager_Multi : MonoBehaviour
         HideDecideButtons(); // 行動決定・キャンセルボタンを隠す
         HideGetExpWindow();
         HideLevelUpWindow();
-        //HideWaitingWindow();
     }
 
     //-------------------------------------------------------------------------
 
     public void ShowWaitingWindow()
     {
-        Debug.Log("SHOW WAITING WINDOW");
         waiting_window.SetActive(true);
         wait_text.text = "Waiting Other Player Enter this Room";
 
@@ -110,7 +108,6 @@ public class GUIManager_Multi : MonoBehaviour
 
     public void HideWaitingWindow()
     {
-        Debug.Log("HIDE WAIT WINDOW");
         waiting_window.SetActive(false);
     }
 

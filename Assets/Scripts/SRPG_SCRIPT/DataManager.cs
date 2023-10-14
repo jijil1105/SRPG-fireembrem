@@ -31,9 +31,9 @@ public class DataManager : MonoBehaviour
 
 		//パス設定
 		filePath = Application.persistentDataPath + "/" + ".savedata.json";
+		//filePath = "/Users/masaki/SRPG-fireembrem_copy" + "/" + ".savedata.json";
 		//セーブデータ初期化
 		saveData = new SaveData();
-		//Debug.Log(Save_HP + ":" + Save_Atk + ":" + Save_Def);
 	}
 
 	
@@ -49,8 +49,6 @@ public class DataManager : MonoBehaviour
     /// <param name="clear_scene_name">クリアしたシーン名</param>
 	public void WriteSaveData(List<Charactor> charactors, string clear_scene_name)
     {
-		Debug.Log("Save Data");
-
 		//クリアしたシーンに応じて次にロードするシーン名を保存
 		Save_ClearMap(clear_scene_name);
 
@@ -156,8 +154,6 @@ public class DataManager : MonoBehaviour
     /// </summary>
 	public void DeleteData()
     {
-		Debug.Log("Delete Data");
-
 		saveData = new SaveData();
 		saveData.SceneName = "Delete Data";
 		

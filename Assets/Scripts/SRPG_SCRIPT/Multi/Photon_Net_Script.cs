@@ -27,8 +27,6 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
 
         UniTask.Delay(TimeSpan.FromSeconds(0.2), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
 
-        Debug.Log("Play SE");
-
         PhotonNetwork.ConnectUsingSettings();
     }
 
@@ -39,8 +37,6 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
 
     public override void OnJoinedRoom()
     {
-        Debug.Log("Joined Room");
-
         //セーブデータ読み込み
         SaveData data = DataManager._instance.Load();
 

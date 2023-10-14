@@ -124,10 +124,6 @@ public class Character_Multi : MonoBehaviourPunCallbacks
     // (スプライトオブジェクトをメインカメラの方向に向ける)
     void Update()
     {
-        if(photonView.IsMine)
-        {
-            photonView.RPC(nameof(RpcSend), RpcTarget.All, this.isEnemy, this.transform.position.x, this.transform.position.y, this.transform.position.z);
-        }
         /*Vector3 camerPos = MainCamera.transform.position;
         camerPos.y = transform.position.y;
         transform.LookAt(MainCamera.transform);
@@ -142,16 +138,19 @@ public class Character_Multi : MonoBehaviourPunCallbacks
     //-------------------------------------------------------------------------
 
     [PunRPC]
-    private void RpcSend(bool isEnemy, float x, float y, float z)
+    void SyncPos(int pos_x, int pos_z)
     {
-        this.isEnemy = isEnemy;
-        Vector3 pos = new Vector3();
+        if(!photonView.IsMine)
+        {
+            xPos = pos_x;
+            zPos = pos_z;
+        }
+    }
 
-        pos.x = x;
-        pos.y = y;
-        pos.z = z;
-
-        transform.position = pos;
+    [PunRPC]
+    void SyncStatus(Character_Multi chara)
+    {
+        this.nowHp = chara.nowHp;
     }
 
     //-------------------------------------------------------------------------
@@ -180,6 +179,8 @@ public class Character_Multi : MonoBehaviourPunCallbacks
         {
             following_to_chara = false;
         });
+
+        photonView.RPC(nameof(SyncPos), RpcTarget.All, xPos, zPos);
     }
 
     /// <summary>
