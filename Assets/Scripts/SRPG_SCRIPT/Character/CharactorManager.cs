@@ -4,8 +4,11 @@ using UnityEngine;
 using System.Linq;
 using DG.Tweening;
 using Photon.Pun;
+using Photon.Realtime;
+using Cysharp.Threading.Tasks;
+using System;
 
-public class CharactorManager : MonoBehaviour
+public class CharactorManager : MonoBehaviourPunCallbacks
 {
     public Transform charactorParent;// 全キャラクターオブジェクトの親オブジェクトTransform
     public List<Charactor> Charactors = new List<Charactor>();// 全キャラクターデータ
@@ -177,18 +180,36 @@ public class CharactorManager : MonoBehaviour
             gm_muti.CheckGameSet();
     }
 
+    //-------------------------------------------------------------------------
+
+    [PunRPC]
+    void DestroyPhotonObj(int ViewId)
+    {
+        var obj = PhotonView.Find(ViewId);
+
+        Character_Multi charadata = obj.GetComponent<Character_Multi>();
+        
+        Charactors_Multis.Remove(charadata);
+
+        Destroy(obj.gameObject);
+
+        Debug.Log("FJFJFJ");
+    }
+
     /// <summary>
     /// 
     /// </summary>
     /// <param name="charadata"></param>
-    public void DeleteCharaData(Character_Multi charadata)
+    async public void DeleteCharaData(Character_Multi charadata)
     {
         Charactors_Multis.Remove(charadata);
 
         DataManager._instance.DeleteCharaData(charadata);
 
+        await UniTask.Delay(TimeSpan.FromSeconds(0.5), cancellationToken: this.GetCancellationTokenOnDestroy());
+
         // オブジェクト削除を攻撃完了後に処理させる為に遅延実行
-        DOVirtual.DelayedCall(0.5f, () => { Destroy(charadata.gameObject); });
+        photonView.RPC(nameof(DestroyPhotonObj), RpcTarget.All, charadata.GetComponent<PhotonView>().ViewID);
 
         var gm = GetComponent<GameManager>();
 
@@ -198,7 +219,7 @@ public class CharactorManager : MonoBehaviour
             gm.CheckGameSet();
 
         if (gm_muti)
-            gm_muti.CheckGameSet();
+            gm_muti.gamecheck_RPC();
     }
 
     /// <summary>

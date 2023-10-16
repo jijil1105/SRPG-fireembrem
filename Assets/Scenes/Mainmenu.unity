@@ -160,11 +160,11 @@ MonoBehaviour:
   - name: SE_1
     audioClip: {fileID: 8300000, guid: 1869a03daea2b4ff7879162a737005aa, type: 3}
     playedTime: 0
-    playableDistance: 0.2
+    playableDistance: 1
   - name: SE_2
     audioClip: {fileID: 8300000, guid: 0968da6de305d411c9c37102333fbb3b, type: 3}
     playedTime: 0
-    playableDistance: 0.2
+    playableDistance: 1
 --- !u!4 &40322852
 Transform:
   m_ObjectHideFlags: 0

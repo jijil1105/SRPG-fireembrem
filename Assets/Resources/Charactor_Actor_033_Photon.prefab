@@ -101,7 +101,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: -1608678244843464409}
@@ -149,6 +149,9 @@ MonoBehaviour:
   moveType: 1
   skill: 4
   isMagicAttac: 1
+  xPos: 0
+  zPos: 0
+  nowHp: 0
   Lv: 1
   nowExp: 0
   ExpPerLv: 100

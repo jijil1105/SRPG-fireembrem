@@ -163,6 +163,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //-------------------------------------------------------------------------
 
+    //-------------------------------------------------------------------------
+
     [PunRPC]
     void AddObject(int senderView)
     {
@@ -910,9 +912,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
-    /// <summary>
-    /// 
-    /// </summary>
     public void CheckGameSet()
     {
         //敵キャラが居るかチェック
@@ -940,16 +939,97 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             DOVirtual.DelayedCall(
                 1.5f, () =>
                 {
-                    if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
+                    if (PhotonNetwork.MasterClient.UserId == PhotonNetwork.LocalPlayer.UserId)
                     {
-                        guiManager_multi.ShowLogo_GameClear();
+                        if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
+                            guiManager_multi.ShowLogo_GameClear();
+
+                        if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
+                            guiManager_multi.ShowLogo_gameOver();
+
+                        guiManager_multi.FadeIn(5.0f);
                     }
+                    else
+                    {
+                        if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
+                            guiManager_multi.ShowLogo_gameOver();
 
+                        if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
+                            guiManager_multi.ShowLogo_GameClear();
 
-                    if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
-                        guiManager_multi.ShowLogo_gameOver();
+                        guiManager_multi.FadeIn(5.0f);
+                    }
+                });
 
-                    guiManager_multi.FadeIn(5.0f);
+            // Gameシーンの再読み込み(遅延実行)
+            DOVirtual.DelayedCall(
+                7.0f, () =>
+                {
+                    //guiManager.FadeIn_FadeOut(false, 1.0f);
+
+                    SceneManager.LoadScene("MainMenu");
+                });
+        }
+    }
+
+    //------------------------------------------------------------------------
+
+    public void gamecheck_RPC()
+    {
+        photonView.RPC(nameof(CheckGameSet_Multi), RpcTarget.All);
+    }
+
+    [PunRPC]
+    /// <summary>
+    /// 
+    /// </summary>
+    public void CheckGameSet_Multi()
+    {
+        Debug.Log("Check GameSet");
+        //敵キャラが居るかチェック
+        var Enemychara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == true);
+
+        //味方キャラが居るかチェック
+        var Chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == false);
+
+        if (!Chara || !Enemychara)
+        {
+            //ゲーム終了フラグをtrue
+            isGameSet = true;
+            if (Chara)
+            {
+                List<Character_Multi> charalist = new List<Character_Multi>();
+                foreach (var chara in charactorManager.Charactors_Multis)
+                {
+                    if (!chara.isEnemy)
+                        charalist.Add(chara);
+                }
+            }
+
+            //ゲーム終了フラグを遅延処理
+            DOVirtual.DelayedCall(
+                1.5f, () =>
+                {
+                    if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+                    {
+                        if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
+                            guiManager_multi.ShowLogo_GameClear();
+
+                        if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
+                            guiManager_multi.ShowLogo_gameOver();
+
+                        guiManager_multi.FadeIn(5.0f);
+                    }
+                    else
+                    {
+                        if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
+                            guiManager_multi.ShowLogo_gameOver();
+
+                        if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
+                            guiManager_multi.ShowLogo_GameClear();
+
+                        guiManager_multi.FadeIn(5.0f);
+                    }
                 });
 
             // Gameシーンの再読み込み(遅延実行)
