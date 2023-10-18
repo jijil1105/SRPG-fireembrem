@@ -153,7 +153,7 @@ MonoBehaviour:
   zPos: 0
   nowHp: 0
   Lv: 1
-  nowExp: 75
+  nowExp: 0
   ExpPerLv: 100
   isSkillLock: 0
   isDefBreak: 0

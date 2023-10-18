@@ -95,15 +95,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 778389293cb554e03883ad16f81eb89a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initPos_X: 0
-  initPos_Z: 0
+  initPos_X: -1
+  initPos_Z: -4
   isEnemy: 0
   charaName: "\u5263\u58EB"
-  maxHP: 30
+  maxHP: 31
   atk: 1000
-  def: 3
+  def: 2
   Int: 2
-  Res: 3
+  Res: 2
   attribute: 0
   moveType: 2
   skill: 1

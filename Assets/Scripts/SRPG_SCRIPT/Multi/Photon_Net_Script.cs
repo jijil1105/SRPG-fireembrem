@@ -23,7 +23,7 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
 
     public void Multi_Button()
     {
-        audioManager.Play("SE_1");
+        AudioManager.instance.Play("SE_1");
 
         UniTask.Delay(TimeSpan.FromSeconds(0.2), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
 

@@ -78,6 +78,7 @@ public class Character_Multi : MonoBehaviourPunCallbacks
     //Main Camera
     private Camera MainCamera;
 
+    //カメラがキャラクターを追従するかのフラグ
     bool following_to_chara;
 
     //-------------------------------------------------------------------------
@@ -85,6 +86,7 @@ public class Character_Multi : MonoBehaviourPunCallbacks
     void Start()
     {
         // Set object's init position from chractor's data
+        //キャラクターの初期位置
         Vector3 pos = new Vector3();
         pos.x = initPos_X;
         xPos = initPos_X;
@@ -95,14 +97,18 @@ public class Character_Multi : MonoBehaviourPunCallbacks
         zPos = initPos_Z;
         transform.position = pos;
 
+        //キャラクターのHP初期化
         nowHp = maxHP;
 
         //Set camera from MainCamera
+        //メインカメラ取得
         MainCamera = Camera.main;
 
+        //マルチモードではキャラクターを追従はしない
         following_to_chara = false;
 
-        if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+        //ルームのホストの場合は自軍キャラ、ホストでない場合は敵軍キャラ
+        if (PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
         {
             if(photonView.IsMine)
             {
@@ -137,18 +143,70 @@ public class Character_Multi : MonoBehaviourPunCallbacks
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// キャラの情報を同期、photonの仕様で親オブジェクトから子オブジェクトのPunRPC属性の関数を呼べないので一度通常の関数を経由
+    /// </summary>
+    public void SyncInfo()
+    {
+        photonView.RPC(nameof(Syncinfo), RpcTarget.All, this);
+    }
+
+    /// <summary>
+    /// キャラの初期情報を同期
+    /// </summary>
+    /// <param name="chara"></param>
+    [PunRPC]
+    void Syncinfo(Character_Multi chara)
+    {
+        if(!photonView.IsMine)
+        {
+            this.initPos_X = chara.initPos_X;
+            this.initPos_Z = chara.initPos_Z;
+            this.maxHP = chara.maxHP;
+            this.atk = chara.atk;
+            this.def = chara.def;
+            this.Int = chara.Int;
+            this.Res = chara.Res;
+            this.xPos = chara.xPos;
+            this.zPos = chara.zPos;
+            this.nowHp = chara.nowHp;
+        }
+    }
+
+    //-------------------------------------------------------------------------
+
+    /// <summary>
+    /// キャラ座標変数を同期
+    /// </summary>
+    /// <param name="pos_x"></param>
+    /// <param name="pos_z"></param>
     [PunRPC]
     void SyncPos(int pos_x, int pos_z)
     {
-        if(!photonView.IsMine)
+        //他プレイヤーのキャラだった場合に座標を同期させる
+        if (!photonView.IsMine)
         {
             xPos = pos_x;
             zPos = pos_z;
         }
     }
 
+    //-------------------------------------------------------------------------
+
+    /// <summary>
+    /// 攻撃を受けた時などにHPを同期、photonの仕様で親オブジェクトから子オブジェクトのPunRPC属性の関数を呼べないので一度通常の関数を経由
+    /// </summary>
+    public void SyncHp()
+    {
+        photonView.RPC(nameof(SyncHP), RpcTarget.All, this);
+    }
+
+    /// <summary>
+    /// キャラのステータスを同期
+    /// </summary>
+    /// <param name="chara"></param>
     [PunRPC]
-    void SyncStatus(Character_Multi chara)
+    void SyncHP(Character_Multi chara)
     {
         this.nowHp = chara.nowHp;
     }
@@ -162,11 +220,14 @@ public class Character_Multi : MonoBehaviourPunCallbacks
 	/// <param name="targetZPos">z座標</param>
     public void MovePosition(int targetXPos, int targetZPos)
     {
+        //カメラに移動中キャラを追従させる
         following_to_chara = true;
 
+        //移動距離計算
         Vector3 movePos = Vector3.zero;
         movePos.x = targetXPos - xPos;
         movePos.z = targetZPos - zPos;
+
 
         // DoTweenのTweenを使用して徐々に位置が変化するアニメーションを行う
         transform.DOMove(movePos, 0.5f).SetEase(Ease.Linear).SetRelative();
@@ -175,11 +236,14 @@ public class Character_Multi : MonoBehaviourPunCallbacks
         xPos = targetXPos;
         zPos = targetZPos;
 
+        //移動完了まで遅延
         DOVirtual.DelayedCall(0.5f, () =>
         {
+            //キャラ追従をやめる
             following_to_chara = false;
         });
 
+        //キャラクターの座標を変数を同期
         photonView.RPC(nameof(SyncPos), RpcTarget.All, xPos, zPos);
     }
 
@@ -263,6 +327,11 @@ public class Character_Multi : MonoBehaviourPunCallbacks
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="targetCharaData"></param>
+    /// <param name="skill"></param>
     public void AttackAnimation(Character_Multi targetCharaData, SkillDefine.Skill skill)
     {
         switch (skill)

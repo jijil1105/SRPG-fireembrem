@@ -42,7 +42,7 @@ public class LoadScene : MonoBehaviour
     public void NewGaeme()
     {
         //ニューゲームボタンのクリックSE再生
-        audioManager.Play("SE_1");
+        AudioManager.instance.Play("SE_1");
         //SEが再生し終わるまで待機
         UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
 
@@ -62,7 +62,7 @@ public class LoadScene : MonoBehaviour
     public void LoadGame()
     {
         //ニューゲームボタンのクリックSE再生
-        audioManager.Play("SE_1");
+        AudioManager.instance.Play("SE_1");
         //SEが再生し終わるまで待機
         UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
 

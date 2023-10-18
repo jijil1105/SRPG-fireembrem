@@ -12,28 +12,6 @@ using System;
 
 public class GameManager_Multi : MonoBehaviourPunCallbacks
 {
-/*  GameManagerで色々なクラスを使用してゲームの進行を行っています
- *  ここの処理ではゲームマネージャーのシングルトン化を行っています。
- */
-
-    /*   private void Awake()
-       {
-           if(instance == null)
-           {
-               instance = this;
-               DontDestroyOnLoad(gameObject);
-           }
-
-           else
-           {
-               Destroy(gameObject);
-           }
-       }
-
-       public static GameManager instance;
-    */
-
-
     //-------------------------------------------------------------------------
     //各マネージャークラスの宣言
 
@@ -75,17 +53,19 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     private Phase nowPhase;//現在の進行モード
 
+    //プレイヤー人数監視
     [SerializeField] ReactiveProperty<int> num_of_player;
 
     //------------------------------------------------------------------------
 
+    //プレイヤーの人数が揃った場合True
     bool isAbleGame = false;
 
     //------------------------------------------------------------------------
 
-    //変数の初期化
     async void  Start()
     {
+        //変数の初期化
         mapManager = GetComponent<MapManager>();//
         charactorManager = GetComponent<CharactorManager>();
         guiManager_multi = GetComponent<GUIManager_Multi>();
@@ -94,13 +74,17 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         nowPhase = Phase.Myturn_Start;
         AudioManager.instance.Play("BGM_1");
 
+        //
         await UniTask.Delay(TimeSpan.FromMilliseconds(0.05), cancellationToken: this.GetCancellationTokenOnDestroy());
 
+        //カメラの初期座標を自軍キャラを真ん中に写す様に設定
         var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
         Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara);
 
+        //現在ルームにいるプレイヤー人数
         num_of_player.Value = PhotonNetwork.CurrentRoom.PlayerCount;
 
+        //プレイヤー人数が２人ならゲーム可能
         num_of_player.Subscribe(x =>
         {
             if (x == 2)
@@ -111,21 +95,38 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             Debug.Log(x);
         }).AddTo(this);
 
+        //プレイヤーが揃うまでの待機ウィンドウ表示
         guiManager_multi.ShowWaitingWindow();
+
+        //プレイヤーが揃うまで待機
         await UniTask.WaitUntil(() => isAbleGame, cancellationToken: this.GetCancellationTokenOnDestroy());
 
-        int phtonviewID = charactorManager.Charactors_Multis[0].GetComponent<PhotonView>().ViewID;
+        //PhotonviewIDから対戦相手のオブジェクトを取得する為、ID取得
+        int[] photonviewID = new int[charactorManager.Charactors_Multis.Count];
 
-        photonView.RPC(nameof(AddObject), RpcTarget.All, phtonviewID);
-      
+        for (int i = 0; i < photonviewID.Length; i++)
+        {
+            photonviewID[i] = charactorManager.Charactors_Multis[i].GetComponent<PhotonView>().ViewID;
+            Debug.Log(i);
+        }
+        //対戦相手のオブジェクトをキャラクターマネージャーの管理変数に追加
+        photonView.RPC(nameof(AddObject), RpcTarget.All, photonviewID);
+
+        var chara_datas = charactorManager.Charactors_Multis;
+
+        foreach (var Chara in chara_datas)
+            Chara.SyncInfo();
+
+        //待機ウィンドウ非表示
         guiManager_multi.HideWaitingWindow();
+
+        //戦闘BGM再生
         AudioManager.instance.Play("BGM_1");
     }
 
     //-------------------------------------------------------------------------
 
     //ボタンを押している間ずっと呼ばれてしまうのでボタンを押してから一度だけ処理を行うようにしています
-
     bool isCalledOnce = false;
 
     void Update()
@@ -154,10 +155,15 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// プレイヤーがルームに入室し時のコールバック
+    /// </summary>
+    /// <param name="newPlayer"></param>
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         base.OnPlayerEnteredRoom(newPlayer);
 
+        //プレイヤー人数を更新
         num_of_player.Value = PhotonNetwork.CurrentRoom.PlayerCount;
     }
 
@@ -165,39 +171,47 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// photonViewIDから検索して対戦相手のキャラクター取得
+    /// </summary>
+    /// <param name="senderView"></param>
     [PunRPC]
-    void AddObject(int senderView)
+    void AddObject(int[] senderView)
     {
-        var obj = PhotonView.Find(senderView).transform;
+        foreach(var viewid in senderView)
+        {
+            //IDからオブジェクト検索
+            var obj = PhotonView.Find(viewid).transform;
 
+            //自分のオブジェクトならリターン
+            if (obj.GetComponent<PhotonView>().IsMine)
+                return;
+
+            //対戦相手のキャラをキャラクターマネジャーの管理変数に追加
+            Character_Multi chara = obj.GetComponent<Character_Multi>();
+            charactorManager.Charactors_Multis.Add(chara);
+        }
+
+        //IDからオブジェクト検索
+        /*var obj = PhotonView.Find(senderView).transform;
+
+        //自分のオブジェクトならリターン
         if (obj.GetComponent<PhotonView>().IsMine)
             return;
 
+        //対戦相手のキャラをキャラクターマネジャーの管理変数に追加
         Character_Multi chara = obj.GetComponent<Character_Multi>();
-        charactorManager.Charactors_Multis.Add(chara);
+        charactorManager.Charactors_Multis.Add(chara);*/
     }
 
     //-------------------------------------------------------------------------
 
-    [PunRPC]
-    private void SynchedCharacters(Character_Multi charactor)
-    {
-        Debug.Log(
-              "charactor.initPos_X" + charactor.initPos_X + ": "
-            + "charactor.initPos_Z" + charactor.initPos_Z + ": "
-            + "charactor.maxHP" + charactor.maxHP+": "
-            + "charactor.atk" + charactor.atk + ": "
-            + "charactor.def" + charactor.def + ": "
-            + "charactor.Int" + charactor.Int + ": "
-            + "charactor.Res" + charactor.Res + ": "
-            + "charactor.xPos" + charactor.xPos + ": "
-            + "charactor.zPos" + charactor.zPos + ": "
-            + "charactor.nowHP" + charactor.nowHp + ": ");
-        charactorManager.Charactors_Multis.Add(charactor);
-    }
-
     //-------------------------------------------------------------------------
 
+    /// <summary>
+    /// 現在のターンを同期
+    /// </summary>
+    /// <param name="phase"></param>
     [PunRPC]
     private void Synchronization(Phase phase)
     {
@@ -238,12 +252,14 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     /// <param name="targetBlock"></param>タップしたオブジェクト情報
     private void SelectBlock(MapBlock targetBlock)
     {
+        //ルームのホストはMyturn、子クライアントならEnemyTurnで行動可能
         //現在の進行モードによって異なる処理を開始する
         switch (nowPhase)
         {
             //自分のターン：開始時
             case Phase.Myturn_Start:
-                if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+                //ルームのホストなら処理
+                if (PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                 {
                     //全ブロックの選択状態解除
                     mapManager.AllSelectionModeClear();
@@ -256,6 +272,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                     //選択したブロックの座標にキャラクターが居た場合の処理
                     if (charaData)
                     {
+                        //自分のオブジェクトなら処理
                         if (charaData.GetComponent<PhotonView>().IsMine)
                         {
                             //選択ブロックに居たキャラクターの記憶
@@ -283,6 +300,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             //進行モード＜自分のターン：移動先選択中＞に変更
                             ChangePhase(Phase.Myturn_Moving);
                         }
+                        //他プレイヤーのオブジェクトなら処理無し
                         else
                         {
                             //選択中キャラを初期化
@@ -305,7 +323,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             //自分のターン：移動先選択中
             case Phase.Myturn_Moving:
 
-                if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+                //ルームのホストなら処理
+                if (PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                 {
                     //選択キャラが敵キャラクターなら移動先選択状態を解除
                     if (selectingChara.isEnemy)
@@ -344,6 +363,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             case Phase.Myturn_Command:
                 if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                 {
+                    //ルームのホストなら処理
                     // キャラクター攻撃処理
                     // (攻撃可能ブロックを選択した場合に攻撃処理を呼び出す)
                     if (attackableBlocks.Contains(targetBlock))
@@ -372,7 +392,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             //敵ターン：開始時
             case Phase.Enemyturn_Start:
 
-                if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
+                //ルームのホスト出ない場合はEnemyTurnで処理
+                if (PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
                     //全ブロックの選択状態解除
                     mapManager.AllSelectionModeClear();
@@ -433,8 +454,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
             //敵ターン：移動先選択中
             case Phase.Enemyturn_Moving:
-
-                if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
+                //ルームのホスト出ない場合はEnemyTurnで処理
+                if (PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
                     //選択キャラが敵キャラクターなら移動先選択状態を解除
                     if (!selectingChara.isEnemy)
@@ -471,7 +492,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                 break;
             //敵ターン：移動後のコマンド選択中
             case Phase.Enemyturn_Command:
-                if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
+                //ルームのホスト出ない場合はEnemyTurnで処理
+                if (PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
                     // キャラクター攻撃処理
                     // (攻撃可能ブロックを選択した場合に攻撃処理を呼び出す)
@@ -530,6 +552,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         nowPhase = NowPhase;
         Debug.Log("Change" + nowPhase);
 
+        //現在のターンを同期
         photonView.RPC(nameof(Synchronization), RpcTarget.All, nowPhase);
 
 
@@ -538,7 +561,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         {
             // 自分のターン：開始時
             case Phase.Myturn_Start:
-                if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+                //ルームのホストなら処理
+                if (PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                 {
                     //行動可能な自キャラが居るかチェック
                     var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
@@ -550,7 +574,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                         //行動可能にする
                         foreach (var charaData in charas)
                             charaData.SetInCapacitited(false);
-
+                        //ターンを変更
                         ChangePhase(Phase.Enemyturn_Start);
                     }
 
@@ -563,8 +587,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
             // 敵のターン：開始時
             case Phase.Enemyturn_Start:
-                if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
+                //ルームのホストじゃないなら処理
+                if (PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
                 {
+                    //行動可能キャラ取得
                     var enemy = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy == true);
 
                     Debug.Log(enemy);
@@ -577,7 +603,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                         //行動可能にする
                         foreach (var charaData in charas)
                             charaData.SetInCapacitited(false);
-
+                        //ターンを変更
                         ChangePhase(Phase.Myturn_Start);
                     }
 
@@ -613,6 +639,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     /// </summary>
     public void StandbyCommand()
     {
+        //SE再生
         AudioManager.instance.Play("SE_1");
 
         // コマンドボタンを非表示にする
@@ -621,15 +648,18 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         //行動不能状態にする
         selectingChara.SetInCapacitited(true);
 
+        //選択キャラ初期化
         selectingChara = null;
 
-        if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+        //ルームのホストなら処理
+        if (PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
         {
             // 進行モード＜自ターン：開始時＞に変更
             ChangePhase(Phase.Myturn_Start, true);
         }
 
-        if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
+        //ルームのホストで無いなら処理
+        if (PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
         {
             // 進行モード＜敵ターン：開始時＞に変更
             ChangePhase(Phase.Enemyturn_Start, true);
@@ -686,7 +716,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         int damagevalue;// ダメージ量
         int atkpoint = attackchara.atk;
         int defpoint = defensechara.def;
-        float delay_time = 2.0f;
+        float delay_time = 2.0f;//遅延時間
 
         if (!attackchara.isMagicAttac)//攻撃キャラが物理攻撃の場合
         {
@@ -705,6 +735,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         damagevalue = atkpoint - defpoint;// ダメージ＝攻撃力－防御力で計算
 
+        //属性相性を反映したダメージ数取得
         float ratio = GetDamegeRatioByAttribute(attackchara, defensechara);
         damagevalue = (int)(damagevalue * ratio);
 
@@ -725,6 +756,9 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         defensechara.nowHp -= damagevalue;
         // HPが0～最大値の範囲に収まるよう補正
         defensechara.nowHp = Mathf.Clamp(defensechara.nowHp, 0, defensechara.maxHP);
+
+        //攻撃を受けるキャラのHPを同期する
+        defensechara.SyncHp();
 
         // HP0になったキャラクターを削除する
         if (defensechara.nowHp == 0)
@@ -751,6 +785,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                     //行動不能状態
                     attackchara.SetInCapacitited(true);
 
+                    //ターンを変更
                     ChangePhase(Phase.Myturn_Start, true);
                 }
 
@@ -759,6 +794,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                     //行動不能状態
                     attackchara.SetInCapacitited(true);
 
+                    //ターンを変更
                     ChangePhase(Phase.Enemyturn_Start, true);
                 }
             });
@@ -767,7 +803,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     //------------------------------------------------------------------------
 
     /// <summary>
-    /// 
+    /// スキル反映
     /// </summary>
     /// <param name="damagevalue"></param>
     /// <param name="atkpoint"></param>
@@ -890,7 +926,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     //------------------------------------------------------------------------
 
     /// <summary>
-    /// 
+    /// 行動キャンセル
     /// </summary>
     /// <param name="isMyturn"></param>
     public void CancelMoving(bool isMyturn = true)
@@ -912,6 +948,9 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
+    /// <summary>
+    /// ゲーム終了条件が揃っているか確認
+    /// </summary>
     public void CheckGameSet()
     {
         //敵キャラが居るかチェック
@@ -974,15 +1013,18 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
+    /// <summary>
+    /// ゲーム終了かどうかを他プレイヤーと同時にチェックする
+    /// </summary>
     public void gamecheck_RPC()
     {
         photonView.RPC(nameof(CheckGameSet_Multi), RpcTarget.All);
     }
 
-    [PunRPC]
     /// <summary>
-    /// 
+    /// マルチモード時にゲーム終了条件が揃っているかチェック
     /// </summary>
+    [PunRPC]
     public void CheckGameSet_Multi()
     {
         Debug.Log("Check GameSet");
@@ -1010,22 +1052,23 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             DOVirtual.DelayedCall(
                 1.5f, () =>
                 {
-                    if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+                    //ホストなら処理
+                    if (PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
                     {
                         if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
                             guiManager_multi.ShowLogo_GameClear();
 
                         if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
                             guiManager_multi.ShowLogo_gameOver();
-
+                        //画面をフェードイン
                         guiManager_multi.FadeIn(5.0f);
                     }
                     else
                     {
-                        if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
+                        if (Chara)//味方キャラがいる場合ゲームオーバーのロゴ表示
                             guiManager_multi.ShowLogo_gameOver();
 
-                        if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
+                        if (Enemychara)//敵キャラがいる場合ゲームクリアのロゴ表示
                             guiManager_multi.ShowLogo_GameClear();
 
                         guiManager_multi.FadeIn(5.0f);
@@ -1096,6 +1139,9 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     }
 }
 
+/// <summary>
+/// PhotonViewRPCでCharacter＿Multiを使用可能にするシリアライザー
+/// </summary>
 public static class CharacterSerializer
 {
     public static void Register()
@@ -1142,6 +1188,9 @@ public static class CharacterSerializer
     }
 }
 
+/// <summary>
+/// 
+/// </summary>
 public static class ColorSerializer
 {
     public static void Register()

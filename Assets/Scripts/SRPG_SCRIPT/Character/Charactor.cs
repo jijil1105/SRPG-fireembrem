@@ -81,9 +81,9 @@ public class Charactor : MonoBehaviour
     //-------------------------------------------------------------------------
 
     //Main Camera
-    private Camera MainCamera;
+    private Camera MainCamera = null;
 
-    bool following_to_chara;
+    private bool following_to_chara = false;
 
     //-------------------------------------------------------------------------
 
@@ -114,7 +114,7 @@ public class Charactor : MonoBehaviour
     // (スプライトオブジェクトをメインカメラの方向に向ける)
     void Update()
     {
-        /*Vector3 camerPos = MainCamera.transform.position;
+        Vector3 camerPos = MainCamera.transform.position;
         camerPos.y = transform.position.y;
         transform.LookAt(MainCamera.transform);
         //MainCamera.transform.LookAt(this.transform);
@@ -122,7 +122,7 @@ public class Charactor : MonoBehaviour
         if(following_to_chara&&isEnemy)
         {
             MainCamera.GetComponent<CameraController>().get_chara_subject.OnNext(this);
-        }*/
+        }
     }
 
     //-------------------------------------------------------------------------

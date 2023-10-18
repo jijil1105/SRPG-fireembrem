@@ -13,7 +13,6 @@ using UniRx;
 
 public class UniTask_Sample1 : MonoBehaviour
 {
-    float _waitTime = 3f;
     private CancellationTokenSource _ct = new CancellationTokenSource();
 
     [SerializeField] private Button button;
@@ -93,11 +92,6 @@ public class UniTask_Sample1 : MonoBehaviour
 
         Debug.Log(github);
         Debug.Log(yahoo);
-    }
-
-    async UniTask DoAsync2(CancellationToken token)
-    {
-
     }
 
     async UniTask<string> GetHtmlAsync(string uri)

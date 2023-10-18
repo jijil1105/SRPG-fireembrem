@@ -51,6 +51,8 @@ MonoBehaviour:
   - SyncStatus
   - DestroyPhotonObj
   - CheckGameSet_Multi
+  - SyncHP
+  - Syncinfo
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

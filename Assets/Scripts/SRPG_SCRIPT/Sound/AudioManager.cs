@@ -55,7 +55,7 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     private AudioSource GetUnusedAudioSource() =>
-        audioSourceList.FirstOrDefault(audiosource => audiosource.isPlaying == false);
+        audioSourceList.FirstOrDefault(audiosource => audiosource.isPlaying == false && audiosource !=null);
 
     /// <summary>
     /// 引数のクリップを再生

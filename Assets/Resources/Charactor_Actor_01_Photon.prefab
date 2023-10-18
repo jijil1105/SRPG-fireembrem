@@ -140,10 +140,10 @@ MonoBehaviour:
   initPos_Z: 4
   isEnemy: 1
   charaName: "\u5263\u58EB"
-  maxHP: 31
-  atk: 999
-  def: 4
-  Int: 2
+  maxHP: 33
+  atk: 1001
+  def: 3
+  Int: 3
   Res: 4
   attribute: 0
   moveType: 2
@@ -152,9 +152,9 @@ MonoBehaviour:
   xPos: 0
   zPos: 0
   nowHp: 0
-  Lv: 3
-  nowExp: 68
-  ExpPerLv: 225
+  Lv: 4
+  nowExp: 86
+  ExpPerLv: 337
   isSkillLock: 0
   isDefBreak: 0
   isIncapacitated: 0

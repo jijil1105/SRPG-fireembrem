@@ -14,7 +14,8 @@ public class GUIManager_Multi : MonoBehaviour
     public Text hpText; // HPText
     public Text atkText; // 攻撃力Text
     public Text defText; // 防御力Text
-                         // 属性アイコン画像
+
+    // 属性アイコン画像
     public Sprite attr_Water; // 水属性アイコン画像
     public Sprite attr_Fire;  // 火属性アイコン画像
     public Sprite attr_Wind;  // 風属性アイコン画像
