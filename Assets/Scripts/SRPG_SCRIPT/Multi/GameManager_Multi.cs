@@ -1100,22 +1100,47 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         var targetChara =
             charactorManager.GetCharactor_Multi(attackBlock.XPos, attackBlock.ZPos);
 
-        if (targetChara != null)
-        {// 攻撃対象のキャラクターが存在する
-         // キャラクター攻撃処理
-            CharaAttack(selectingChara, targetChara);
 
-            // 進行モードを進める(行動結果表示へ)
-            ChangePhase(Phase.Myturn_Result);
-            return;
+        if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+        {
+            if (targetChara != null)
+            {// 攻撃対象のキャラクターが存在する
+             // キャラクター攻撃処理
+                CharaAttack(selectingChara, targetChara);
+
+                // 進行モードを進める(行動結果表示へ)
+                ChangePhase(Phase.Myturn_Result);
+                return;
+            }
+            else
+            {// 攻撃対象が存在しない
+
+                //行動不能状態
+                selectingChara.SetInCapacitited(true);
+                // 進行モードを進める(敵のターンへ)
+                ChangePhase(Phase.Myturn_Start, true);
+            }
         }
-        else
-        {// 攻撃対象が存在しない
 
-            //行動不能状態
-            selectingChara.SetInCapacitited(true);
-            // 進行モードを進める(敵のターンへ)
-            ChangePhase(Phase.Myturn_Start, true);
+        if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
+        {
+            if (targetChara != null)
+            {// 攻撃対象のキャラクターが存在する
+             // キャラクター攻撃処理
+                CharaAttack(selectingChara, targetChara);
+
+                // 進行モードを進める(行動結果表示へ)
+                ChangePhase(Phase.Enemyturn_Result);
+                return;
+            }
+            else
+            {// 攻撃対象が存在しない
+
+                //行動不能状態
+                selectingChara.SetInCapacitited(true);
+                // 進行モードを進める(敵のターンへ)
+                ChangePhase(Phase.Enemyturn_Start, true);
+            }
         }
     }
 
@@ -1134,8 +1159,17 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         // キャラクターの選択を解除する
         ClearSelectingChara();
 
-        // 進行モードを戻す(ターンの最初へ)
-        ChangePhase(Phase.Myturn_Start, true);
+        if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+        {
+            // 進行モードを戻す(ターンの最初へ)
+            ChangePhase(Phase.Myturn_Start, true);
+        }
+
+        if(PhotonNetwork.MasterClient.UserId!=PhotonNetwork.LocalPlayer.UserId)
+        {
+            // 進行モードを戻す(ターンの最初へ)
+            ChangePhase(Phase.Enemyturn_Start, true);
+        }
     }
 }
 
