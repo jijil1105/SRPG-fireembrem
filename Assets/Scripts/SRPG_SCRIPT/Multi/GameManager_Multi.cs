@@ -460,7 +460,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                     //選択キャラが敵キャラクターなら移動先選択状態を解除
                     if (!selectingChara.isEnemy)
                     {
-                        CancelMoving(false);
+                        CancelMoving();
                         break;
                     }
 
@@ -767,7 +767,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             charactorManager.DeleteCharaData(defensechara);
         }
 
-
         // Skillの選択状態を解除する
         selectingSkill = SkillDefine.Skill._None;
 
@@ -858,6 +857,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
+
   
     //------------------------------------------------------------------------
 
@@ -929,7 +929,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
     /// 行動キャンセル
     /// </summary>
     /// <param name="isMyturn"></param>
-    public void CancelMoving(bool isMyturn = true)
+    public void CancelMoving()
     {
         mapManager.AllSelectionModeClear();
 
@@ -939,7 +939,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         guiManager_multi.ShowMoveCancelButton(false);
 
-        if(isMyturn)
+        if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
             ChangePhase(Phase.Myturn_Start, true);
 
         else
