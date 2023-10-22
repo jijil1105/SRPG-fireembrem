@@ -171,13 +171,8 @@ public class CharactorManager : MonoBehaviourPunCallbacks
 
         var gm = GetComponent<GameManager>();
 
-        var gm_muti = GetComponent<GameManager_Multi>();
-
         if(gm)
             gm.CheckGameSet();
-
-        if (gm_muti)
-            gm_muti.CheckGameSet();
     }
 
     //-------------------------------------------------------------------------
@@ -192,8 +187,6 @@ public class CharactorManager : MonoBehaviourPunCallbacks
         Charactors_Multis.Remove(charadata);
 
         Destroy(obj.gameObject);
-
-        Debug.Log("FJFJFJ");
     }
 
     /// <summary>
@@ -211,12 +204,7 @@ public class CharactorManager : MonoBehaviourPunCallbacks
         // オブジェクト削除を攻撃完了後に処理させる為に遅延実行
         photonView.RPC(nameof(DestroyPhotonObj), RpcTarget.All, charadata.GetComponent<PhotonView>().ViewID);
 
-        var gm = GetComponent<GameManager>();
-
         var gm_muti = GetComponent<GameManager_Multi>();
-
-        if (gm)
-            gm.CheckGameSet();
 
         if (gm_muti)
             gm_muti.gamecheck_RPC();

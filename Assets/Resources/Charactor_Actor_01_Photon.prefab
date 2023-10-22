@@ -136,9 +136,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32f6c037e32c54168b6fd0f0c0956be5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initPos_X: 1
-  initPos_Z: 4
-  isEnemy: 1
+  initPos_X: -1
+  initPos_Z: -4
+  isEnemy: 0
   charaName: "\u5263\u58EB"
   maxHP: 33
   atk: 1001
@@ -153,7 +153,7 @@ MonoBehaviour:
   zPos: 0
   nowHp: 0
   Lv: 4
-  nowExp: 86
+  nowExp: 329
   ExpPerLv: 337
   isSkillLock: 0
   isDefBreak: 0

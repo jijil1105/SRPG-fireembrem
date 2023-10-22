@@ -53,6 +53,7 @@ MonoBehaviour:
   - CheckGameSet_Multi
   - SyncHP
   - Syncinfo
+  - SyncShowLogo
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

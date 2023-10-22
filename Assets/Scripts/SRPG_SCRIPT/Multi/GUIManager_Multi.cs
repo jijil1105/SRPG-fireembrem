@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class GUIManager_Multi : MonoBehaviour
+public class GUIManager_Multi : MonoBehaviourPun
 {
     // ステータスウィンドウUI
     public GameObject statusWindow; // ステータスウィンドウオブジェクト
@@ -298,6 +300,32 @@ public class GUIManager_Multi : MonoBehaviour
     public void HideCommandButtons()
     {
         commandButtons.SetActive(false);
+    }
+
+    //-------------------------------------------------------------------------
+
+    public void Sync_Show_Logo(bool isMyTurne)
+    {
+        photonView.RPC(nameof(SyncShowLogo), RpcTarget.All, isMyTurne);
+    }
+
+    [PunRPC]
+    void SyncShowLogo(bool Turne)
+    {
+        if(Turne)
+        {
+            if (PhotonNetwork.MasterClient.UserId == PhotonNetwork.LocalPlayer.UserId)
+                ShowLogoChangeTurn(false);
+            else
+                ShowLogoChangeTurn(true);
+        }
+        else
+        {
+            if (PhotonNetwork.MasterClient.UserId != PhotonNetwork.LocalPlayer.UserId)
+                ShowLogoChangeTurn(false);
+            else
+                ShowLogoChangeTurn(true);
+        }
     }
 
     //-------------------------------------------------------------------------

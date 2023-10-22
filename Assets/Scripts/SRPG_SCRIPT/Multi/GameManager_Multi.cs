@@ -92,7 +92,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             else
                 isAbleGame = false;
 
-            Debug.Log(x);
         }).AddTo(this);
 
         //プレイヤーが揃うまでの待機ウィンドウ表示
@@ -105,10 +104,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         int[] photonviewID = new int[charactorManager.Charactors_Multis.Count];
 
         for (int i = 0; i < photonviewID.Length; i++)
-        {
             photonviewID[i] = charactorManager.Charactors_Multis[i].GetComponent<PhotonView>().ViewID;
-            Debug.Log(i);
-        }
+        
         //対戦相手のオブジェクトをキャラクターマネージャーの管理変数に追加
         photonView.RPC(nameof(AddObject), RpcTarget.All, photonviewID);
 
@@ -169,8 +166,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //-------------------------------------------------------------------------
 
-    //-------------------------------------------------------------------------
-
     /// <summary>
     /// photonViewIDから検索して対戦相手のキャラクター取得
     /// </summary>
@@ -191,20 +186,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             Character_Multi chara = obj.GetComponent<Character_Multi>();
             charactorManager.Charactors_Multis.Add(chara);
         }
-
-        //IDからオブジェクト検索
-        /*var obj = PhotonView.Find(senderView).transform;
-
-        //自分のオブジェクトならリターン
-        if (obj.GetComponent<PhotonView>().IsMine)
-            return;
-
-        //対戦相手のキャラをキャラクターマネジャーの管理変数に追加
-        Character_Multi chara = obj.GetComponent<Character_Multi>();
-        charactorManager.Charactors_Multis.Add(chara);*/
     }
-
-    //-------------------------------------------------------------------------
 
     //-------------------------------------------------------------------------
 
@@ -310,11 +292,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                     else
                     {//選択ブロック座標にキャラが居ない場合
-
                         //選択中キャラを初期化
                         ClearSelectingChara();
-                        //選択ブロックのデバッグ出力
-                        Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
                     }
                 }
 
@@ -442,11 +421,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                     else
                     {//選択ブロック座標にキャラが居ない場合
-
                         //選択中キャラを初期化
                         ClearSelectingChara();
-                        //選択ブロックのデバッグ出力
-                        Debug.Log("Tapped on Block  Position : " + targetBlock.XPos + ", " + targetBlock.ZPos);
                     }
                 }
 
@@ -576,11 +552,9 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             charaData.SetInCapacitited(false);
                         //ターンを変更
                         ChangePhase(Phase.Enemyturn_Start);
-                    }
 
-                    // 自分のターン開始時のロゴを表示
-                    if (!noLogos)
-                        guiManager_multi.ShowLogoChangeTurn(true);
+                        guiManager_multi.Sync_Show_Logo(true);
+                    }
                 }
 
                 break;
@@ -593,8 +567,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                     //行動可能キャラ取得
                     var enemy = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy == true);
 
-                    Debug.Log(enemy);
-
                     //動かせるキャラが居なかった場合
                     if (!enemy)
                     {
@@ -605,11 +577,9 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                             charaData.SetInCapacitited(false);
                         //ターンを変更
                         ChangePhase(Phase.Myturn_Start);
-                    }
 
-                    // 敵のターン開始時のロゴを表示
-                    if (!noLogos)
-                        guiManager_multi.ShowLogoChangeTurn(false);
+                        guiManager_multi.Sync_Show_Logo(false);
+                    }
                 }
 
                 break;
@@ -845,7 +815,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                 //スキル使用不可状態にする
                 attackchara.isSkillLock = true;
-
                 break;
 
             default:// スキル無しor通常攻撃時
@@ -948,69 +917,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
     //------------------------------------------------------------------------
 
-    /// <summary>
-    /// ゲーム終了条件が揃っているか確認
-    /// </summary>
-    public void CheckGameSet()
-    {
-        //敵キャラが居るかチェック
-        var Enemychara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == true);
-
-        //味方キャラが居るかチェック
-        var Chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isEnemy == false);
-
-        if (!Chara || !Enemychara)
-        {
-            //ゲーム終了フラグをtrue
-            isGameSet = true;
-            if (Chara)
-            {
-                List<Character_Multi> charalist = new List<Character_Multi>();
-                foreach (var chara in charactorManager.Charactors_Multis)
-                {
-                    if (!chara.isEnemy)
-                        charalist.Add(chara);
-                }
-            }
-
-
-            //ゲーム終了フラグを遅延処理
-            DOVirtual.DelayedCall(
-                1.5f, () =>
-                {
-                    if (PhotonNetwork.MasterClient.UserId == PhotonNetwork.LocalPlayer.UserId)
-                    {
-                        if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
-                            guiManager_multi.ShowLogo_GameClear();
-
-                        if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
-                            guiManager_multi.ShowLogo_gameOver();
-
-                        guiManager_multi.FadeIn(5.0f);
-                    }
-                    else
-                    {
-                        if (Chara)//味方キャラがいる場合ゲームクリア時のロゴ表示
-                            guiManager_multi.ShowLogo_gameOver();
-
-                        if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
-                            guiManager_multi.ShowLogo_GameClear();
-
-                        guiManager_multi.FadeIn(5.0f);
-                    }
-                });
-
-            // Gameシーンの再読み込み(遅延実行)
-            DOVirtual.DelayedCall(
-                7.0f, () =>
-                {
-                    //guiManager.FadeIn_FadeOut(false, 1.0f);
-
-                    SceneManager.LoadScene("MainMenu");
-                });
-        }
-    }
-
     //------------------------------------------------------------------------
 
     /// <summary>
@@ -1080,6 +986,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                 7.0f, () =>
                 {
                     //guiManager.FadeIn_FadeOut(false, 1.0f);
+
+                    PhotonNetwork.Disconnect();
 
                     SceneManager.LoadScene("MainMenu");
                 });
