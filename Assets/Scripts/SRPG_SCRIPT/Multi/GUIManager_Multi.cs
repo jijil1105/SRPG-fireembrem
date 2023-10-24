@@ -31,7 +31,7 @@ public class GUIManager_Multi : MonoBehaviourPun
     //-------------------------------------------------------------------------
 
     // バトル結果表示UI処理クラス
-    public BattleWindowUI battleWindowUI;
+    public BattleWindowUI_Multi battleWindowUI;
 
     //-------------------------------------------------------------------------
 

@@ -718,9 +718,10 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         // キャラクター攻撃アニメーション
         attackchara.AttackAnimation(defensechara, selectingSkill);
-
+        //
+        int id = defensechara.GetComponent<PhotonView>().ViewID;
         // バトル結果表示ウィンドウの表示設定
-        guiManager_multi.battleWindowUI.ShowWindow(defensechara, damagevalue);
+        guiManager_multi.battleWindowUI.Show_Window(id, damagevalue);
 
         // ダメージ量分防御側のHPを減少
         defensechara.nowHp -= damagevalue;
@@ -747,7 +748,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             {// 遅延実行する内容
 
                 // ウィンドウを非表示化
-                guiManager_multi.battleWindowUI.HideWindow();
+                guiManager_multi.battleWindowUI.Hide_Window();
                 // ターンを切り替える
                 if (nowPhase == Phase.Myturn_Result)
                 {
