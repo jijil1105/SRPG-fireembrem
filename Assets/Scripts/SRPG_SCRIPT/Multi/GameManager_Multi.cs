@@ -77,10 +77,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         //
         await UniTask.Delay(TimeSpan.FromMilliseconds(0.05), cancellationToken: this.GetCancellationTokenOnDestroy());
 
-        //カメラの初期座標を自軍キャラを真ん中に写す様に設定
-        var chara = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-        Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(chara);
-
         //現在ルームにいるプレイヤー人数
         num_of_player.Value = PhotonNetwork.CurrentRoom.PlayerCount;
 
@@ -113,6 +109,19 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
         foreach (var Chara in chara_datas)
             Chara.SyncInfo();
+
+        if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
+        {
+            //カメラの初期座標を自軍キャラを真ん中に写す様に設定
+            var character = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+            Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(character);
+        }
+        else
+        {
+            //カメラの初期座標を自軍キャラを真ん中に写す様に設定
+            var character = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy == true);
+            Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(character);
+        }
 
         //待機ウィンドウ非表示
         guiManager_multi.HideWaitingWindow();
