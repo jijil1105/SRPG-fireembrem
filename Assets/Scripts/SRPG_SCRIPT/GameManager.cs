@@ -69,7 +69,9 @@ public class GameManager : MonoBehaviour
 
     //------------------------------------------------------------------------
 
-
+    bool following_camera = false;
+    CameraController camera_ = null;
+    Charactor following_chara = null;
 
     //------------------------------------------------------------------------
 
@@ -84,11 +86,12 @@ public class GameManager : MonoBehaviour
         attackableBlocks = new List<MapBlock>();
         nowPhase = Phase.Myturn_Start;
         AudioManager.instance.Play("BGM_1");
+        camera_ = Camera.main.GetComponent<CameraController>();
 
         DOVirtual.DelayedCall(0.05f, () =>
         {
             var chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-            Camera.main.GetComponent<CameraController>().get_chara_subject.OnNext(chara);
+            camera_.get_chara_subject.OnNext(chara);
         });
     }
 
@@ -114,6 +117,9 @@ public class GameManager : MonoBehaviour
                 GetMapBlockByTapPos();
             }
         }
+
+        if (following_camera)
+            camera_.get_chara_subject.OnNext(following_chara);
 
         if(!Input.GetMouseButton(0)) { isCalledOnce = false; }
     }
@@ -340,11 +346,12 @@ public class GameManager : MonoBehaviour
 
                     ChangePhase(Phase.Myturn_Start);
 
+                    following_camera = false;
                     var chara_data = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
                     Camera.main.GetComponent<CameraController>().get_chara_subject.OnNext(chara_data);
                     return;
                 }
-
+                
                 // 敵のターン開始時のロゴを表示
                 if (!noLogos)
                     guiManager.ShowLogoChangeTurn(false);
@@ -681,6 +688,7 @@ public class GameManager : MonoBehaviour
         if (actionPlan != null)
         {
             // 敵キャラクター移動処理
+            following_chara = actionPlan.charaData; following_camera = true;
             actionPlan.charaData.MovePosition(actionPlan.toMoveBlock.XPos, actionPlan.toMoveBlock.ZPos);
             // 敵キャラクター攻撃処理
 
@@ -699,7 +707,7 @@ public class GameManager : MonoBehaviour
         // 移動させる１体をランダムに選ぶ
         int randValue = UnityEngine.Random.Range(0, enemycharas.Count);
         var chara = enemycharas[randValue];
-
+        following_chara = chara; following_camera = true;
         // 対象の移動可能場所リストの中から1つの場所をランダムに選ぶ
         reachableBlocks = mapManager.SearchReachableBlocks(chara.XPos, chara.ZPos);
         if(reachableBlocks.Count > 0)
