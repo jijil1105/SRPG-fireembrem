@@ -859,6 +859,8 @@ public class GameManager : MonoBehaviour
                 {
                     //guiManager.FadeIn_FadeOut(false, 1.0f);
 
+                    camera_.GetComponent<CameraController>().get_chara_subject.OnCompleted();
+
                     SceneManager.LoadScene("MainMenu");
                 });
         }

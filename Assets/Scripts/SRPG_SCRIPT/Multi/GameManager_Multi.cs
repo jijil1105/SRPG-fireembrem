@@ -996,6 +996,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                 {
                     //guiManager.FadeIn_FadeOut(false, 1.0f);
 
+                    Camera.main.GetComponent<CameraController>().get_chara_subject.OnCompleted();
+
                     PhotonNetwork.Disconnect();
 
                     SceneManager.LoadScene("MainMenu");
