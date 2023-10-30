@@ -87,7 +87,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                 isAbleGame = true;
             else
                 isAbleGame = false;
-
         }).AddTo(this);
 
         //プレイヤーが揃うまでの待機ウィンドウ表示
