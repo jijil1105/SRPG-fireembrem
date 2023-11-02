@@ -134,11 +134,12 @@ public class Character_Multi : MonoBehaviourPunCallbacks
         camerPos.y = transform.position.y;
         transform.LookAt(MainCamera.transform);
         //MainCamera.transform.LookAt(this.transform);
+        */
 
-        if(following_to_chara&&isEnemy)
+        if(following_to_chara)
         {
-            MainCamera.GetComponent<CameraController>().get_chara_subject.OnNext(this);
-        }*/
+            MainCamera.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(this);
+        }
     }
 
     //-------------------------------------------------------------------------

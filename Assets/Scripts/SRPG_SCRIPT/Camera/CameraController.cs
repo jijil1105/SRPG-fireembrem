@@ -36,6 +36,9 @@ public class CameraController : MonoBehaviour
     {
         offset = this.transform.position - Vector3.zero;
 
+        chara_subject.Publish();
+        chara_subject_Multi.Publish();
+
         chara_subject.Subscribe(chara => this.transform.position = chara.transform.position + offset).AddTo(this.gameObject);
         chara_subject_Multi.Subscribe(chara => this.transform.position = chara.transform.position + offset).AddTo(this.gameObject);
     }

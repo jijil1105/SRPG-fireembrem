@@ -113,13 +113,20 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         {
             //カメラの初期座標を自軍キャラを真ん中に写す様に設定
             var character = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-            Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(character);
+            var camera = Camera.main.GetComponent<CameraController>();
+            /*camera.offset.z *= -1;
+            var rot = Camera.main.transform.rotation;
+            rot.x = 50;
+            rot.y = 180;
+            Camera.main.transform.rotation = rot;*/
+            camera.get_chara_subject_Multi.OnNext(character);
         }
         else
         {
             //カメラの初期座標を自軍キャラを真ん中に写す様に設定
             var character = charactorManager.Charactors_Multis.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy == true);
-            Camera.main.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(character);
+            var camera = Camera.main;
+            camera.GetComponent<CameraController>().get_chara_subject_Multi.OnNext(character);
         }
 
         //待機ウィンドウ非表示

@@ -96,21 +96,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   initPos_X: -1
-  initPos_Z: -10
+  initPos_Z: -4
   isEnemy: 0
   charaName: "\u5263\u58EB"
-  maxHP: 33
-  atk: 1001
+  maxHP: 31
+  atk: 999
   def: 3
-  Int: 3
-  Res: 4
+  Int: 2
+  Res: 2
   attribute: 0
   moveType: 2
   skill: 1
   isMagicAttac: 0
-  Lv: 4
-  nowExp: 329
-  ExpPerLv: 337
+  Lv: 2
+  nowExp: 143
+  ExpPerLv: 150
   isSkillLock: 0
   isDefBreak: 0
   isIncapacitated: 0
