@@ -19,6 +19,8 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     public Vector3 offset = Vector3.zero;
 
+    public bool isHost = false;
+
     private Subject<Charactor> chara_subject = new Subject<Charactor>();
     private Subject<Character_Multi> chara_subject_Multi = new Subject<Character_Multi>();
 
@@ -59,23 +61,43 @@ public class CameraController : MonoBehaviour
         if(isForward)
         {
             float speed = SPEED * Time.deltaTime;
-
             var velocity = Vector3.zero;
+
+            if(isHost)
+            {
+                velocity.z = -speed;
+                transform.position += velocity;
+            }
+            else
+            {
+                velocity.x = 0;
+                velocity.z = speed;
+                transform.position += velocity;
+            }
+
+            /*var velocity = Vector3.zero;
             var rotation = transform.rotation;
             rotation.x = 0;
             velocity.z = speed;
-            transform.position += rotation * velocity;
+            transform.position += rotation * velocity;*/
         }
 
         if(isBack)
         {
             float speed = SPEED * Time.deltaTime;
-
             var velocity = Vector3.zero;
-            var rotation = transform.rotation;
-            rotation.x = 0;
-            velocity.z = -speed;
-            transform.position += rotation * velocity;
+
+            if (isHost)
+            {
+                velocity.z = speed;
+                transform.position += velocity;
+            }
+            else
+            {
+                velocity.x = 0;
+                velocity.z = -speed;
+                transform.position += velocity;
+            }
         }
 
         if(isRight)
