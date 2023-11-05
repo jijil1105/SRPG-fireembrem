@@ -72,7 +72,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         reachableBlocks = new List<MapBlock>();
         attackableBlocks = new List<MapBlock>();
         nowPhase = Phase.Myturn_Start;
-        AudioManager.instance.Play("BGM_1");
 
         //
         await UniTask.Delay(TimeSpan.FromMilliseconds(0.05), cancellationToken: this.GetCancellationTokenOnDestroy());
