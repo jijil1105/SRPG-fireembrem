@@ -87,6 +87,10 @@ public class GUIManager_Multi : MonoBehaviourPun
 
     //-------------------------------------------------------------------------
 
+    public MenuWindow menuWindow;
+
+    //-------------------------------------------------------------------------
+
     // Start is called before the first frame update
     void Start()
     {
@@ -97,6 +101,9 @@ public class GUIManager_Multi : MonoBehaviourPun
         HideDecideButtons(); // 行動決定・キャンセルボタンを隠す
         HideGetExpWindow();
         HideLevelUpWindow();
+        HideMenuWindow();
+
+        menuWindow.isMulti = true;
     }
 
     //-------------------------------------------------------------------------
@@ -388,6 +395,12 @@ public class GUIManager_Multi : MonoBehaviourPun
             1.0f,
             1.0f)
             .SetEase(Ease.OutCubic);
+
+        gameClearImage.transform.DOScale(
+            1.5f,
+            1.0f)
+            .SetEase(Ease.OutCubic)
+            .SetLoops(2, LoopType.Yoyo);
     }
 
     //-------------------------------------------------------------------------
@@ -549,5 +562,15 @@ public class GUIManager_Multi : MonoBehaviourPun
     public void HideLevelUpWindow()
     {
         LevelUpWindow.SetActive(false);
+    }
+
+    public void HideMenuWindow()
+    {
+        menuWindow.gameObject.SetActive(false);
+    }
+
+    public void ShowMenuWindow()
+    {
+        menuWindow.gameObject.SetActive(true);
     }
 }

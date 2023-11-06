@@ -131,6 +131,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         //待機ウィンドウ非表示
         guiManager_multi.HideWaitingWindow();
 
+        guiManager_multi.ShowMenuWindow();
+
         //戦闘BGM再生
         AudioManager.instance.Play("BGM_1");
     }
@@ -146,7 +148,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         if (!isAbleGame)
             return;
 
-        //ゲーム終了後なら終了
+        //trueならゲーム終了なら終了
         if (isGameSet)
             return;
 
@@ -959,15 +961,6 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         {
             //ゲーム終了フラグをtrue
             isGameSet = true;
-            if (Chara)
-            {
-                List<Character_Multi> charalist = new List<Character_Multi>();
-                foreach (var chara in charactorManager.Charactors_Multis)
-                {
-                    if (!chara.isEnemy)
-                        charalist.Add(chara);
-                }
-            }
 
             //ゲーム終了フラグを遅延処理
             DOVirtual.DelayedCall(
@@ -981,6 +974,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                         if (Enemychara)//敵キャラがいる場合ゲームオーバー時のロゴ表示
                             guiManager_multi.ShowLogo_gameOver();
+
                         //画面をフェードイン
                         guiManager_multi.FadeIn(5.0f);
                     }
@@ -1001,6 +995,8 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
                 7.0f, () =>
                 {
                     //guiManager.FadeIn_FadeOut(false, 1.0f);
+
+                    AudioManager.instance.Stop("BGM_1");
 
                     Camera.main.GetComponent<CameraController>().get_chara_subject.OnCompleted();
 
@@ -1096,6 +1092,45 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             ChangePhase(Phase.Enemyturn_Start, true);
         }
     }
+
+    public void Retire_multi_game()
+    {
+        photonView.RPC(nameof(Retire), RpcTarget.All);
+    }
+
+    [PunRPC]
+    public async void Retire()
+    {
+        //ゲーム終了フラグをtrue
+        isGameSet = true;
+        var time = -1.0f;
+
+        var isRetire = guiManager_multi.menuWindow.isRetire;
+
+        //ゲーム終了フラグを遅延処理
+        await UniTask.Delay(TimeSpan.FromSeconds(1.5f + time));
+
+        if (isRetire)
+            guiManager_multi.ShowLogo_gameOver();
+
+        else
+            guiManager_multi.ShowLogo_GameClear();
+
+
+        guiManager_multi.FadeIn(5.0f);
+
+
+        // Gameシーンの再読み込み(遅延実行)
+        await UniTask.Delay(TimeSpan.FromSeconds(7.0f + time));
+
+        AudioManager.instance.Stop("BGM_1");
+
+        Camera.main.GetComponent<CameraController>().get_chara_subject.OnCompleted();
+
+        PhotonNetwork.Disconnect();
+
+        SceneManager.LoadScene("MainMenu");
+    }
 }
 
 /// <summary>
@@ -1182,5 +1217,4 @@ public static class ColorSerializer
 
         return color;
     }
-
 } // class ColorSerializer 

@@ -55,7 +55,10 @@ public class AudioManager : MonoBehaviour
     /// </summary>
     /// <returns></returns>
     private AudioSource GetUnusedAudioSource() =>
-        audioSourceList.FirstOrDefault(audiosource => audiosource.isPlaying == false && audiosource !=null);
+        audioSourceList.FirstOrDefault(audiosource => audiosource.isPlaying == false && audiosource != null);
+
+    private AudioSource GetUsedAudioSource(string clip_name) =>
+        audioSourceList.FirstOrDefault(audiosource => audiosource.isPlaying == true && audiosource != null && audiosource.clip.name == clip_name);
 
     /// <summary>
     /// 引数のクリップを再生
@@ -93,5 +96,22 @@ public class AudioManager : MonoBehaviour
         {
             Debug.LogWarning($"その別名は登録されていません:{name}");
         }
+    }
+
+    public void Stop(string clip_name)
+    {
+        if(soundDictionary.TryGetValue(clip_name, out var soundData))
+        {
+            var audiosource = GetUsedAudioSource(soundData.audioClip.name);
+
+            if (!audiosource)
+                Debug.Log(clip_name + " Dont used to audiosource");
+
+            if (audiosource)
+                audiosource.Stop(); audiosource.clip = null; soundData.playedTime = 0;
+        }
+
+        else
+            Debug.LogWarning($"その別名は登録されていません:{name}");
     }
 }

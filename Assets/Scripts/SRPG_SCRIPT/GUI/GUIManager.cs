@@ -360,6 +360,12 @@ public class GUIManager : MonoBehaviour
             1.0f,
             1.0f)
             .SetEase(Ease.OutCubic);
+
+        gameClearImage.transform.DOScale(
+            1.5f,
+            1.0f)
+            .SetEase(Ease.OutCubic)
+            .SetLoops(2, LoopType.Yoyo);
     }
 
     //-------------------------------------------------------------------------

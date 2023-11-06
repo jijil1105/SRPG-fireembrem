@@ -326,6 +326,21 @@ public class Character_Multi : MonoBehaviourPunCallbacks
                 });*/
                 break;
         }
+
+        /*var subject = new Subject<uint>();
+
+        var dispose = subject.ObserveOn(Scheduler.ThreadPool).Subscribe();
+
+        DOVirtual.DelayedCall(1, () =>
+        {
+            AudioManager.instance.Stop("SE_2");
+        });
+
+        subject.ObserveOn(Scheduler.MainThread);
+
+        subject.OnCompleted();
+
+        dispose?.Dispose();*/
     }
 
     /// <summary>

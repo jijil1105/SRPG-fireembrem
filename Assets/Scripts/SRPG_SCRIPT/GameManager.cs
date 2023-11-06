@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -915,5 +916,10 @@ public class GameManager : MonoBehaviour
 
         // 進行モードを戻す(ターンの最初へ)
         ChangePhase(Phase.Myturn_Start, true);
+    }
+
+    public void Retire()
+    {
+        Debug.Log("Retire");
     }
 }
