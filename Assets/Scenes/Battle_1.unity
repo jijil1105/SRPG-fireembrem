@@ -2402,7 +2402,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba4127efb0784df0b09d95445e85359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGameable: 1
 --- !u!114 &871221861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2482,6 +2481,34 @@ MonoBehaviour:
   character_image: {fileID: 1592346511}
   text_window_image: {fileID: 2087352840}
   text_window_text: {fileID: 1837880925}
+  text_datas:
+    text_datas:
+    - aaaaaaa
+    - iiiiiiiiiiiiiii
+    - uuuuuuuu
+    - eeeeeee
+    - ooooooo
+    chara_name:
+    - "\u52C7\u8005"
+    - "\u9B54\u6CD5\u4F7F\u3044"
+    - "\u5263\u58EB"
+    - "\u9B54\u738B"
+    - "\u30C7\u30FC\u30E2\u30F3"
+    chara_sprite:
+    - {fileID: 21300000, guid: 6bb24a95577d649cc8a8f9f49ca90eca, type: 3}
+    - {fileID: 21300000, guid: 74b9d9fca607b406db10e506d72b4321, type: 3}
+    - {fileID: 21300000, guid: 771fa07ebbfb44f90853759f87a5f433, type: 3}
+    - {fileID: 21300000, guid: 21789fc85a545421daa68916c219334d, type: 3}
+    - {fileID: 21300000, guid: 406b9565c4848461bbbe418e13676b7b, type: 3}
+    chara_pos: 0000000000000000000000000000000000000000
+    effect:
+    - 
+    - 
+    - 
+    - 
+    - 
+  isAdventure: 1
+  textasset: {fileID: 0}
 --- !u!114 &871221863
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -83,8 +83,34 @@ public class GUIManager : MonoBehaviour
     //-------------------------------------------------------------------------
 
     //会話ウィンドウ
+    [SerializeField]
+    GameObject Adventure_Window;
+    [SerializeField]
+    private Image back_ground_image;
+    [SerializeField]
+    private Image character_image;
+    [SerializeField]
+    private Image text_window_image;
+    [SerializeField]
+    private Text text_window_text;
 
+    [System.Serializable]
+    private class Text_Data
+    {
+        public List<string> text_datas;
+        public List<string> chara_name;
+        public List<Sprite> chara_sprite;
+        public List<int> chara_pos;
+        public List<string> effect;
+    }
 
+    [SerializeField]
+    Text_Data text_datas;
+
+    public bool isAdventure;
+
+    [SerializeField]
+    private TextAsset textasset;
 
     //-------------------------------------------------------------------------
 
@@ -98,19 +124,19 @@ public class GUIManager : MonoBehaviour
         HideDecideButtons(); // 行動決定・キャンセルボタンを隠す
         HideGetExpWindow();
         HideLevelUpWindow();
+        HideCharacter();
+        HideTextWindow();
+
+        if (isAdventure)
+            StartAdventure(text_datas);
     }
 
     //-------------------------------------------------------------------------
-    [SerializeField]
-    GameObject Adventure_Window;
-    [SerializeField]
-    private Image back_ground_image;
-    [SerializeField]
-    private Image character_image;
-    [SerializeField]
-    private Image text_window_image;
-    [SerializeField]
-    private Text text_window_text;
+
+    private void StartAdventure(Text_Data textdata_)
+    {
+        Debug.Log("start adventure");
+    }
 
     //-------------------------------------------------------------------------
 

@@ -75,11 +75,7 @@ public class GameManager : MonoBehaviour
     CameraController camera_ = null;
     Charactor following_chara = null;
 
-    //------------------------------------------------------------------------
-
-    //ゲーム開始フラグ
-    [SerializeField]
-    bool isGameable;
+    //-----------------------------------------------------------------------
 
 
     //変数の初期化
@@ -96,7 +92,7 @@ public class GameManager : MonoBehaviour
         guiManager.ShowAdventureWindow();
         guiManager.SetText("hogehoge/n" + "hogehoge");
 
-        await UniTask.WaitUntil(() => isGameable, cancellationToken: this.GetCancellationTokenOnDestroy());
+        await UniTask.WaitUntil(() => !guiManager.isAdventure, cancellationToken: this.GetCancellationTokenOnDestroy());
 
         AudioManager.instance.Play("BGM_1");
 
@@ -114,9 +110,6 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        if (!isGameable)
-            return;
-
         //ゲーム終了後なら終了
         if(isGameSet)
             return;
