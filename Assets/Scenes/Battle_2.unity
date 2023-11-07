@@ -8491,6 +8491,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba4127efb0784df0b09d95445e85359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isGameable: 1
 --- !u!114 &871221861
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8505,14 +8506,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   charactorParent: {fileID: 1348453198}
   Charactors: []
+  Charactors_Multis: []
   charaObjs:
   - charaObj: {fileID: 8516334276831482043, guid: 1d98b4bd730c342d591e2bf87377b5bc, type: 3}
     Character_Name: "\u5263\u58EB"
+    Character_ObjName: 
   - charaObj: {fileID: 8516334276831482043, guid: 973a7a36ffb8d4d02a3667257470a530, type: 3}
     Character_Name: "\u6226\u58EB"
+    Character_ObjName: 
   - charaObj: {fileID: 8516334276831482043, guid: ae3f65c450b804a82867e28296652955, type: 3}
     Character_Name: "\u9B54\u8853\u5E2B"
+    Character_ObjName: 
   initPos: []
+  isMulti: 0
 --- !u!114 &871221862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8560,6 +8566,9 @@ MonoBehaviour:
   levelupwindow_def_text: {fileID: 1052802950}
   levelupwindow_int_text: {fileID: 1453424785}
   levelupwindow_res_text: {fileID: 652495878}
+  waiting_window: {fileID: 0}
+  wait_untill_backimage: {fileID: 0}
+  wait_text: {fileID: 0}
 --- !u!114 &871221863
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9730,6 +9739,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   offset: {x: 0, y: 0, z: 0}
+  isHost: 0
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0

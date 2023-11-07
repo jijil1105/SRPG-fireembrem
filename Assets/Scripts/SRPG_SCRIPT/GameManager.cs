@@ -5,6 +5,7 @@ using DG.Tweening;
 using System.Linq;
 using UnityEngine.SceneManagement;
 using System;
+using Cysharp.Threading.Tasks;
 
 public class GameManager : MonoBehaviour
 {
@@ -76,9 +77,13 @@ public class GameManager : MonoBehaviour
 
     //------------------------------------------------------------------------
 
-    //変数の初期化
+    //ゲーム開始フラグ
+    [SerializeField]
+    bool isGameable;
 
-    public void Start()
+
+    //変数の初期化
+    public async void Start()
     {
         mapManager = GetComponent<MapManager>();//
         charactorManager = GetComponent<CharactorManager>();
@@ -86,14 +91,19 @@ public class GameManager : MonoBehaviour
         reachableBlocks = new List<MapBlock>();
         attackableBlocks = new List<MapBlock>();
         nowPhase = Phase.Myturn_Start;
-        AudioManager.instance.Play("BGM_1");
         camera_ = Camera.main.GetComponent<CameraController>();
 
-        DOVirtual.DelayedCall(0.05f, () =>
-        {
-            var chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
-            camera_.get_chara_subject.OnNext(chara);
-        });
+        guiManager.ShowAdventureWindow();
+        guiManager.SetText("hogehoge/n" + "hogehoge");
+
+        await UniTask.WaitUntil(() => isGameable, cancellationToken: this.GetCancellationTokenOnDestroy());
+
+        AudioManager.instance.Play("BGM_1");
+
+        var chara = charactorManager.Charactors.FirstOrDefault(chara => chara.isIncapacitated != true && chara.isEnemy != true);
+        camera_.get_chara_subject.OnNext(chara);
+
+        guiManager.HideAdventureWindow();
     }
 
     //-------------------------------------------------------------------------
@@ -104,6 +114,9 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (!isGameable)
+            return;
+
         //ゲーム終了後なら終了
         if(isGameSet)
             return;

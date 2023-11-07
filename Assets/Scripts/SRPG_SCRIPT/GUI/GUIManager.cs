@@ -78,9 +78,13 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
-    public GameObject waiting_window;
-    public Image wait_untill_backimage;
-    public Text wait_text;
+
+
+    //-------------------------------------------------------------------------
+
+    //会話ウィンドウ
+
+
 
     //-------------------------------------------------------------------------
 
@@ -94,24 +98,56 @@ public class GUIManager : MonoBehaviour
         HideDecideButtons(); // 行動決定・キャンセルボタンを隠す
         HideGetExpWindow();
         HideLevelUpWindow();
-        //HideWaitingWindow();
     }
 
     //-------------------------------------------------------------------------
+    [SerializeField]
+    GameObject Adventure_Window;
+    [SerializeField]
+    private Image back_ground_image;
+    [SerializeField]
+    private Image character_image;
+    [SerializeField]
+    private Image text_window_image;
+    [SerializeField]
+    private Text text_window_text;
 
-    public void ShowWaitingWindow()
+    //-------------------------------------------------------------------------
+
+    public void ShowAdventureWindow()
     {
-        waiting_window.SetActive(true);
-        wait_text.text = "Waiting Other Player Enter this Room";
-
-        //UniRxかEventで文字送り実装予定
+        Adventure_Window.SetActive(true);
     }
 
-    public void HideWaitingWindow()
+    public void HideAdventureWindow()
     {
-        waiting_window.SetActive(false);
+        Adventure_Window.SetActive(false);
     }
 
+    public void ShowCharacter()
+    {
+        character_image.gameObject.SetActive(true);
+    }
+
+    public void HideCharacter()
+    {
+        character_image.gameObject.SetActive(false);
+    }
+
+    public void ShowTextWindow()
+    {
+        text_window_image.gameObject.SetActive(true);
+    }
+
+    public void HideTextWindow()
+    {
+        text_window_image.gameObject.SetActive(false);
+    }
+
+    public void SetText(string text)
+    {
+        text_window_text.text = text;
+    }
     //-------------------------------------------------------------------------
 
     /// <summary>

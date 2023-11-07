@@ -1021,6 +1021,9 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
         var targetChara =
             charactorManager.GetCharactor_Multi(attackBlock.XPos, attackBlock.ZPos);
 
+        if (targetChara)
+            if (targetChara.GetComponent<PhotonView>().IsMine)
+                targetChara = null;
 
         if(PhotonNetwork.MasterClient.UserId==PhotonNetwork.LocalPlayer.UserId)
         {
@@ -1035,10 +1038,9 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
             }
             else
             {// 攻撃対象が存在しない
-
                 //行動不能状態
                 selectingChara.SetInCapacitited(true);
-                // 進行モードを進める(敵のターンへ)
+                // 進行モードを進める
                 ChangePhase(Phase.Myturn_Start, true);
             }
         }
@@ -1059,7 +1061,7 @@ public class GameManager_Multi : MonoBehaviourPunCallbacks
 
                 //行動不能状態
                 selectingChara.SetInCapacitited(true);
-                // 進行モードを進める(敵のターンへ)
+                // 進行モードを進める
                 ChangePhase(Phase.Enemyturn_Start, true);
             }
         }
