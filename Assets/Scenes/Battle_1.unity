@@ -2402,7 +2402,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6ba4127efb0784df0b09d95445e85359, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isGameable: 0
+  isGameable: 1
 --- !u!114 &871221861
 MonoBehaviour:
   m_ObjectHideFlags: 0
