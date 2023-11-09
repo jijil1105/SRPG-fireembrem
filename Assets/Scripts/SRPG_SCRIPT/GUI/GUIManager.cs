@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using Cysharp.Threading.Tasks;
+using System;
 
 public class GUIManager : MonoBehaviour
 {
@@ -93,13 +95,20 @@ public class GUIManager : MonoBehaviour
     private Image text_window_image;
     [SerializeField]
     private Text text_window_text;
+    [SerializeField]
+    private Text name_text;
+    [SerializeField]
+    private Image chara_image_right;
+    [SerializeField]
+    private Image chara_image_left;
 
     [System.Serializable]
     private class Text_Data
     {
-        public List<string> text_datas;
+        public List<string> text_;
         public List<string> chara_name;
-        public List<Sprite> chara_sprite;
+        public List<Sprite> chara_sprite_right;
+        public List<Sprite> chara_sprite_left;
         public List<int> chara_pos;
         public List<string> effect;
     }
@@ -112,7 +121,7 @@ public class GUIManager : MonoBehaviour
     [SerializeField]
     private TextAsset textasset;
 
-    //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------]
 
     // Start is called before the first frame update
     void Start()
@@ -133,9 +142,44 @@ public class GUIManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
-    private void StartAdventure(Text_Data textdata_)
+    private async void StartAdventure(Text_Data textdata_)
     {
-        Debug.Log("start adventure");
+        //defalt_mat = Resources.GetBuiltinResource<Material>("Sprites-Default.mat");
+        ShowTextWindow();
+        ShowCharacter();
+        for(int i=0; i<text_datas.text_.Count; i++)
+        {
+
+
+            if (text_datas.text_[i] != null)
+                SetText(text_datas.text_[i]);
+
+            if (text_datas.chara_name[i] != null)
+                SetCharaName(text_datas.chara_name[i]);
+
+
+            if (text_datas.chara_sprite_right[i])
+            {
+                chara_image_right.color = new Color(1,1,1,1);
+                SetCharaImage_R(text_datas.chara_sprite_right[i]);
+            }
+            else
+                chara_image_right.color = new Color(1,1,1,0);
+
+
+            if (text_datas.chara_sprite_left[i])
+            {
+                chara_image_left.color = new Color(1,1,1,1);
+                SetCharaImage_L(text_datas.chara_sprite_left[i]);
+            }
+            else
+                chara_image_left.color = new Color(1,1,1,0);
+
+
+            await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0));
+        }
+
+        isAdventure = false;
     }
 
     //-------------------------------------------------------------------------
@@ -170,10 +214,28 @@ public class GUIManager : MonoBehaviour
         text_window_image.gameObject.SetActive(false);
     }
 
+    //-------------------------------------------------------------------------
+
+    public void SetCharaImage_R(Sprite sprite)
+    {
+        chara_image_right.sprite = sprite;
+    }
+
+    public void SetCharaImage_L(Sprite sprite)
+    {
+        chara_image_left.sprite = sprite;
+    }
+
+    public void SetCharaName(string name)
+    {
+        name_text.text = name;
+    }
+
     public void SetText(string text)
     {
         text_window_text.text = text;
     }
+
     //-------------------------------------------------------------------------
 
     /// <summary>

@@ -93,10 +93,4 @@ public class MenuWindow : MonoBehaviour
                 break;
         }
     }
-
-    /*private void OnDestroy()
-    {
-        disposable1?.Dispose();
-        disposable2?.Dispose();
-    }*/
 }
