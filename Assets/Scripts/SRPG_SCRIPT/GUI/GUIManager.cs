@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using System;
+using UniRx;
 
 public class GUIManager : MonoBehaviour
 {
@@ -117,6 +118,9 @@ public class GUIManager : MonoBehaviour
     Text_Data text_datas;
 
     public bool isAdventure;
+    bool isWriting;
+    bool isSkip;
+    int index;
 
     [SerializeField]
     private TextAsset textasset;
@@ -135,9 +139,23 @@ public class GUIManager : MonoBehaviour
         HideLevelUpWindow();
         HideCharacter();
         HideTextWindow();
+        isWriting = false;
+        index = 0;
+        isSkip = false;
 
         if (isAdventure)
             StartAdventure(text_datas);
+    }
+
+    private void Update()
+    {
+        if (isWriting)
+            if (Input.GetMouseButtonDown(0))
+            {
+                text_window_text.text = text_datas.text_[index];
+                AudioManager.instance.Play("SE_3");
+                isSkip = true; Debug.Log("LLL");
+            }           
     }
 
     //-------------------------------------------------------------------------
@@ -149,11 +167,6 @@ public class GUIManager : MonoBehaviour
         ShowCharacter();
         for(int i=0; i<text_datas.text_.Count; i++)
         {
-
-
-            if (text_datas.text_[i] != null)
-                SetText(text_datas.text_[i]);
-
             if (text_datas.chara_name[i] != null)
                 SetCharaName(text_datas.chara_name[i]);
 
@@ -176,7 +189,8 @@ public class GUIManager : MonoBehaviour
                 chara_image_left.color = new Color(1,1,1,0);
 
 
-            await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0));
+            if (text_datas.text_[i] != null)
+                await SetText(text_datas.text_[i]);
         }
 
         isAdventure = false;
@@ -231,9 +245,34 @@ public class GUIManager : MonoBehaviour
         name_text.text = name;
     }
 
-    public void SetText(string text)
+    async UniTask SetText(string text)
+    {
+        text_window_text.text = "";
+        isWriting = true;
+
+        foreach (var x in text)
+        {
+            if (isSkip)
+            {
+                break;
+            }
+
+            text_window_text.text += x;
+            AudioManager.instance.Play("SE_3");
+
+            await UniTask.WaitForSeconds(0.1f, cancellationToken: this.GetCancellationTokenOnDestroy());
+        }
+        index++;
+        isWriting = false;
+        isSkip = false;
+        await UniTask.WaitUntil(() => Input.GetMouseButtonDown(0), cancellationToken: this.GetCancellationTokenOnDestroy());
+        await UniTask.Yield(cancellationToken: this.GetCancellationTokenOnDestroy());
+    }
+
+    void Set_Text(string text)
     {
         text_window_text.text = text;
+        AudioManager.instance.Play("SE_3");
     }
 
     //-------------------------------------------------------------------------

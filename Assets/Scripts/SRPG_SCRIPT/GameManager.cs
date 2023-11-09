@@ -90,7 +90,6 @@ public class GameManager : MonoBehaviour
         camera_ = Camera.main.GetComponent<CameraController>();
 
         guiManager.ShowAdventureWindow();
-        guiManager.SetText("hogehoge/n" + "hogehoge");
 
         await UniTask.WaitUntil(() => !guiManager.isAdventure, cancellationToken: this.GetCancellationTokenOnDestroy());
 
