@@ -77,6 +77,7 @@ public class GameManager : MonoBehaviour
 
     //-----------------------------------------------------------------------
 
+    //-----------------------------------------------------------------------
 
     //変数の初期化
     public async void Start()
@@ -99,6 +100,8 @@ public class GameManager : MonoBehaviour
         camera_.get_chara_subject.OnNext(chara);
 
         guiManager.HideAdventureWindow();
+
+        guiManager.ShowMenuWindow();
     }
 
     //-------------------------------------------------------------------------
@@ -866,7 +869,7 @@ public class GameManager : MonoBehaviour
                     //guiManager.FadeIn_FadeOut(false, 1.0f);
 
                     camera_.GetComponent<CameraController>().get_chara_subject.OnCompleted();
-
+                    AudioManager.instance.Stop("BGM_1");
                     SceneManager.LoadScene("MainMenu");
                 });
         }
@@ -925,6 +928,8 @@ public class GameManager : MonoBehaviour
 
     public void Retire()
     {
+        AudioManager.instance.Stop("BGM_1");
         Debug.Log("Retire");
+        SceneManager.LoadScene("MainMenu");
     }
 }

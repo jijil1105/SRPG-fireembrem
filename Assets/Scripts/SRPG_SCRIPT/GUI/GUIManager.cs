@@ -125,7 +125,11 @@ public class GUIManager : MonoBehaviour
     [SerializeField]
     private TextAsset textasset;
 
-    //-------------------------------------------------------------------------]
+    //-------------------------------------------------------------------------
+
+    public MenuWindow menuWindow;
+
+    //-------------------------------------------------------------------------
 
     // Start is called before the first frame update
     void Start()
@@ -142,6 +146,7 @@ public class GUIManager : MonoBehaviour
         isWriting = false;
         index = 0;
         isSkip = false;
+        HideMenuWindow();
 
         if (isAdventure)
             StartAdventure(text_datas);
@@ -152,8 +157,7 @@ public class GUIManager : MonoBehaviour
         if (isWriting)
             if (Input.GetMouseButtonDown(0))
             {
-                text_window_text.text = text_datas.text_[index];
-                AudioManager.instance.Play("SE_3");
+                Set_Text(text_datas.text_[index]);
                 isSkip = true; Debug.Log("LLL");
             }           
     }
@@ -690,5 +694,15 @@ public class GUIManager : MonoBehaviour
     public void HideLevelUpWindow()
     {
         LevelUpWindow.SetActive(false);
+    }
+
+    public void HideMenuWindow()
+    {
+        menuWindow.gameObject.SetActive(false);
+    }
+
+    public void ShowMenuWindow()
+    {
+        menuWindow.gameObject.SetActive(true);
     }
 }
