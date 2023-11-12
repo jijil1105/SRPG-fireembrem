@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using System.Linq;
 public class AudioManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class AudioManager : MonoBehaviour
         public AudioClip audioClip;
         public float playedTime; //前回再生した時間
         public float playableDistance = 0.2f;//一度再生してから、次再生出来るまでの間隔(秒)
+        public string type;
     }
 
     [SerializeField]
@@ -19,6 +21,18 @@ public class AudioManager : MonoBehaviour
     private AudioSource[] audioSourceList = new AudioSource[20];
 
     private Dictionary<string, SoundData> soundDictionary = new Dictionary<string, SoundData>();
+
+    public AudioMixer audioMixer;
+
+    public enum ParamType
+    {
+        Master,
+        BGM,
+        SE
+    }
+
+    [SerializeField]
+    public float initVolume;
 
     //-------------------------------------------------------------------------
 
@@ -50,6 +64,13 @@ public class AudioManager : MonoBehaviour
 
     //-------------------------------------------------------------------------
 
+    private void Start()
+    {
+        audioMixer.SetFloat("BGM", 0);
+        audioMixer.SetFloat("SE", 0);
+        audioMixer.SetFloat("Master", 0);
+    }
+
     /// <summary>
     /// 使用されていないオーディオソースを取得する
     /// </summary>
@@ -64,11 +85,17 @@ public class AudioManager : MonoBehaviour
     /// 引数のクリップを再生
     /// </summary>
     /// <param name="clip">再生するオーディオクリップ</param>
-    public void Play(AudioClip clip)
+    public void Play(AudioClip clip, string type)
     {
         var audioSouce = GetUnusedAudioSource();
         if (audioSouce == null) return;
         audioSouce.clip = clip;
+        var mixer = audioMixer.FindMatchingGroups(type)[0];
+        if (mixer != null)
+            audioSouce.outputAudioMixerGroup = mixer;
+        else
+            audioSouce.outputAudioMixerGroup = null;
+
         audioSouce.Play();
     }
 
@@ -83,14 +110,14 @@ public class AudioManager : MonoBehaviour
             if(soundData.playedTime==0)
             {
                 soundData.playedTime = Time.realtimeSinceStartup;
-                Play(soundData.audioClip);
+                Play(soundData.audioClip, soundData.type);
                 return;
             }
 
             if (Time.realtimeSinceStartup - soundData.playedTime < soundData.playableDistance) return;
 
             soundData.playedTime = Time.realtimeSinceStartup;
-            Play(soundData.audioClip);
+            Play(soundData.audioClip, soundData.type);
         }
         else
         {

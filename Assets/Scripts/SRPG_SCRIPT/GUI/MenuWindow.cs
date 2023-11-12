@@ -16,11 +16,25 @@ public class MenuWindow : MonoBehaviour
     [SerializeField]
     Button soundsetting_button;
     [SerializeField]
-    GameObject menubuttons;
-    [SerializeField]
     Button close_soundsetting_button;
+
+    //-------------------------------------------------------------------------
+
+    [SerializeField]
+    GameObject menubuttons;
+
+    //-------------------------------------------------------------------------
+
     [SerializeField]
     Image soundsetting_background;
+    [SerializeField]
+    Slider bgm_slider;
+    [SerializeField]
+    Slider se_slider;
+    [SerializeField]
+    Slider master_slider;
+
+    //-------------------------------------------------------------------------
 
     enum MenueButton
     {
@@ -30,6 +44,8 @@ public class MenuWindow : MonoBehaviour
         SoundSetting,
         CloseSoundSettingWindow
     }
+
+    //-------------------------------------------------------------------------
 
     public bool isRetire = false;
 
@@ -60,6 +76,14 @@ public class MenuWindow : MonoBehaviour
 
         menubuttons.SetActive(false);
         soundsetting_background.gameObject.SetActive(false);
+
+        bgm_slider.value = 1;
+        se_slider.value = 1;
+        master_slider.value = 1;
+
+        bgm_slider.onValueChanged.AddListener(SetVolumeBGM);
+        se_slider.onValueChanged.AddListener(SetVolumeSE);
+        master_slider.onValueChanged.AddListener(SetVolumeMaser);
     }
 
     void Update()
@@ -114,5 +138,35 @@ public class MenuWindow : MonoBehaviour
             default:
                 break;
         }
+    }
+
+    void SetVolumeBGM(float value)
+    {
+        value /= 5;
+
+        var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
+        volume += AudioManager.instance.initVolume;
+        AudioManager.instance.audioMixer.SetFloat("BGM", volume);
+        Debug.Log($"BGM:{volume}");
+    }
+
+    void SetVolumeSE(float value)
+    {
+        value /= 5;
+
+        var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
+        volume += AudioManager.instance.initVolume;
+        AudioManager.instance.audioMixer.SetFloat("SE", volume);
+        Debug.Log($"SE:{volume}");
+    }
+
+    void SetVolumeMaser(float value)
+    {
+        value /= 5;
+
+        var volume = Mathf.Clamp(Mathf.Log10(value) * 20f, -80f, 0f);
+        volume += AudioManager.instance.initVolume;
+        AudioManager.instance.audioMixer.SetFloat("Master", volume);
+        Debug.Log($"Master:{volume}");
     }
 }

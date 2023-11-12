@@ -572,9 +572,12 @@ MonoBehaviour:
   retire_button: {fileID: 23612320}
   menu_button: {fileID: 1011996424}
   soundsetting_button: {fileID: 2072770827}
-  menubuttons: {fileID: 744279625}
   close_soundsetting_button: {fileID: 110586011}
+  menubuttons: {fileID: 744279625}
   soundsetting_background: {fileID: 327005648}
+  bgm_slider: {fileID: 2052268236}
+  se_slider: {fileID: 2113733498}
+  master_slider: {fileID: 661368349}
   isRetire: 0
   isMulti: 0
 --- !u!222 &65155497
@@ -3357,7 +3360,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.53
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -7482,14 +7485,18 @@ MonoBehaviour:
     audioClip: {fileID: 8300000, guid: d1e70e32e419e45db9e70fe4aae4dce8, type: 3}
     playedTime: 0
     playableDistance: 117
+    type: 
   - name: SE_1
     audioClip: {fileID: 8300000, guid: 1869a03daea2b4ff7879162a737005aa, type: 3}
     playedTime: 0
     playableDistance: 0.2
+    type: 
   - name: SE_2
     audioClip: {fileID: 8300000, guid: 0968da6de305d411c9c37102333fbb3b, type: 3}
     playedTime: 0
     playableDistance: 0.2
+    type: 
+  audioMixer: {fileID: 0}
 --- !u!4 &1873621443
 Transform:
   m_ObjectHideFlags: 0
@@ -7899,7 +7906,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.53
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -8497,7 +8504,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.53
+  m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
