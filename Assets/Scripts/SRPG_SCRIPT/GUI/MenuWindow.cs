@@ -9,21 +9,26 @@ public class MenuWindow : MonoBehaviour
 {
     [SerializeField]
     Button resum_button;
-
     [SerializeField]
     Button retire_button;
-
     [SerializeField]
     Button menu_button;
-
+    [SerializeField]
+    Button soundsetting_button;
     [SerializeField]
     GameObject menubuttons;
+    [SerializeField]
+    Button close_soundsetting_button;
+    [SerializeField]
+    Image soundsetting_background;
 
     enum MenueButton
     {
         MenuButton,
         ResumeButton,
-        RetireButton
+        RetireButton,
+        SoundSetting,
+        CloseSoundSettingWindow
     }
 
     public bool isRetire = false;
@@ -42,10 +47,19 @@ public class MenuWindow : MonoBehaviour
             _ => Click_Button(MenueButton.ResumeButton)).AddTo(this);
 
         retire_button.onClick.AsObservable().Subscribe(
-            _ => isRetire = true);
+            _ => isRetire = true).AddTo(this);
 
         retire_button.onClick.AsObservable().Subscribe(
             _ => Click_Button(MenueButton.RetireButton)).AddTo(this);
+
+        soundsetting_button.onClick.AsObservable().Subscribe(
+            _ => Click_Button(MenueButton.SoundSetting)).AddTo(this);
+
+        close_soundsetting_button.onClick.AsObservable().Subscribe(
+            _ => Click_Button(MenueButton.CloseSoundSettingWindow)).AddTo(this);
+
+        menubuttons.SetActive(false);
+        soundsetting_background.gameObject.SetActive(false);
     }
 
     void Update()
@@ -87,6 +101,14 @@ public class MenuWindow : MonoBehaviour
                         manager_multi.Retire_multi_game();
                     }
                 }
+                break;
+
+            case MenueButton.SoundSetting:
+                soundsetting_background.gameObject.SetActive(true);
+                break;
+
+            case MenueButton.CloseSoundSettingWindow:
+                soundsetting_background.gameObject.SetActive(false);
                 break;
 
             default:

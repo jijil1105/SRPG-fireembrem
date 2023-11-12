@@ -158,7 +158,7 @@ public class GUIManager : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 Set_Text(text_datas.text_[index]);
-                isSkip = true; Debug.Log("LLL");
+                isSkip = true;
             }           
     }
 
