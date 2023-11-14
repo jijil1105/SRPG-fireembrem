@@ -109,7 +109,7 @@ MonoBehaviour:
   skill: 4
   isMagicAttac: 1
   Lv: 1
-  nowExp: 0
+  nowExp: 75
   ExpPerLv: 100
   isSkillLock: 0
   isDefBreak: 0

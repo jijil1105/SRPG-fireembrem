@@ -228,7 +228,7 @@ public class MapManager : MonoBehaviour
         var results = new List<MapBlock>();
 
         int baseX = -1, baseZ = -1;
-
+         
         for(int i=0; i<MAP_WIDTH; i++)
         {
             for(int j=0; j<MAP_HEIGHT; j++)
