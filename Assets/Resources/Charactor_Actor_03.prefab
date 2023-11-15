@@ -99,18 +99,18 @@ MonoBehaviour:
   initPos_Z: -4
   isEnemy: 0
   charaName: "\u9B54\u8853\u5E2B"
-  maxHP: 15
-  atk: 2
-  def: 2
+  maxHP: 16
+  atk: 3
+  def: 3
   Int: 20
-  Res: 10
+  Res: 11
   attribute: 1
   moveType: 1
   skill: 4
   isMagicAttac: 1
-  Lv: 1
-  nowExp: 75
-  ExpPerLv: 100
+  Lv: 2
+  nowExp: 50
+  ExpPerLv: 150
   isSkillLock: 0
   isDefBreak: 0
   isIncapacitated: 0

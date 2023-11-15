@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
  *  ここの処理ではゲームマネージャーのシングルトン化を行っています。
  */
 
- /*   private void Awake()
+    /*private void Awake()
     {
         if(instance == null)
         {
