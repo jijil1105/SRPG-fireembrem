@@ -1,19 +1,15 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Assertions;
-using System.Threading;
+using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using System;
-using UniRx;
-using System.Threading.Tasks;
-
-
+using DG.Tweening;
 
 public class LoadScene : MonoBehaviour
 {
     [SerializeField] AudioManager audioManager;
+    [SerializeField] Image fadeimage;
 
     // Start is called before the first frame update
     void Start()
@@ -31,42 +27,39 @@ public class LoadScene : MonoBehaviour
     /// シーン遷移
     /// </summary>
     /// <param name="name">遷移するシーン名</param>
-    public void ChangeScene(string name)
+    public async void ChangeScene(string name)
     {
+
+        await UniTask.Delay(TimeSpan.FromSeconds(2), cancellationToken: this.GetCancellationTokenOnDestroy());
         SceneManager.LoadScene(name);
     }
 
     /// <summary>
     /// ゲームを最初から始める
     /// </summary>
-    public void NewGaeme()
+    public async void NewGaeme()
     {
         //ニューゲームボタンのクリックSE再生
         AudioManager.instance.Play("SE_1");
-        //SEが再生し終わるまで待機
-        UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
-
-        Debug.Log("Play SE");
         
         //セーブデータ初期化
         DataManager._instance.DeleteData();
 
+        FadeOut(2);
+
+        await UniTask.Delay(TimeSpan.FromSeconds(2), cancellationToken: this.GetCancellationTokenOnDestroy());
+
         //最初のマップに遷移
-        //SceneManager.LoadScene("Battle_1");
         SceneManager.LoadScene("Battle_1");
     }
 
     /// <summary>
     /// ゲームを続きから始める
     /// </summary>
-    public void LoadGame()
+    public async void LoadGame()
     {
         //ニューゲームボタンのクリックSE再生
         AudioManager.instance.Play("SE_1");
-        //SEが再生し終わるまで待機
-        UniTask.Delay(TimeSpan.FromSeconds(0.2f), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
-
-        Debug.Log("Play SE");
 
         //セーブデータ読み込み
         SaveData data = DataManager._instance.Load();
@@ -108,9 +101,40 @@ public class LoadScene : MonoBehaviour
 		    public int ExpPerLv;//次のレベルに必要な経験値
             */
 
+            FadeOut(2);
+
+            await UniTask.Delay(TimeSpan.FromSeconds(2),cancellationToken: this.GetCancellationTokenOnDestroy());
             SceneManager.LoadScene(data.SceneName);
         }
         else
             Debug.Log("Dont have Data");
+    }
+
+    private void FadeIn(float duration, Action on_completed = null)
+    {
+        StartCoroutine(FadeCoroutine(duration, on_completed, true));
+    }
+
+    private void FadeOut(float duration, Action on_completed = null)
+    {
+        StartCoroutine(FadeCoroutine(duration, on_completed));
+    }
+
+    private IEnumerator FadeCoroutine(float duration, Action on_compleated, bool is_reversing = false)
+    {
+        if (!is_reversing) fadeimage.enabled = true;
+
+        var elapsed_time = 0.0f;
+        var color = fadeimage.color;
+
+        while(elapsed_time < duration)
+        {
+            var elapased_rate = Mathf.Min(elapsed_time / duration, 1.0f);
+            color.a = is_reversing ? 1.0f - elapased_rate : elapased_rate;
+            fadeimage.color = color;
+
+            yield return null;
+            elapsed_time += Time.deltaTime;
+        }
     }
 }

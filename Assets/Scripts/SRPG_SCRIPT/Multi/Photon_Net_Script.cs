@@ -4,9 +4,6 @@ using UnityEngine;
 using Photon.Realtime;
 using Photon.Pun;
 using Cysharp.Threading.Tasks;
-using UnityEngine.SceneManagement;
-using ExitGames.Client.Photon;
-using UnityEditor;
 using System;
 
 public class Photon_Net_Script : MonoBehaviourPunCallbacks
