@@ -3,28 +3,45 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Realtime;
 using Photon.Pun;
-using Cysharp.Threading.Tasks;
 using System;
+using UnityEngine.UI;
+using DG.Tweening;
 
 public class Photon_Net_Script : MonoBehaviourPunCallbacks
 {
     public string MaseterClientId;
     private string[] teamUserIDs;
     [SerializeField] AudioManager audioManager;
+    [SerializeField] Image fadeimage;
+    [SerializeField] Button multi_button;
 
     // Start is called before the first frame update
     void Start()
     {
         CharacterSerializer.Register();
+
+        //セーブデータ読み込み
+        SaveData data = DataManager._instance.Load();
+
+        //セーブデータからキャラステータス反映（仮）、セーブデータに保存されているマップへ遷移
+        if (data != null && data.SceneName != "Delete Data")
+        {
+            multi_button.gameObject.SetActive(true);
+        }
+        else
+            multi_button.gameObject.SetActive(false);
     }
 
     public void Multi_Button()
     {
         AudioManager.instance.Play("SE_1");
 
-        UniTask.Delay(TimeSpan.FromSeconds(0.2), cancellationToken: this.GetCancellationTokenOnDestroy()).Forget();
+        FadeOut(2);
 
-        PhotonNetwork.ConnectUsingSettings();
+        DOVirtual.DelayedCall(3, () =>
+        {
+            PhotonNetwork.ConnectUsingSettings();
+        });
     }
 
     public override void OnConnectedToMaster()
@@ -104,6 +121,34 @@ public class Photon_Net_Script : MonoBehaviourPunCallbacks
         for (int i = 0; i < PhotonNetwork.PlayerListOthers.Length; i++)
         {
             teamUserIDs[i] = PhotonNetwork.PlayerListOthers[i].UserId;
+        }
+    }
+
+    private void FadeIn(float duration, Action on_completed = null)
+    {
+        StartCoroutine(FadeCoroutine(duration, on_completed, true));
+    }
+
+    private void FadeOut(float duration, Action on_completed = null)
+    {
+        StartCoroutine(FadeCoroutine(duration, on_completed));
+    }
+
+    private IEnumerator FadeCoroutine(float duration, Action on_compleated, bool is_reversing = false)
+    {
+        if (!is_reversing) fadeimage.enabled = true;
+
+        var elapsed_time = 0.0f;
+        var color = fadeimage.color;
+
+        while (elapsed_time < duration)
+        {
+            var elapased_rate = Mathf.Min(elapsed_time / duration, 1.0f);
+            color.a = is_reversing ? 1.0f - elapased_rate : elapased_rate;
+            fadeimage.color = color;
+
+            yield return null;
+            elapsed_time += Time.deltaTime;
         }
     }
 }

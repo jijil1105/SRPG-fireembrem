@@ -1202,6 +1202,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaseterClientId: 
   audioManager: {fileID: 40322851}
+  fadeimage: {fileID: 120062805}
+  multi_button: {fileID: 1516439632}
 --- !u!4 &1707750697
 Transform:
   m_ObjectHideFlags: 0
@@ -1329,7 +1331,7 @@ GameObject:
   - component: {fileID: 1769827365}
   - component: {fileID: 1769827364}
   m_Layer: 0
-  m_Name: maincamer
+  m_Name: maincamera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

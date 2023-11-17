@@ -30,7 +30,7 @@ public class LoadScene : MonoBehaviour
     public async void ChangeScene(string name)
     {
 
-        await UniTask.Delay(TimeSpan.FromSeconds(2), cancellationToken: this.GetCancellationTokenOnDestroy());
+        await UniTask.Delay(TimeSpan.FromSeconds(3), cancellationToken: this.GetCancellationTokenOnDestroy());
         SceneManager.LoadScene(name);
     }
 
@@ -47,7 +47,7 @@ public class LoadScene : MonoBehaviour
 
         FadeOut(2);
 
-        await UniTask.Delay(TimeSpan.FromSeconds(2), cancellationToken: this.GetCancellationTokenOnDestroy());
+        await UniTask.Delay(TimeSpan.FromSeconds(3), cancellationToken: this.GetCancellationTokenOnDestroy());
 
         //最初のマップに遷移
         SceneManager.LoadScene("Battle_1");
@@ -103,7 +103,7 @@ public class LoadScene : MonoBehaviour
 
             FadeOut(2);
 
-            await UniTask.Delay(TimeSpan.FromSeconds(2),cancellationToken: this.GetCancellationTokenOnDestroy());
+            await UniTask.Delay(TimeSpan.FromSeconds(3),cancellationToken: this.GetCancellationTokenOnDestroy());
             SceneManager.LoadScene(data.SceneName);
         }
         else
