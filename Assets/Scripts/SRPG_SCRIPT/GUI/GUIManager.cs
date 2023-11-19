@@ -102,6 +102,8 @@ public class GUIManager : MonoBehaviour
     private Image chara_image_right;
     [SerializeField]
     private Image chara_image_left;
+    [SerializeField]
+    private Image adv_fede_image;
 
     [System.Serializable]
     private class Text_Data
@@ -110,8 +112,8 @@ public class GUIManager : MonoBehaviour
         public List<string> chara_name;
         public List<Sprite> chara_sprite_right;
         public List<Sprite> chara_sprite_left;
-        public List<int> chara_pos;
         public List<string> effect;
+        public List<string> target;
     }
 
     [SerializeField]
@@ -121,6 +123,7 @@ public class GUIManager : MonoBehaviour
     bool isWriting;
     bool isSkip;
     int index;
+    //bool iswait;
 
     [SerializeField]
     private TextAsset textasset;
@@ -192,9 +195,13 @@ public class GUIManager : MonoBehaviour
             else
                 chara_image_left.color = new Color(1,1,1,0);
 
+           // await UniTask.WaitUntil(() => !iswait);
 
             if (text_datas.text_[i] != null)
                 await SetText(text_datas.text_[i]);
+
+            if (text_datas.effect[i] != null)
+                await SetEffect(text_datas.effect[i]);
         }
 
         isAdventure = false;
@@ -278,6 +285,34 @@ public class GUIManager : MonoBehaviour
         text_window_text.text = text;
         AudioManager.instance.Play("SE_3");
     }
+
+    async UniTask SetEffect(string name)
+    {
+        switch(name)
+        {
+            case "shake":
+                back_ground_image.transform.DOShakePosition(1f, 20, 30, 90, false, true);
+                await UniTask.Delay(TimeSpan.FromSeconds(1));
+                break;
+
+            case "fade":
+                adv_fede_image.DOFade(1, 1).SetLoops(2, LoopType.Yoyo);
+                await UniTask.Delay(TimeSpan.FromSeconds(2));
+                //UniTask.Run(() => fooasync());
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    /*private async UniTask fooasync()
+    {
+        iswait = true;
+        await UniTask.Delay(TimeSpan.FromSeconds(2));
+        iswait = false;
+        Debug.Log("end");
+    }*/
 
     //-------------------------------------------------------------------------
 
