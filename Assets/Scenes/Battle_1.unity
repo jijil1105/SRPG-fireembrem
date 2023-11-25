@@ -3963,6 +3963,7 @@ MonoBehaviour:
   blockParentobj: {fileID: 169811917}
   blockPrefab_Grass: {fileID: 5834167874720143618, guid: 37928c98a240e421f9c9db5e9501c3e8, type: 3}
   blockPrefab_Water: {fileID: 526010217631796985, guid: a48c715194adc42beb167ded66c31b7b, type: 3}
+  blockPrefab_Heal: {fileID: 5834167874720143618, guid: 44654599a3be442729afd3bb383a113e, type: 3}
   blockPrefab_Null: {fileID: 526010217631796985, guid: 2bd37535443f14b50a0244194ec7ef51, type: 3}
   SceneName: 
   mapTyape: 0
@@ -3970,6 +3971,8 @@ MonoBehaviour:
   MAP_WIDTH: 9
   MAP_HEIGHT: 9
   GENERATE_RATIO_GRASS: 80
+  GENERATE_RATIO_Heal: 10
+  healBlock_pos: []
 --- !u!4 &871221859
 Transform:
   m_ObjectHideFlags: 0

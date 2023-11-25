@@ -11,6 +11,7 @@ public class MapManager : MonoBehaviour
     public GameObject blockParentobj;
     public GameObject blockPrefab_Grass; // 草ブロック
     public GameObject blockPrefab_Water; // 水場ブロック
+    public GameObject blockPrefab_Heal;
     public GameObject blockPrefab_Null;
 
     //-------------------------------------------------------------------------
@@ -48,6 +49,9 @@ public class MapManager : MonoBehaviour
     public int MAP_HEIGHT = 9;// マップの縦(奥行)の幅
     [SerializeField]
     private int GENERATE_RATIO_GRASS = 80;// 草ブロックが生成される確率
+    [SerializeField]
+    private int GENERATE_RATIO_Heal = 10;
+    [SerializeField] List<Vector2> healBlock_pos;
 
     //-------------------------------------------------------------------------
 
@@ -117,12 +121,22 @@ public class MapManager : MonoBehaviour
                     // ブロックの種類を決定
                     int rand = Random.Range(0, 100);
                     bool isGrass = false;
+                    bool isHeal = false;
 
-                    if (rand < GENERATE_RATIO_GRASS) { isGrass = true; }
+                    if (rand < GENERATE_RATIO_GRASS)
+                    {
+                        isGrass = true;
+                    }
+                    else if(GENERATE_RATIO_GRASS <= rand&& rand < (GENERATE_RATIO_GRASS+GENERATE_RATIO_Heal))
+                    {
+                        isHeal = true;
+                    }
 
                     GameObject obj;
 
                     if (isGrass) { obj = Instantiate(blockPrefab_Grass, blockParent); }// blockParentの子に草ブロックを生成
+
+                    else if(isHeal) { obj = Instantiate(blockPrefab_Heal, blockParent); }
 
                     else { obj = Instantiate(blockPrefab_Water, blockParent); }// blockParentの子に水場ブロックを生成
 
@@ -178,6 +192,8 @@ public class MapManager : MonoBehaviour
                     obj = Instantiate(blockPrefab_Grass, blockParent);
                 else if (map_data_class.block_vlue[i] == 2)
                     obj = Instantiate(blockPrefab_Water, blockParent);
+                else if (map_data_class.block_vlue[i] == 3)
+                    obj = Instantiate(blockPrefab_Heal, blockParent);
                 else
                     obj = Instantiate(blockPrefab_Null, blockParent);
 
@@ -200,7 +216,6 @@ public class MapManager : MonoBehaviour
                     p++;
             }
         }
-
     }
 
     //-------------------------------------------------------------------------

@@ -16,6 +16,8 @@ public class MapBlock : MonoBehaviour
 
     [Header("通行可能フラグ")]
     public bool passable;//通行可能フラグ
+    [Header("HP回復フラグ")]
+    public bool isHeal;//通行可能フラグ
 
     //-------------------------------------------------------------------------
 

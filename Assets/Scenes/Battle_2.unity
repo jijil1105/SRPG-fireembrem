@@ -3963,13 +3963,16 @@ MonoBehaviour:
   blockParentobj: {fileID: 169811917}
   blockPrefab_Grass: {fileID: 5834167874720143618, guid: 37928c98a240e421f9c9db5e9501c3e8, type: 3}
   blockPrefab_Water: {fileID: 526010217631796985, guid: a48c715194adc42beb167ded66c31b7b, type: 3}
+  blockPrefab_Heal: {fileID: 5834167874720143618, guid: 44654599a3be442729afd3bb383a113e, type: 3}
   blockPrefab_Null: {fileID: 526010217631796985, guid: 2bd37535443f14b50a0244194ec7ef51, type: 3}
   SceneName: 
   mapTyape: 2
-  Map_Data: {fileID: 4900000, guid: 60541fb3311784e798f2fc2194509351, type: 3}
+  Map_Data: {fileID: 4900000, guid: a8e12113cfd2146489d054db2933b984, type: 3}
   MAP_WIDTH: 9
   MAP_HEIGHT: 9
   GENERATE_RATIO_GRASS: 0
+  GENERATE_RATIO_Heal: 10
+  healBlock_pos: []
 --- !u!4 &871221859
 Transform:
   m_ObjectHideFlags: 0
@@ -4078,6 +4081,7 @@ MonoBehaviour:
   name_text: {fileID: 12462993}
   chara_image_right: {fileID: 1592346511}
   chara_image_left: {fileID: 101206151}
+  adv_fede_image: {fileID: 0}
   text_datas:
     text_:
     - "\u3042\u3044\u3046\u3048\u304A"
@@ -4103,13 +4107,13 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 21300000, guid: 21789fc85a545421daa68916c219334d, type: 3}
     - {fileID: 0}
-    chara_pos: 0000000000000000000000000000000000000000
     effect:
     - 
     - 
     - 
     - 
     - 
+    target: []
   isAdventure: 0
   textasset: {fileID: 0}
   menuWindow: {fileID: 65155496}

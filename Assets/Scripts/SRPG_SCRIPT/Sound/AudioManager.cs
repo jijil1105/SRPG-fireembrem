@@ -130,15 +130,26 @@ public class AudioManager : MonoBehaviour
         if(soundDictionary.TryGetValue(clip_name, out var soundData))
         {
             if (soundData == null)
-                Debug.Log(clip_name + " Dont used to audiosource");return;
+            {
+                Debug.Log(clip_name + " Dont used to audiosource");
+                return;
+            }
 
             var audiosource = GetUsedAudioSource(soundData.audioClip.name);
 
             if (!audiosource)
-                Debug.Log(clip_name + " Dont used to audiosource");return;
+            {
+                Debug.Log(clip_name + " Dont used to audiosource");
+                return;
+            }
 
             if (audiosource)
-                audiosource.Stop(); audiosource.clip = null; soundData.playedTime = 0;
+            {
+                audiosource.Stop();
+                audiosource.clip = null;
+                soundData.playedTime = 0;
+                Debug.Log("STOP");
+            }     
         }
 
         else
