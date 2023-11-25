@@ -10,11 +10,21 @@ public class LoadScene : MonoBehaviour
 {
     [SerializeField] AudioManager audioManager;
     [SerializeField] Image fadeimage;
+    [SerializeField] Button ContinueButton;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        var data = DataManager._instance.Load();
+
+        if (data != null && data.SceneName != "Delete Data")
+        {
+            ContinueButton.gameObject.SetActive(true);
+        }
+        else
+        {
+            ContinueButton.gameObject.SetActive(false);
+        }
     }
 
     // Update is called once per frame

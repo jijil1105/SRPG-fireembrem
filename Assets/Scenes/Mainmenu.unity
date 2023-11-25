@@ -794,6 +794,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioManager: {fileID: 40322851}
   fadeimage: {fileID: 120062805}
+  ContinueButton: {fileID: 411681892}
 --- !u!4 &1244835424
 Transform:
   m_ObjectHideFlags: 0
