@@ -10611,10 +10611,10 @@ MonoBehaviour:
   isEnemy: 0
   charaName: "\u91CD\u88C5\u5175_\u65A7"
   maxHP: 30
-  atk: 5
-  def: 10
+  atk: 8
+  def: 12
   Int: 1
-  Res: 2
+  Res: 10
   attribute: 1
   moveType: 0
   skill: 2

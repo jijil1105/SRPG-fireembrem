@@ -9292,8 +9292,8 @@ MonoBehaviour:
   maxHP: 15
   atk: 2
   def: 2
-  Int: 20
-  Res: 10
+  Int: 15
+  Res: 5
   attribute: 1
   moveType: 1
   skill: 4
@@ -9321,7 +9321,7 @@ MonoBehaviour:
   isEnemy: 0
   charaName: "\u6226\u58EB"
   maxHP: 20
-  atk: 10
+  atk: 12
   def: 5
   Int: 1
   Res: 2
@@ -9352,7 +9352,7 @@ MonoBehaviour:
   isEnemy: 0
   charaName: "\u5263\u58EB"
   maxHP: 30
-  atk: 999
+  atk: 15
   def: 2
   Int: 1
   Res: 2

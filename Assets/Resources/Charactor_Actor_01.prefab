@@ -100,17 +100,17 @@ MonoBehaviour:
   isEnemy: 0
   charaName: "\u5263\u58EB"
   maxHP: 30
-  atk: 1001
-  def: 4
-  Int: 2
-  Res: 4
+  atk: 15
+  def: 2
+  Int: 1
+  Res: 2
   attribute: 0
   moveType: 2
   skill: 1
   isMagicAttac: 0
-  Lv: 3
-  nowExp: 68
-  ExpPerLv: 225
+  Lv: 1
+  nowExp: 75
+  ExpPerLv: 100
   isSkillLock: 0
   isDefBreak: 0
   isIncapacitated: 0
