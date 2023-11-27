@@ -337,7 +337,11 @@ public class GameManager : MonoBehaviour
 
                 // 自分のターン開始時のロゴを表示
                 if(!noLogos)
+                {
                     guiManager.ShowLogoChangeTurn(true);
+                    CheckHealBlock();
+                }
+                    
                 break;
 
             // 敵のターン：開始時
@@ -931,5 +935,36 @@ public class GameManager : MonoBehaviour
         AudioManager.instance.Stop("BGM_1");
         Debug.Log("Retire");
         SceneManager.LoadScene("MainMenu");
+    }
+
+    void CheckHealBlock()
+    {
+        var healblock = mapManager.GetHealBlocks();
+        var charas = charactorManager.Charactors.Where(chara => chara.isEnemy == false);
+
+        List<Charactor> HealCharas = new List<Charactor>();
+        if(healblock?.Count>0&&charas!=null&&charas.Count()>0)
+        {
+            foreach (var chara in charas)
+            {
+                foreach (var block in healblock)
+                {
+                    if (chara.XPos == block.XPos && chara.ZPos == block.ZPos)
+                    {
+                        HealCharas.Add(chara);
+                    }
+                }
+            }
+        }
+
+        if(HealCharas?.Count>0)
+        {
+            HealCharacters(HealCharas);
+        }
+    }
+
+    void HealCharacters(List<Charactor> charactors)
+    {
+
     }
 }

@@ -492,4 +492,16 @@ public class MapManager : MonoBehaviour
 
         return results;
     }
+
+    public List<MapBlock> GetHealBlocks()
+    {
+        List<MapBlock> healblocks = new List<MapBlock>();
+        foreach(var block in mapBlocks)
+        {
+            if (block.isHeal == true)
+                healblocks.Add(block);
+        }
+
+        return healblocks;
+    }
 }

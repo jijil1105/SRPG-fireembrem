@@ -131,7 +131,6 @@ public class AudioManager : MonoBehaviour
         {
             if (soundData == null)
             {
-                Debug.Log(clip_name + " Dont used to audiosource");
                 return;
             }
 
@@ -139,7 +138,6 @@ public class AudioManager : MonoBehaviour
 
             if (!audiosource)
             {
-                Debug.Log(clip_name + " Dont used to audiosource");
                 return;
             }
 
@@ -148,7 +146,6 @@ public class AudioManager : MonoBehaviour
                 audiosource.Stop();
                 audiosource.clip = null;
                 soundData.playedTime = 0;
-                Debug.Log("STOP");
             }     
         }
 
