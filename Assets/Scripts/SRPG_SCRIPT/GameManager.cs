@@ -306,7 +306,7 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	/// <param name="NowPhase">変更先モード</param>
     /// <param name="noLogos">trueだとロゴを表示しない</param>
-    private void ChangePhase(Phase NowPhase, bool noLogos = false)
+    private async void ChangePhase(Phase NowPhase, bool noLogos = false)
     {
         //ゲーム終了後なら終了
         if (isGameSet)
@@ -339,7 +339,7 @@ public class GameManager : MonoBehaviour
                 if(!noLogos)
                 {
                     guiManager.ShowLogoChangeTurn(true);
-                    CheckHealBlock();
+                    await CheckHealBlock();
                 }
                     
                 break;
@@ -367,7 +367,10 @@ public class GameManager : MonoBehaviour
                 
                 // 敵のターン開始時のロゴを表示
                 if (!noLogos)
+                {
                     guiManager.ShowLogoChangeTurn(false);
+                    await CheckHealBlock();
+                }
                 
                 // 敵の行動を開始する処理
                 // (ロゴ表示後に開始させる為、遅延処理にする)
@@ -937,34 +940,80 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
-    void CheckHealBlock()
+    async UniTask CheckHealBlock()
     {
-        var healblock = mapManager.GetHealBlocks();
-        var charas = charactorManager.Charactors.Where(chara => chara.isEnemy == false);
-
         List<Charactor> HealCharas = new List<Charactor>();
-        if(healblock?.Count>0&&charas!=null&&charas.Count()>0)
+        switch (nowPhase)
         {
-            foreach (var chara in charas)
-            {
-                foreach (var block in healblock)
+            case Phase.Myturn_Start:
+                var healblock1 = mapManager.GetHealBlocks();
+                var charas = charactorManager.Charactors.Where(chara => chara.isEnemy == false);
+
+                if (healblock1?.Count > 0 && charas != null && charas.Count() > 0)
                 {
-                    if (chara.XPos == block.XPos && chara.ZPos == block.ZPos)
+                    foreach (var chara in charas)
                     {
-                        HealCharas.Add(chara);
+                        foreach (var block in healblock1)
+                        {
+                            if (chara.XPos == block.XPos && chara.ZPos == block.ZPos)
+                            {
+                                HealCharas.Add(chara);
+                            }
+                        }
                     }
                 }
-            }
+                break;
+
+            case Phase.Enemyturn_Start:
+                var healblock2 = mapManager.GetHealBlocks();
+                var enemys = charactorManager.Charactors.Where(chara => chara.isEnemy == true);
+
+                if (healblock2?.Count > 0 && enemys != null && enemys.Count() > 0)
+                {
+                    foreach (var chara in enemys)
+                    {
+                        foreach (var block in healblock2)
+                        {
+                            if (chara.XPos == block.XPos && chara.ZPos == block.ZPos)
+                            {
+                                HealCharas.Add(chara);
+                            }
+                        }
+                    }
+                }
+                break;
+
         }
 
         if(HealCharas?.Count>0)
         {
-            HealCharacters(HealCharas);
+            await HealCharacters(HealCharas);
         }
     }
 
-    void HealCharacters(List<Charactor> charactors)
+    async UniTask HealCharacters(List<Charactor> charactors)
     {
+        await UniTask.Delay(TimeSpan.FromSeconds(2), cancellationToken: this.GetCancellationTokenOnDestroy());
 
+        int healvalue = -10;
+        foreach (var chara in charactors)
+        {
+            camera_.get_chara_subject.OnNext(chara);
+            // バトル結果表示ウィンドウの表示設定
+            guiManager.battleWindowUI.ShowWindow(chara, healvalue);
+
+            // ダメージ量分防御側のHPを減少
+            chara.NowHp -= healvalue;
+            // HPが0～最大値の範囲に収まるよう補正
+            chara.NowHp = Mathf.Clamp(chara.NowHp, 0, chara.maxHP);
+
+            AudioManager.instance.Play("SE_1");
+
+            await UniTask.Delay(TimeSpan.FromSeconds(1.0), cancellationToken: this.GetCancellationTokenOnDestroy());
+
+            guiManager.battleWindowUI.HideWindow();
+
+            await UniTask.Delay(TimeSpan.FromSeconds(0.5));
+        }
     }
 }
